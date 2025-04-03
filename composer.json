@@ -1,0 +1,15 @@
+{
+    "name": "camilo/aso-junta-sys",
+    "autoload": {
+        "psr-4": {
+            "Camilo\\AsoJuntaSys\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Camilin28",
+            "email": "berbeocamilo@gmail.com"
+        }
+    ],
+    "require": {}
+}
