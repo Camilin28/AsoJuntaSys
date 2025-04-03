@@ -4,7 +4,7 @@ require '../config/db.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST['nombre'];
     $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); //
+    $password = password_hash($_POST['contraseña'], PASSWORD_DEFAULT); //
 
     $sql = "INSERT INTO usuarios (nombre, email, contraseña) VALUES (:nombre, :email, :password)";
     $stmt = $pdo->prepare($sql);
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="email" name="email" required>
         <br>
         <label>Contraseña:</label>
-        <input type="contraseña" name="contraseña" required>
+        <input type="password" name="contraseña" required>
         <br>
         <button type="submit">Registrar</button>
     </form>

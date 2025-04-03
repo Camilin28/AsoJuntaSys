@@ -9,7 +9,7 @@ if (isset($_GET['id'])) {
     $stmt->execute(['id' => $id]);
 
     echo "✅ Usuario eliminado con éxito.";
-    header("Location: leer_usuario.php");
+    header("Location: listar_usuario.php");
 }
 ?>
 

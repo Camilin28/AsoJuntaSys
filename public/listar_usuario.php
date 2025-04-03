@@ -31,7 +31,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?= $usuario['email'] ?></td>
                 <td><?= $usuario['fecha_registro'] ?></td>
                 <td>
-                    <a href="editar_usuario.php?id=<?= $usuario['id'] ?>">✏️ Editar</a> |
+                    <a href="actualizar_usuario.php?id=<?= $usuario['id'] ?>">✏️ Editar</a> |
                     <a href="eliminar_usuario.php?id=<?= $usuario['id'] ?>" onclick="return confirm('¿Seguro que deseas eliminar este usuario?')">🗑️ Eliminar</a>
                 </td>
             </tr>

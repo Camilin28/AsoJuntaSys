@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute(['nombre' => $nombre, 'email' => $email, 'id' => $id]);
 
     echo "✅ Usuario actualizado con éxito.";
-    header("Location: leer_usuario.php");
+    header("Location: listar_usuario.php");
 }
 ?>
 
