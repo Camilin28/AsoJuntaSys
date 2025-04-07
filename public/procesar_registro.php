@@ -5,7 +5,7 @@ require_once '../config/db.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = trim($_POST['nombre']);
     $email = trim($_POST['email']);
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $password = password_hash($password, PASSWORD_BCRYPT);
     $rol = $_POST['rol'];
 
     if (!empty($nombre) && !empty($email) && !empty($password)) {
