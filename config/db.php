@@ -1,8 +1,8 @@
 <?php
-$host = "sql8.freesqldatabase.com";
-$dbname = "sql8771202";
-$username = "sql8771202";
-$password = "wzusHXWCn4";
+$host = "sql3.freesqldatabase.com";
+$dbname = "sql3774738";
+$username = "sql3774738";
+$password = "Ypt8bDM35B";
 $port = 3306;
 
 try {
