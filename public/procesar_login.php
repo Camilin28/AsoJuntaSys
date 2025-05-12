@@ -4,7 +4,7 @@ require_once '../config/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
-    $contraseña = trim($_POST['contraseña']);
+    $contraseña = trim($_POST['password']);
 
     if (!empty($email) && !empty($contraseña)) {
         try {
@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute([':email' => $email]);
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($usuario && password_verify($contraseña, $usuario['contraseña'])) {
+            if ($usuario && password_verify($password, $usuario['contraseña'])) {
                 $_SESSION['usuario_id'] = $usuario['id'];
                 $_SESSION['usuario_nombre'] = $usuario['nombre'];
                 $_SESSION['usuario_rol'] = $usuario['rol'];

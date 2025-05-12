@@ -5,17 +5,17 @@ require_once '../config/db.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = trim($_POST['nombre']);
     $email = trim($_POST['email']);
-    $contraseña = trim($_POST['contraseña']);
+    $password = password_hash($password, PASSWORD_BCRYPT);
     $rol = $_POST['rol'];
 
-    if (!empty($nombre) && !empty($email) && !empty($contraseña)) {
+    if (!empty($nombre) && !empty($email) && !empty($password)) {
         try {
-            $sql = "INSERT INTO usuarios (nombre, email, contraseña, rol) VALUES (:nombre, :email, :contraseña, :rol)";
+            $sql = "INSERT INTO usuarios (nombre, email, contraseña, rol) VALUES (:nombre, :email, :password, :rol)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':nombre' => $nombre,
                 ':email' => $email,
-                ':contraseña' => $contraseña,
+                ':password' => $password,
                 ':rol'=> $rol
                 
             ]);

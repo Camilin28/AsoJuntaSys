@@ -1,8 +1,8 @@
 <?php
-$host = "localhost";
-$dbname = "asojuntasys";
-$username = "root";
-$password = "";
+$host = "sql8.freesqldatabase.com";
+$dbname = "sql8771202";
+$username = "sql8771202";
+$password = "wzusHXWCn4";
 $port = 3306;
 
 try {
