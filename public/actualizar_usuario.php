@@ -82,13 +82,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         button {
             width: 50%;
             padding: 12px;
-            background-color: #007bff;
+            background: linear-gradient(to right, #00ff00, #00bfff);
             color: white;
             font-size: 16px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.4);
+            box-shadow: 5px 5px 10px rgba(221, 23, 23, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.4);
             transition: all 0.3s ease;
         }
 
@@ -141,7 +141,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <?php
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            echo "<p class='mensaje'>✅ Usuario actualizado con éxito.</p>";
+            echo "<p class='mensaje'>Usuario actualizado con éxito.</p>";
         }
         ?>
     </div>

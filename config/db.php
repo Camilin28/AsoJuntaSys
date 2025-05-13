@@ -14,7 +14,7 @@ try {
     ]);
 
     // Verificar la conexión
-    // echo "✅ Conexión exitosa a la base de datos."; // (Puedes descomentar esta línea para probar)
+   // echo "✅ Conexión exitosa a la base de datos."; // (Puedes descomentar esta línea para probar)
 } catch (PDOException $e) {
     die("❌ Error en la conexión: " . $e->getMessage());
 }

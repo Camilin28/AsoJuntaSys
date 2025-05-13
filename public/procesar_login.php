@@ -38,13 +38,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
                 exit();
             } else {
-                $_SESSION['error'] = "❌ Credenciales incorrectas.";
+                $_SESSION['error'] = " Credenciales incorrectas.";
             }
         } catch (PDOException $e) {
-            $_SESSION['error'] = "❌ Error en la autenticación: " . $e->getMessage();
+            $_SESSION['error'] = "Error en la autenticación: " . $e->getMessage();
         }
     } else {
-        $_SESSION['error'] = "❌ Todos los campos son obligatorios.";
+        $_SESSION['error'] = "Todos los campos son obligatorios.";
     }
 }
 

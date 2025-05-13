@@ -12,7 +12,7 @@ session_start();
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #e0e5ec;
+            background-color:rgb(0, 0, 0);
             margin: 0;
             padding: 0;
         }
@@ -26,10 +26,10 @@ session_start();
         }
 
         .sidebar {
-            background-color: #ffffff;
+            background-color:rgb(0, 0, 0);
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff; /* Neumorphic shadow */
+            box-shadow: 2px 2px 15px #00ff00, -2px -2px 15px #00ff00; /* Neumorphic shadow */
             width: 250px;
             height: auto;
         }
@@ -37,12 +37,12 @@ session_start();
         .sidebar h2 {
             font-size: 22px;
             margin-bottom: 20px;
-            color: #333;
+            color: #ffff;
         }
 
         .sidebar a {
             display: block;
-            color: #555;
+            color: #ffff;
             text-decoration: none;
             padding: 10px 0;
             font-size: 16px;
@@ -51,7 +51,7 @@ session_start();
         }
 
         .sidebar a:hover {
-            background-color: #a3b1c6;
+            background-color:rgb(0, 255, 76);
             color: white;
             border-radius: 5px;
         }
@@ -59,15 +59,15 @@ session_start();
         .content {
             flex: 1;
             padding: 20px;
-            background-color: #ffffff;
+            background-color: #0000;
             border-radius: 15px;
-            box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff; /* Neumorphic shadow */
+            box-shadow: 2px 2px 15px #a3b1c6, -2px -2px 15px #00ff00; /* Neumorphic shadow */
             margin-left: 20px;
         }
 
         .content h2 {
             font-size: 24px;
-            color: #333;
+            color: #ffff;
             margin-bottom: 20px;
         }
 
@@ -76,7 +76,7 @@ session_start();
             padding: 20px;
             margin: 10px 0;
             border-radius: 15px;
-            box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff; /* Neumorphic shadow */
+            
         }
 
         .card h3 {
@@ -92,7 +92,7 @@ session_start();
 
         .card button {
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background: linear-gradient(to right, #00ff00, #00bfff);
             color: white;
             border: none;
             border-radius: 10px;
@@ -102,25 +102,24 @@ session_start();
             margin-top: 10px;
         }
 
-        .card button:hover {
-            background-color: #45a049;
-        }
 
         .card button:active {
             box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
         }
 
         .logout-btn {
-            margin-top: 20px;
-            background-color: #f44336;
+            margin-top: 10px;
+            
+            border-radius: 5px;
+            
         }
 
         .logout-btn:hover {
-            background-color: #e53935;
+            background-color:rgb(60, 237, 44);
         }
 
         .logout-btn:active {
-            background-color: #d32f2f;
+            background-color:rgb(57, 239, 12);
         }
 
         .admin-actions {

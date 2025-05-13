@@ -10,121 +10,161 @@ session_start();
     <title>Inicio de Sesión</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #e0e5ec;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+            height: 100vh;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
         }
 
-        .login-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff; /* Neumorphic shadow */
-            width: 300px;
-            text-align: center;
+        .container {
+            display: flex;
+            width: 800px;
+            height: 450px;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px #0000FF;
         }
 
-        h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: bold;
+        .left-panel {
+            width: 50%;
+            background-color: #111;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-panel h2 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 28px;
+            align-self: auto;
         }
 
         label {
-            display: block;
-            margin-bottom: 8px;
+            color: #ccc;
             font-size: 14px;
-            color: #44;
+            margin-bottom: 5px;
         }
 
         input[type="email"],
         input[type="password"] {
-            width: 90%;
-            padding: 12px;
+            padding: 10px;
             margin-bottom: 20px;
-            border-radius: 10px;
             border: none;
+            border-bottom: 2px solid #555;
+            background: transparent;
+            color: white;
             font-size: 16px;
-            background: #e0e5ec;
-            box-shadow: inset 4px 4px 8px #c8d0e7, inset -4px -4px 8px #ffffff; /* Neumorphic input effect */
-            color: #333;
         }
 
-        input[type="email"]:focus,
-        input[type="password"]:focus {
+        input:focus {
             outline: none;
-            box-shadow: 0 0 5px 2px #a3b1c6;
+            border-bottom-color: #00ffff;
         }
 
         button {
-            width: 50%;
-            padding: 12px;
-            background-color: #4CAF50;
-            color: white;
+            background: linear-gradient(to right, #00ff00, #00bfff);
             border: none;
-            border-radius: 10px;
+            color: white;
+            padding: 12px;
+            border-radius: 20px;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 4px 4px 10px #a3b1c6, -4px -4px 10px #ffffff; /* Neumorphic button effect */
+            transition: background 0.3s ease;
         }
 
         button:hover {
-            background-color: #45a049;
-        }
-
-        button:active {
-            box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
-        }
-
-        .error-message {
-            color: red;
-            margin-bottom: 20px;
-            font-size: 14px;
+            opacity: 0.9;
         }
 
         .signup-link {
-            margin-top: 10px;
+            margin-top: 20px;
             font-size: 14px;
+            color: white;
         }
 
         .signup-link a {
+            color: #00ffff;
             text-decoration: none;
-            color: #4CAF50;
         }
 
         .signup-link a:hover {
             text-decoration: underline;
         }
+
+        .right-panel {
+            width: 50%;
+            background: linear-gradient(to right, #00ff00, #00bfff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-size: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .right-panel h1 {
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 15px;
+            font-size: 14px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Iniciar Sesión</h2>
+    <div class="container">
+        <div class="left-panel">
+            <h2>LOGIN</h2>
 
-        <!-- Mensajes de error -->
-        <?php
-        if (isset($_SESSION['error'])) {
-            echo "<p class='error-message'>" . $_SESSION['error'] . "</p>";
-            unset($_SESSION['error']);
-        }
-        ?>
+            <?php
+            if (isset($_SESSION['error'])) {
+                echo "<p class='error-message'>" . $_SESSION['error'] . "</p>";
+                unset($_SESSION['error']);
+            }
+            ?>
 
-        <form action="../public/procesar_login.php" method="POST">
-            <label for="email">Correo Electrónico:</label>
-            <input type="email" name="email" required placeholder="Introduce tu correo electrónico">
+            <form action="../public/procesar_login.php" method="POST">
+                <label for="email">Usuario</label>
+                <input type="email" name="email" required placeholder="Correo electrónico">
 
-            <label for="password">Contraseña:</label>
-            <input type="password" name="password" required placeholder="Introduce tu contraseña">
+                <label for="password">Contraseña</label>
+                <input type="password" name="password" required placeholder="Introduce tu contraseña">
 
-            <button type="submit">Iniciar Sesión</button>
-        </form>
+                <button type="submit">Iniciar Sesión</button>
+            </form>
 
-        <p class="signup-link">¿No tienes cuenta? <a href="../views/registrar.php">Regístrate aquí</a></p>
+            <p class="signup-link">¿No tienes cuenta? <a href="../views/registrar.php">Por favor, Regístrate</a></p>
+        </div>
+        <div class="right-panel">
+            <h1>BIENVENIDO</h1>
+            
+        </div>
     </div>
+
+   
 </body>
 </html>

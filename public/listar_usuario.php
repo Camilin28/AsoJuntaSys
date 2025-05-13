@@ -47,7 +47,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         table th {
-            background-color: #007bff;
+            background: linear-gradient(to right, #00ff00, #00bfff);
             color: white;
             text-align: center;
         }
@@ -70,7 +70,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .regresar-btn {
             margin-top: 20px;
             padding: 10px 20px;
-            background-color:rgb(14, 127, 214);
+            background: linear-gradient(to right, #00ff00, #00bfff);
             color: white;
             border: none;
             border-radius: 5px;
