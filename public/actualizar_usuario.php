@@ -17,8 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['nombre' => $nombre, 'email' => $email, 'id' => $id]);
 
-    echo "✅ Usuario actualizado con éxito.";
     header("Location: listar_usuario.php");
+    exit();
 }
 ?>
 
@@ -28,10 +28,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Editar Usuario</title>
     <style>
-        /* Estilos generales */
+        :root {
+            --bg-color: #020202;
+            --form-bg: #ffffff;
+            --primary-color: #00ff00;
+            --secondary-color: #00bfff;
+            --text-color: #333;
+            --input-bg: #f9f9f9;
+            --focus-border:rgb(51, 255, 0);
+            --shadow-light:#00ff00;
+            --shadow-dark: #0000ff ;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f7fa;
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -39,73 +50,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0;
         }
 
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        /* Estilo del formulario */
         form {
-            background-color: #fff;
-            padding: 30px;
+            background-color: var(--form-bg);
+            padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            box-shadow:
+                0 10px 10px var(--shadow-dark),
+                0 -10px 10px var(--shadow-light),
+                inset 0 0 10px rgba(109, 228, 5, 0.95);
             width: 100%;
             max-width: 400px;
         }
 
+        h3 {
+            text-align: center;
+            color: var(--text-color);
+        }
+
         label {
             display: block;
-            margin: 10px 0 5px;
-            font-size: 14px;
-            color: #333;
+            margin: 10px 0 1px;
+            font-size: 15px;
+            color: var(--text-color);
         }
 
         input[type="text"], input[type="email"] {
-            width: 100%;
+            width: 95%;
             padding: 10px;
             font-size: 16px;
             border-radius: 10px;
             border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), inset -2px -2px 5px rgba(255, 255, 255, 0.7);
+            background-color: var(--input-bg);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05);
             margin-bottom: 20px;
             transition: all 0.3s ease;
         }
 
         input[type="text"]:focus, input[type="email"]:focus {
             outline: none;
-            border-color: #007bff;
-            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), inset -2px -2px 5px rgba(255, 255, 255, 0.5), 0 0 5px rgba(0, 123, 255, 0.5);
+            border-color: var(--focus-border);
+            box-shadow: 0 0 8px var(--secondary-color);
+        }
+
+        .botones {
+            display: flex;
+            justify-content: space-between;
         }
 
         button {
-            width: 50%;
+            flex: 1;
             padding: 12px;
-            background: linear-gradient(to right, #00ff00, #00bfff);
+            margin: 0 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             font-size: 16px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            box-shadow: 5px 5px 10px rgba(221, 23, 23, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            transition: background 0.3s ease, transform 0.2s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
+            opacity: 0.9;
         }
 
         button:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
 
-        .botones {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        /* Mensajes de éxito o error */
         .mensaje {
             text-align: center;
             margin-top: 20px;
@@ -117,33 +130,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-top: 20px;
             color: red;
         }
-
     </style>
 </head>
 <body>
-    <div>
-        <h2>Editar Usuario</h2>
+    <form method="POST">
+        <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
+        <h3>Editar Usuario</h3>
 
-        <form method="POST">
-            <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" value="<?= $usuario['nombre'] ?>" required>
 
-            <label>Nombre:</label>
-            <input type="text" name="nombre" value="<?= $usuario['nombre'] ?>" required>
+        <label>Email:</label>
+        <input type="email" name="email" value="<?= $usuario['email'] ?>" required>
 
-            <label>Email:</label>
-            <input type="email" name="email" value="<?= $usuario['email'] ?>" required>
-
-            <div class="botones">
-                <button type="submit">Actualizar</button>
-                <button type="submit">Regresar</button>
-            </div>
-        </form>
-        
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            echo "<p class='mensaje'>Usuario actualizado con éxito.</p>";
-        }
-        ?>
-    </div>
+        <div class="botones">
+            <button type="submit">Actualizar</button>
+            <button type="button" onclick="window.location.href='listar_usuario.php'">Regresar</button>
+        </div>
+    </form>
 </body>
 </html>

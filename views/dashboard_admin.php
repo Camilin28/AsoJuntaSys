@@ -1,5 +1,13 @@
 <?php
 session_start();
+
+// Verifica que el usuario esté autenticado y tenga el rol correcto
+if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Presidente General') {
+    header("Location: ../views/login.php");
+    exit();
+}
+
+$nombre = $_SESSION['usuario_nombre']; // nombre del usuario desde sesión
 ?>
 
 <!DOCTYPE html>
@@ -12,7 +20,7 @@ session_start();
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color:rgb(0, 0, 0);
+            background-color: rgb(0, 0, 0);
             margin: 0;
             padding: 0;
         }
@@ -26,10 +34,10 @@ session_start();
         }
 
         .sidebar {
-            background-color:rgb(0, 0, 0);
+            background-color: rgb(0, 0, 0);
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 2px 2px 15px #00ff00, -2px -2px 15px #00ff00; /* Neumorphic shadow */
+            box-shadow: 2px 2px 15px #00ff00, -2px -2px 15px #00ff00;
             width: 250px;
             height: auto;
         }
@@ -37,12 +45,12 @@ session_start();
         .sidebar h2 {
             font-size: 22px;
             margin-bottom: 20px;
-            color: #ffff;
+            color: #ffffff;
         }
 
         .sidebar a {
             display: block;
-            color: #ffff;
+            color: #ffffff;
             text-decoration: none;
             padding: 10px 0;
             font-size: 16px;
@@ -51,7 +59,7 @@ session_start();
         }
 
         .sidebar a:hover {
-            background-color:rgb(0, 255, 76);
+            background-color: rgb(0, 255, 76);
             color: white;
             border-radius: 5px;
         }
@@ -59,15 +67,15 @@ session_start();
         .content {
             flex: 1;
             padding: 20px;
-            background-color: #0000;
+            background-color: transparent;
             border-radius: 15px;
-            box-shadow: 2px 2px 15px #a3b1c6, -2px -2px 15px #00ff00; /* Neumorphic shadow */
+            box-shadow: 2px 2px 15px #a3b1c6, -2px -2px 15px #00ff00;
             margin-left: 20px;
         }
 
         .content h2 {
             font-size: 24px;
-            color: #ffff;
+            color: #ffffff;
             margin-bottom: 20px;
         }
 
@@ -76,18 +84,17 @@ session_start();
             padding: 20px;
             margin: 10px 0;
             border-radius: 15px;
-            
         }
 
         .card h3 {
             font-size: 20px;
-            color: #333;
+            color: #333333;
             margin-bottom: 10px;
         }
 
         .card p {
             font-size: 16px;
-            color: #555;
+            color: #555555;
         }
 
         .card button {
@@ -98,10 +105,9 @@ session_start();
             border-radius: 10px;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 4px 4px 10px #a3b1c6, -4px -4px 10px #ffffff; /* Neumorphic button effect */
+            box-shadow: 4px 4px 10px #a3b1c6, -4px -4px 10px #ffffff;
             margin-top: 10px;
         }
-
 
         .card button:active {
             box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
@@ -109,17 +115,15 @@ session_start();
 
         .logout-btn {
             margin-top: 10px;
-            
             border-radius: 5px;
-            
         }
 
         .logout-btn:hover {
-            background-color:rgb(60, 237, 44);
+            background-color: rgb(60, 237, 44);
         }
 
         .logout-btn:active {
-            background-color:rgb(57, 239, 12);
+            background-color: rgb(57, 239, 12);
         }
 
         .admin-actions {
@@ -138,7 +142,7 @@ session_start();
     <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h2>Bienvenido, <?php echo $_SESSION['nombre']; ?></h2>
+            <h2>Bienvenido, <?php echo htmlspecialchars($nombre); ?></h2>
             <a href="dashboard_admin.php">Panel de Control</a>
             <a href="usuarios.php">Gestión de Usuarios</a>
             <a href="estadisticas.php">Estadísticas</a>
@@ -148,7 +152,7 @@ session_start();
 
         <!-- Main Content -->
         <div class="content">
-            <h2>Panel de Control - Admin</h2>
+            <h2>Panel de Control - Presidente General Asojuntas</h2>
 
             <!-- Admin Actions -->
             <div class="admin-actions">

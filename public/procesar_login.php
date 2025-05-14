@@ -3,7 +3,7 @@ session_start();
 require_once '../config/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $contraseña = trim($_POST['password']);
 
     if (!empty($email) && !empty($contraseña)) {
