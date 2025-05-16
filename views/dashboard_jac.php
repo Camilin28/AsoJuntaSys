@@ -3,7 +3,7 @@ session_start();
 
 // Verificar que el usuario ha iniciado sesión y tiene el rol correcto
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Presidentes de JAC') {
-    header("Location: login.php");
+    header("Location: ../views/login.php");
     exit();
 }
 
@@ -17,11 +17,25 @@ $nombre = $_SESSION['usuario_nombre'];
     <title>Dashboard Presidente de JAC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --fondo-color: rgb(0, 0, 0);
+        }
+
+        body {
+            background-color: var(--fondo-color);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #00ff00, #0000ff) !important;
+            box-shadow: 10px 10px 50px #0000ff;
+        }
+
         .custom-card {
-            background: linear-gradient(145deg,#ffff);
             border-radius: 15px;
+            overflow: hidden;
             box-shadow: 4px 4px 10px #00ff00, -4px -4px 10px #0000ff;
             transition: transform 0.2s ease-in-out;
+            border: none;
         }
 
         .custom-card:hover {
@@ -29,9 +43,27 @@ $nombre = $_SESSION['usuario_nombre'];
         }
 
         .custom-card .card-header {
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
+            color: white;
             font-weight: bold;
+            padding: 10px 15px;
+        }
+
+        .card-reuniones .card-header {
+            background: linear-gradient(135deg, #00ff00, #0000ff);
+        }
+
+        .card-proyectos .card-header {
+            background: linear-gradient(135deg, #00ff00, #0000ff);
+        }
+
+        .card-informes .card-header {
+            background: linear-gradient(135deg, #00ff00, #0000ff);
+        }
+
+        .custom-card .card-body {
+            background-color: white;
+            color: #333;
+            padding: 20px;
         }
 
         .btn-custom {
@@ -40,9 +72,9 @@ $nombre = $_SESSION['usuario_nombre'];
         }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Junta de Acción Comunal</a>
         <div class="collapse navbar-collapse">
@@ -59,12 +91,12 @@ $nombre = $_SESSION['usuario_nombre'];
 </nav>
 
 <div class="container mt-4">
-    <h2 class="mb-4">Panel del Presidente de la JAC</h2>
+    <h2 class="mb-4 text-white">Panel del Presidente de la JAC</h2>
 
     <div class="row">
         <div class="col-md-4">
-            <div class="card custom-card border-0 mb-4">
-                <div class="card-header bg-primary text-white">Reuniones</div>
+            <div class="card custom-card card-reuniones mb-4">
+                <div class="card-header">Reuniones</div>
                 <div class="card-body">
                     <p class="card-text">Consultar y gestionar reuniones comunitarias.</p>
                     <a href="reuniones.php" class="btn btn-primary btn-custom">Ver Reuniones</a>
@@ -73,8 +105,8 @@ $nombre = $_SESSION['usuario_nombre'];
         </div>
 
         <div class="col-md-4">
-            <div class="card custom-card border-0 mb-4">
-                <div class="card-header bg-success text-white">Proyectos</div>
+            <div class="card custom-card card-proyectos mb-4">
+                <div class="card-header">Proyectos</div>
                 <div class="card-body">
                     <p class="card-text">Revisar proyectos activos y propuestos en la comunidad.</p>
                     <a href="proyectos.php" class="btn btn-success btn-custom">Ver Proyectos</a>
@@ -83,8 +115,8 @@ $nombre = $_SESSION['usuario_nombre'];
         </div>
 
         <div class="col-md-4">
-            <div class="card custom-card border-0 mb-4">
-                <div class="card-header bg-warning text-white">Informes</div>
+            <div class="card custom-card card-informes mb-4">
+                <div class="card-header">Informes</div>
                 <div class="card-body">
                     <p class="card-text">Consultar informes de gestión y avances.</p>
                     <a href="informes.php" class="btn btn-warning btn-custom text-white">Ver Informes</a>
@@ -92,7 +124,6 @@ $nombre = $_SESSION['usuario_nombre'];
             </div>
         </div>
     </div>
-
 </div>
 
 </body>
