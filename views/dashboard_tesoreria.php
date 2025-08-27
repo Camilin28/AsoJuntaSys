@@ -105,7 +105,7 @@ $nombre = $_SESSION['usuario_nombre'];
                 <div class="card-header">Ingresos</div>
                 <div class="card-body">
                     <p class="card-text">Consultar y gestionar los ingresos de la comunidad.</p>
-                    <a href="ingresos.php" class="btn btn-primary btn-custom">Ver Ingresos</a>
+                    <a href="../views/ingresos.php" class="btn btn-primary btn-custom">Ver Ingresos</a>
                 </div>
             </div>
         </div>
