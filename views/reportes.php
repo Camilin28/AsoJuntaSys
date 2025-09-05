@@ -92,7 +92,6 @@ $nombre = $_SESSION['usuario_nombre'];
                 <th>Tipo</th>
                 <th>Monto</th>
                 <th>Fecha</th>
-                <th>Responsable</th>
                 <th>Observaciones</th>
             </tr>
         </thead>
