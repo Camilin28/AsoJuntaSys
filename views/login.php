@@ -1,170 +1,165 @@
-<?php
-session_start();
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de Sesión</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - AsoJuntaSys</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #2E7D32 40%, #FBC02D 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    .container {
+      display: flex;
+      width: 800px;
+      height: 500px;
+      background: #ff0000ff;
+      border-radius: 50px;
+      box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #000;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    /* Panel izquierdo (formulario) */
+    .left-panel {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #ffffff;
+    }
 
-        .container {
-            display: flex;
-            width: 800px;
-            height: 450px;
-            border: 2px solid #00ff00;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 20px #0000FF;
-        }
+    .left-panel h2 {
+      color: #2E7D32;
+      margin-bottom: 20px;
+    }
 
-        .left-panel {
-            width: 50%;
-            background-color: #111;
-            padding: 40px 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+    .left-panel label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #333;
+    }
 
-        .left-panel h2 {
-            color: white;
-            margin-bottom: 30px;
-            font-size: 28px;
-            align-self: auto;
-        }
+    .left-panel input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 2px solid #C8E6C9;
+      border-radius: 8px;
+      outline: none;
+      transition: border 0.3s ease;
+    }
 
-        label {
-            color: #ccc;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
+    .left-panel input:focus {
+      border-color: #FBC02D;
+    }
 
-        input[type="email"],
-        input[type="password"] {
-            padding: 10px;
-            margin-bottom: 20px;
-            border: none;
-            border-bottom: 2px solid #555;
-            background: transparent;
-            color: white;
-            font-size: 16px;
-        }
+    .left-panel button {
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #2E7D32;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+      width: 110%;
+    }
 
-        input:focus {
-            outline: none;
-            border-bottom-color: #00ffff;
-        }
+    .left-panel button:hover {
+      background-color: #FBC02D;
+      color: #333;
+    }
 
-        button {
-            background: linear-gradient(to right, #00ff00, #00bfff);
-            border: none;
-            color: white;
-            padding: 12px;
-            border-radius: 20px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+    .signup-link {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #333;
+    }
 
-        button:hover {
-            opacity: 0.9;
-        }
+    .signup-link a {
+      color: #2E7D32;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-        .signup-link {
-            margin-top: 20px;
-            font-size: 14px;
-            color: white;
-        }
+    .signup-link a:hover {
+      color: #FBC02D;
+    }
 
-        .signup-link a {
-            color: #00ffff;
-            text-decoration: none;
-        }
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+    }
 
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
+    /* Panel derecho (logo) */
+.right-panel {
+  flex: 1;
+  background: radial-gradient(
+    circle at 48% 45%, /* mueve el centro (X%, Y%) */
+    #ffffff 0% 30%,   /* tamaño del blanco */
+    #2E7D32 10%,      /* verde alrededor */
+    #FBC02D 40%      /* amarillo en los bordes */
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
 
-        .right-panel {
-            width: 50%;
-            background: linear-gradient(to right, #00ff00, #00bfff);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
-            font-size: 20px;
-            padding: 20px;
-            text-align: center;
-        }
+.right-panel img {
+  max-width: 500px;
+  height: 300px;
+  z-index: 1;
+  filter: drop-shadow(2px 2px 8px rgba(0,0,0,0.4));
+}
 
-        .right-panel h1 {
-            margin-bottom: 10px;
-        }
 
-        .error-message {
-            color: #ff4444;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        footer {
-            position: absolute;
-            bottom: 15px;
-            font-size: 14px;
-            color: white;
-            text-align: center;
-            width: 100%;
-        }
-    </style>
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="left-panel">
-            <h2>LOGIN</h2>
+  <div class="container">
+    <!-- Panel izquierdo -->
+    <div class="left-panel">
+      <h2>LOGIN</h2>
 
-            <?php
-            if (isset($_SESSION['error'])) {
-                echo "<p class='error-message'>" . $_SESSION['error'] . "</p>";
-                unset($_SESSION['error']);
-            }
-            ?>
+      <?php
+      if (isset($_SESSION['error'])) {
+          echo "<p class='error-message'>" . $_SESSION['error'] . "</p>";
+          unset($_SESSION['error']);
+      }
+      ?>
 
-            <form action="../public/procesar_login.php" method="POST">
-                <label for="email">Usuario</label>
-                <input type="email" name="email" required placeholder="Correo electrónico">
+      <form action="../public/procesar_login.php" method="POST">
+        <label for="email">Usuario</label>
+        <input type="email" name="email" required placeholder="Correo electrónico">
 
-                <label for="password">Contraseña</label>
-                <input type="password" name="password" required placeholder="Introduce tu contraseña">
+        <label for="password">Contraseña</label>
+        <input type="password" name="password" required placeholder="Introduce tu contraseña">
 
-                <button type="submit">Iniciar Sesión</button>
-            </form>
+        <button type="submit">Iniciar Sesión</button>
+      </form>
 
-            <p class="signup-link">¿No tienes cuenta? <a href="../views/registrar.php">Por favor, Regístrate</a></p>
-        </div>
-        <div class="right-panel">
-            <h1>BIENVENIDO</h1>
-            
-        </div>
+      <p class="signup-link">¿No tienes cuenta? 
+        <a href="../views/registrar.php">Por favor, Regístrate</a>
+      </p>
     </div>
 
-   
+    <!-- Panel derecho con el logo -->
+    <div class="right-panel">
+      <img src="../imagenes/logo1.png" alt="Logo AsoJuntaSys">
+    </div>
+  </div>
 </body>
 </html>

@@ -20,7 +20,7 @@ $nombre = $_SESSION['usuario_nombre']; // nombre del usuario desde sesión
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: rgb(0, 0, 0);
+            background-color: #f5f5f5; /* Fondo general claro */
             margin: 0;
             padding: 0;
         }
@@ -28,113 +28,118 @@ $nombre = $_SESSION['usuario_nombre']; // nombre del usuario desde sesión
         .dashboard-container {
             display: flex;
             justify-content: space-between;
-            padding: 20px;
             height: 100vh;
-            flex-wrap: wrap;
         }
 
+        /* Sidebar */
         .sidebar {
-            background-color: rgb(0, 0, 0);
+            background-color: #2E7D32; /* Verde institucional */
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 2px 2px 15px #00ff00, -2px -2px 15px #00ff00;
             width: 250px;
-            height: auto;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 15px 15px 0;
+            box-shadow: 2px 0px 10px rgba(0,0,0,0.2);
         }
 
         .sidebar h2 {
-            font-size: 22px;
+            font-size: 20px;
             margin-bottom: 20px;
-            color: #ffffff;
+            color: #fff;
         }
 
         .sidebar a {
             display: block;
-            color: #ffffff;
+            color: #fff;
             text-decoration: none;
-            padding: 10px 0;
+            padding: 12px 10px;
             font-size: 16px;
-            margin: 5px 0;
-            transition: background-color 0.3s ease;
+            margin: 6px 0;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .sidebar a:hover {
-            background-color: rgb(0, 255, 76);
-            color: white;
-            border-radius: 5px;
+            background-color: #FBC02D; /* Amarillo */
+            color: #333;
         }
 
+        .logout-btn {
+            margin-top: auto;
+            background-color: #F44336; /* Rojo para destacar logout */
+            text-align: center;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+            color: #fff;
+        }
+
+        /* Contenido */
         .content {
             flex: 1;
-            padding: 20px;
-            background-color: transparent;
-            border-radius: 15px;
-            box-shadow: 2px 2px 15px #a3b1c6, -2px -2px 15px #00ff00;
-            margin-left: 20px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 15px 0 0 15px;
+            margin: 20px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
         }
 
         .content h2 {
             font-size: 24px;
-            color: #ffffff;
-            margin-bottom: 20px;
+            color: #2E7D32;
+            margin-bottom: 25px;
         }
 
-        .card {
-            background-color: #ffffff;
-            padding: 20px;
-            margin: 10px 0;
-            border-radius: 15px;
-        }
-
-        .card h3 {
-            font-size: 20px;
-            color: #333333;
-            margin-bottom: 10px;
-        }
-
-        .card p {
-            font-size: 16px;
-            color: #555555;
-        }
-
-        .card button {
-            padding: 10px 20px;
-            background: linear-gradient(to right, #00ff00, #00bfff);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 4px 4px 10px #a3b1c6, -4px -4px 10px #ffffff;
-            margin-top: 10px;
-        }
-
-        .card button:active {
-            box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
-        }
-
-        .logout-btn {
-            margin-top: 10px;
-            border-radius: 5px;
-        }
-
-        .logout-btn:hover {
-            background-color: rgb(60, 237, 44);
-        }
-
-        .logout-btn:active {
-            background-color: rgb(57, 239, 12);
-        }
-
+        /* Cards */
         .admin-actions {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            gap: 20px;
         }
 
         .admin-actions .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
             width: 45%;
-            margin-bottom: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .admin-actions .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 14px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            color: #2E7D32;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: #555;
+        }
+
+        .card button {
+            padding: 10px 16px;
+            background-color: #2E7D32;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background-color 0.3s ease;
+        }
+
+        .card button:hover {
+            background-color: #FBC02D;
+            color: #333;
         }
     </style>
 </head>
