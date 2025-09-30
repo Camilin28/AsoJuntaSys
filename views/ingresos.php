@@ -11,14 +11,19 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería'
 require('../config/db.php'); // Ajusta la ruta si es necesario
 
 try {
-    // Consulta para obtener los ingresos
-    $sql = "SELECT * FROM recursos_financieros WHERE tipo_movimiento = 'Ingreso'";
+    // Consulta para obtener los ingresos (Incluye Ingreso, Donación, Subsidio y Otro clasificado como Ingreso)
+    $sql = "SELECT * FROM recursos_financieros 
+            WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
+               OR (tipo_movimiento = 'Otro' AND clasificacion = 'Ingreso')";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $ingresos = $stmt->fetchAll();
 
     // Consulta para obtener el total de ingresos
-    $sqlTotal = "SELECT SUM(monto) AS total_ingresos FROM recursos_financieros WHERE tipo_movimiento = 'Ingreso'";
+    $sqlTotal = "SELECT SUM(monto) AS total_ingresos 
+                 FROM recursos_financieros 
+                 WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
+                    OR (tipo_movimiento = 'Otro' AND clasificacion = 'Ingreso')";
     $stmtTotal = $pdo->prepare($sqlTotal);
     $stmtTotal->execute();
     $totalIngresos = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total_ingresos'] ?? 0;
@@ -159,7 +164,13 @@ $nombre = $_SESSION['usuario_nombre'];
                 <tr>
                     <td><?= htmlspecialchars($ingreso['id']) ?></td>
                     <td><?= htmlspecialchars($ingreso['descripcion']) ?></td>
-                    <td><?= htmlspecialchars($ingreso['tipo_movimiento']) ?></td>
+                    <td>
+                        <?php if ($ingreso['tipo_movimiento'] === 'Otro'): ?>
+                            Otro (<?= htmlspecialchars($ingreso['clasificacion']) ?>)
+                        <?php else: ?>
+                            <?= htmlspecialchars($ingreso['tipo_movimiento']) ?>
+                        <?php endif; ?>
+                    </td>
                     <td class="fw-bold text-success">$<?= number_format($ingreso['monto'], 0, ',', '.') ?></td>
                     <td><?= htmlspecialchars($ingreso['fecha']) ?></td>
                     <td><?= htmlspecialchars($ingreso['responsable'] ?? '-') ?></td>

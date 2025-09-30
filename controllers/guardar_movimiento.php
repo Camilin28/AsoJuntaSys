@@ -1,21 +1,27 @@
 <?php
-require '../config/conexion.php';
+require('../config/db.php');
+session_start();
 
-$descripcion = $_POST['descripcion'];
-$tipo = $_POST['tipo_movimiento'];
-$monto = $_POST['monto'];
-$fecha = $_POST['fecha'];
-$responsable = $_POST['responsable'] ?? null;
-$observaciones = $_POST['observaciones'] ?? null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $descripcion = $_POST['descripcion'];
+    $tipo_movimiento = $_POST['tipo_movimiento'];
+    $monto = $_POST['monto'];
+    $fecha = $_POST['fecha'];
+    $responsable = $_POST['responsable'];
+    $observaciones = $_POST['observaciones'];
 
-$sql = "INSERT INTO movimientos_financieros (descripcion, tipo_movimiento, monto, fecha, responsable, observaciones)
-        VALUES (?, ?, ?, ?, ?, ?)";
+    $clasificacion = null;
+    if ($tipo_movimiento === "Otro" && !empty($_POST['otro_clasificacion'])) {
+        $clasificacion = $_POST['otro_clasificacion'];
+    }
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ssisss", $descripcion, $tipo, $monto, $fecha, $responsable, $observaciones);
+    $sql = "INSERT INTO recursos_financieros 
+                (descripcion, tipo_movimiento, clasificacion, monto, fecha, responsable, observaciones) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$descripcion, $tipo_movimiento, $clasificacion, $monto, $fecha, $responsable, $observaciones]);
 
-if ($stmt->execute()) {
-    header("Location: ../views/dashboard_tesorero.php");
-} else {
-    echo "Error al guardar el movimiento: " . $conn->error;
+    header("Location: ../views/dashboard_tesoreria.php");
+    exit();
 }
+?>

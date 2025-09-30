@@ -2,7 +2,6 @@
 // reportes.php
 session_start();
 
-// Verificar que el usuario ha iniciado sesión y tiene el rol correcto
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería') {
     header("Location: ../views/login.php");
     exit();
@@ -11,26 +10,26 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería'
 require('../config/db.php');
 
 try {
-    // Total ingresos
-    $sql_ingresos = "SELECT SUM(monto) AS total_ingresos FROM recursos_financieros WHERE tipo_movimiento = 'Ingreso'";
-    $stmt = $pdo->prepare($sql_ingresos);
-    $stmt->execute();
-    $totalIngresos = $stmt->fetchColumn() ?? 0;
-
-    // Total egresos
-    $sql_egresos = "SELECT SUM(monto) AS total_egresos FROM recursos_financieros WHERE tipo_movimiento = 'Gasto'";
-    $stmt = $pdo->prepare($sql_egresos);
-    $stmt->execute();
-    $totalEgresos = $stmt->fetchColumn() ?? 0;
-
-    // Balance
-    $balance = $totalIngresos - $totalEgresos;
-
-    // Movimientos
-    $sql_movimientos = "SELECT * FROM recursos_financieros ORDER BY fecha DESC";
-    $stmt = $pdo->prepare($sql_movimientos);
+    $sql = "SELECT * FROM recursos_financieros ORDER BY fecha DESC";
+    $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $movimientos = $stmt->fetchAll();
+
+    $sqlIngresos = "SELECT SUM(monto) AS total FROM recursos_financieros 
+                    WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
+                       OR (tipo_movimiento='Otro' AND clasificacion='Ingreso')";
+    $stmtIngresos = $pdo->prepare($sqlIngresos);
+    $stmtIngresos->execute();
+    $totalIngresos = $stmtIngresos->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+    $sqlEgresos = "SELECT SUM(monto) AS total FROM recursos_financieros 
+                   WHERE tipo_movimiento IN ('Gasto','Transferencia') 
+                      OR (tipo_movimiento='Otro' AND clasificacion='Egreso')";
+    $stmtEgresos = $pdo->prepare($sqlEgresos);
+    $stmtEgresos->execute();
+    $totalEgresos = $stmtEgresos->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+    $balance = $totalIngresos - $totalEgresos;
 
 } catch (PDOException $e) {
     die("Error en la consulta: " . $e->getMessage());
@@ -43,14 +42,13 @@ $nombre = $_SESSION['usuario_nombre'];
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Reportes Financieros - Junta de Acción Comunal</title>
+    <title>Reportes Financieros</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            background-color: #fff9c4; /* Fondo claro
+            background-color: #fffde7;
         }
 
-        /* Navbar */
         .navbar {
             background-color: #2E7D32 !important;
         }
@@ -59,7 +57,6 @@ $nombre = $_SESSION['usuario_nombre'];
             color: #FBC02D !important;
         }
 
-        /* Contenedor */
         .container {
             background: #fff;
             padding: 30px;
@@ -67,22 +64,11 @@ $nombre = $_SESSION['usuario_nombre'];
             box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
         }
 
-        h2, h3 {
+        h2 {
             color: #2E7D32;
             margin-bottom: 20px;
         }
 
-        /* Cards */
-        .card {
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .card h3 {
-            font-weight: bold;
-        }
-
-        /* Tabla */
         .table thead {
             background-color: #2E7D32;
             color: #fff;
@@ -96,7 +82,50 @@ $nombre = $_SESSION['usuario_nombre'];
             background-color: #E8F5E9;
         }
 
-        /* Botón */
+        /* 🔥 Colores con mayor prioridad */
+        td.text-ingreso {
+            color: #2E7D32 !important; /* verde */
+            font-weight: bold;
+        }
+
+        td.text-egreso {
+            color: #c62828 !important; /* rojo */
+            font-weight: bold;
+        }
+
+        .resumen-card {
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+            color: #fff;
+        }
+
+        .card-ingresos {
+            background: #2E7D32;
+        }
+
+        .card-egresos {
+            background: #c62828;
+        }
+
+        .card-balance {
+            background: #FBC02D;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .resumen-card h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .resumen-card p {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
         .btn-custom {
             background-color: #2E7D32;
             color: #fff;
@@ -128,40 +157,31 @@ $nombre = $_SESSION['usuario_nombre'];
 </nav>
 
 <div class="container mt-4">
-    <h2>Reportes Financieros</h2>
+    <h2>Reporte de Movimientos Financieros</h2>
 
     <!-- Totales -->
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-header">Total Ingresos</div>
-                <div class="card-body">
-                    <h3>$ <?= number_format($totalIngresos, 0, ',', '.') ?></h3>
-                </div>
+            <div class="resumen-card card-ingresos">
+                <h3>Total Ingresos</h3>
+                <p>$<?= number_format($totalIngresos, 0, ',', '.') ?></p>
             </div>
         </div>
-
         <div class="col-md-4">
-            <div class="card text-white bg-danger mb-3">
-                <div class="card-header">Total Egresos</div>
-                <div class="card-body">
-                    <h3>$ <?= number_format($totalEgresos, 0, ',', '.') ?></h3>
-                </div>
+            <div class="resumen-card card-egresos">
+                <h3>Total Egresos</h3>
+                <p>$<?= number_format($totalEgresos, 0, ',', '.') ?></p>
             </div>
         </div>
-
         <div class="col-md-4">
-            <div class="card text-dark bg-warning mb-3">
-                <div class="card-header">Balance</div>
-                <div class="card-body">
-                    <h3>$ <?= number_format($balance, 0, ',', '.') ?></h3>
-                </div>
+            <div class="resumen-card card-balance">
+                <h3>Balance</h3>
+                <p>$<?= number_format($balance, 0, ',', '.') ?></p>
             </div>
         </div>
     </div>
 
-    <!-- Movimientos -->
-    <h3>Movimientos recientes</h3>
+    <!-- Tabla -->
     <table class="table table-striped table-hover">
         <thead>
             <tr>
@@ -177,17 +197,30 @@ $nombre = $_SESSION['usuario_nombre'];
         <tbody>
             <?php if(count($movimientos) > 0): ?>
                 <?php foreach ($movimientos as $mov): ?>
-                <tr>
-                    <td><?= htmlspecialchars($mov['id']) ?></td>
-                    <td><?= htmlspecialchars($mov['descripcion']) ?></td>
-                    <td><?= htmlspecialchars($mov['tipo_movimiento']) ?></td>
-                    <td class="<?= $mov['tipo_movimiento'] === 'Ingreso' ? 'text-success fw-bold' : 'text-danger fw-bold' ?>">
-                        $<?= number_format($mov['monto'], 0, ',', '.') ?>
-                    </td>
-                    <td><?= htmlspecialchars($mov['fecha']) ?></td>
-                    <td><?= htmlspecialchars($mov['responsable'] ?? '-') ?></td>
-                    <td><?= htmlspecialchars($mov['observaciones'] ?? '-') ?></td>
-                </tr>
+                    <?php
+                        $esIngreso = (
+                            $mov['tipo_movimiento'] === 'Ingreso' ||
+                            $mov['tipo_movimiento'] === 'Donacion' ||
+                            $mov['tipo_movimiento'] === 'Subsidio' ||
+                            ($mov['tipo_movimiento'] === 'Otro' && $mov['clasificacion'] === 'Ingreso')
+                        );
+                    ?>
+                    <tr>
+                        <td><?= htmlspecialchars($mov['id']) ?></td>
+                        <td><?= htmlspecialchars($mov['descripcion']) ?></td>
+                        <td>
+                            <?= htmlspecialchars($mov['tipo_movimiento']) ?>
+                            <?php if ($mov['tipo_movimiento'] === 'Otro'): ?>
+                                (<?= htmlspecialchars($mov['clasificacion']) ?>)
+                            <?php endif; ?>
+                        </td>
+                        <td class="<?= $esIngreso ? 'text-ingreso' : 'text-egreso' ?>">
+                            $<?= number_format($mov['monto'], 0, ',', '.') ?>
+                        </td>
+                        <td><?= htmlspecialchars($mov['fecha']) ?></td>
+                        <td><?= htmlspecialchars($mov['responsable'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($mov['observaciones'] ?? '-') ?></td>
+                    </tr>
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
@@ -199,6 +232,5 @@ $nombre = $_SESSION['usuario_nombre'];
 
     <a href="dashboard_tesoreria.php" class="btn btn-custom mt-3">⬅ Volver al Dashboard</a>
 </div>
-
 </body>
 </html>

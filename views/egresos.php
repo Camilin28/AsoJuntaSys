@@ -11,14 +11,19 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería'
 require('../config/db.php'); // Ajusta la ruta si es necesario
 
 try {
-    // Consulta para obtener los egresos (tipo_movimiento = 'Gasto')
-    $sql = "SELECT * FROM recursos_financieros WHERE tipo_movimiento = 'Gasto'";
+    // Consulta para obtener los egresos (Gasto, Transferencia y Otro clasificado como Egreso)
+    $sql = "SELECT * FROM recursos_financieros 
+            WHERE tipo_movimiento IN ('Gasto','Transferencia') 
+               OR (tipo_movimiento = 'Otro' AND clasificacion = 'Egreso')";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $egresos = $stmt->fetchAll();
 
     // Consulta para el total de egresos
-    $sqlTotal = "SELECT SUM(monto) AS total_egresos FROM recursos_financieros WHERE tipo_movimiento = 'Gasto'";
+    $sqlTotal = "SELECT SUM(monto) AS total_egresos 
+                 FROM recursos_financieros 
+                 WHERE tipo_movimiento IN ('Gasto','Transferencia') 
+                    OR (tipo_movimiento = 'Otro' AND clasificacion = 'Egreso')";
     $stmtTotal = $pdo->prepare($sqlTotal);
     $stmtTotal->execute();
     $totalEgresos = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total_egresos'] ?? 0;
@@ -38,7 +43,7 @@ $nombre = $_SESSION['usuario_nombre'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            background-color: #fff9c4; /* Fondo claro
+            background-color: #fff9c4; /* Fondo claro */
         }
 
         /* Navbar */
@@ -163,7 +168,13 @@ $nombre = $_SESSION['usuario_nombre'];
                 <tr>
                     <td><?= htmlspecialchars($egreso['id']) ?></td>
                     <td><?= htmlspecialchars($egreso['descripcion']) ?></td>
-                    <td><?= htmlspecialchars($egreso['tipo_movimiento']) ?></td>
+                    <td>
+                        <?php if ($egreso['tipo_movimiento'] === 'Otro'): ?>
+                            Otro (<?= htmlspecialchars($egreso['clasificacion']) ?>)
+                        <?php else: ?>
+                            <?= htmlspecialchars($egreso['tipo_movimiento']) ?>
+                        <?php endif; ?>
+                    </td>
                     <td class="fw-bold">$<?= number_format($egreso['monto'], 0, ',', '.') ?></td>
                     <td><?= htmlspecialchars($egreso['fecha']) ?></td>
                     <td><?= htmlspecialchars($egreso['responsable'] ?? '-') ?></td>
