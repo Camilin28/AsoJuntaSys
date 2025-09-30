@@ -29,15 +29,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Editar Usuario</title>
     <style>
         :root {
-            --bg-color: #020202;
+            --bg-color: #81c784;
             --form-bg: #ffffff;
-            --primary-color: #00ff00;
-            --secondary-color: #00bfff;
-            --text-color: #333;
-            --input-bg: #f9f9f9;
-            --focus-border:rgb(51, 255, 0);
-            --shadow-light:#00ff00;
-            --shadow-dark: #0000ff ;
+            --primary-color: #2e7d32;
+            --secondary-color: #fbc02d;
+            --text-color: #81c784;
+            --input-bg: #fff4c9;
+            --focus-border: #2e7d32;
+            --shadow-light:#2e7d32;
+            --shadow-dark: #fbc02d ;
         }
 
         body {
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             box-shadow:
                 0 10px 10px var(--shadow-dark),
                 0 -10px 10px var(--shadow-light),
-                inset 0 0 10px rgba(109, 228, 5, 0.95);
+                inset 0 0 10px #424242;
             width: 100%;
             max-width: 400px;
         }

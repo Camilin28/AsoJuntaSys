@@ -17,7 +17,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
         /* Estilo general */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f7fa;
+            background-color: #81c784;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,7 +28,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         h2 {
             text-align: center;
-            color: #333;
+            color: #ffffff;
         }
 
         table {
@@ -36,20 +36,21 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
             margin-top: 20px;
             border-collapse: collapse;
             text-align: left;
-            background-color: #fff;
-            border-radius: 8px;
+            background-color: #fff9c4;
+            border-radius: 40px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         table th, table td {
             padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #81c784;
         }
 
         table th {
-            background: linear-gradient(to right, #00ff00, #00bfff);
+            background: linear-gradient(135deg, #2E7D32 10%, #FBC02D 100%);
             color: white;
             text-align: center;
+            
         }
 
         table td {
@@ -58,19 +59,19 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         table a {
             text-decoration: none;
-            color: #007bff;
+            color: #2E7D32;
             font-weight: bold;
         }
 
         table a:hover {
-            color: #0056b3;
+            color: #FBC02D;
         }
 
         /* Botón de regreso al dashboard */
         .regresar-btn {
             margin-top: 20px;
             padding: 10px 20px;
-            background: linear-gradient(to right, #00ff00, #00bfff);
+            background: linear-gradient(135deg, #2E7D32 10%, #FBC02D 100%);
             color: white;
             border: none;
             border-radius: 5px;
