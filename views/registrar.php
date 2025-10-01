@@ -10,9 +10,10 @@ session_start();
     <title>Registro de Usuario</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
+        
         body {
             font-family: Arial, sans-serif;
-            background-color: #e0e5ec;
+            background-color: #fff9c4;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,10 +22,11 @@ session_start();
         }
 
         .register-container {
+            /* Usamos Blanco #FFFFFF para la base de la caja */
             background-color: #ffffff;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 8px 8px 15px #a3b1c6, -8px -8px 15px #ffffff; /* Neumorphic shadow */
+            box-shadow: 8px 8px 15px #fbc02d, -8px -8px 15px #2e7d32;
             width: 350px;
             text-align: center;
         }
@@ -33,14 +35,14 @@ session_start();
             margin-bottom: 20px;
             font-size: 24px;
             font-weight: bold;
-            color: #333;
+            color: #2e7d32; /* Gris Oscuro para el título */
         }
 
         label {
             display: block;
             margin-bottom: 8px;
             font-size: 14px;
-            color: #555;
+            color: #2e7d32;
         }
 
         input[type="text"],
@@ -53,9 +55,9 @@ session_start();
             border-radius: 10px;
             border: none;
             font-size: 16px;
-            background: #e0e5ec;
-            box-shadow: inset 4px 4px 8px #c8d0e7, inset -4px -4px 8px #ffffff; /* Neumorphic input effect */
-            color: #333;
+            background: #fff9c4;
+            
+            color: #424242; /* Gris Oscuro para el texto de entrada */
         }
 
         input[type="text"]:focus,
@@ -63,44 +65,54 @@ session_start();
         input[type="password"]:focus,
         select:focus {
             outline: none;
-            box-shadow: 0 0 5px 2px #a3b1c6;
+            box-shadow: 0 0 5px 2px #2e7d32;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #2E7D32 5%, #FBC02D 70%); 
             color: white;
             border: none;
             border-radius: 10px;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 4px 4px 10px #a3b1c6, -4px -4px 10px #ffffff; /* Neumorphic button effect */
+            box-shadow: 6px 6px 12px #fbc02d, -4px -4px 10px #ffffff;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #45a049; /* Un poco más claro que el principal para el hover */
         }
 
         button:active {
             box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
+            background-color: #2E7D32; /* Vuelve al color principal al ser presionado */
         }
 
-        .error-message,
-        .success-message {
-            color: red;
+        .error-message {
+            color: red; /* Mantenemos el rojo para mensajes de error */
             margin-bottom: 20px;
             font-size: 14px;
+        }
+        
+        .success-message {
+            color: #FBC02D; /* 🟡 Amarillo Principal para mensajes de éxito */
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: bold;
         }
 
         .signup-link {
             margin-top: 10px;
             font-size: 14px;
+            color: #424242; /* Gris Oscuro para el texto del link */
         }
 
         .signup-link a {
             text-decoration: none;
-            color: #4CAF50;
+            color: #2E7D32; /* 🟢 Verde Principal para el link */
+            font-weight: bold;
         }
 
         .signup-link a:hover {
@@ -112,7 +124,6 @@ session_start();
     <div class="register-container">
         <h2>Registro de Usuario</h2>
 
-        <!-- Mensajes de error o éxito -->
         <?php
         if (isset($_SESSION['mensaje'])) {
             echo "<p class='success-message'>" . $_SESSION['mensaje'] . "</p>";

@@ -31,6 +31,30 @@ try {
 
     $balance = $totalIngresos - $totalEgresos;
 
+    // Totales por tipo de movimiento para la gráfica de pastel
+    $sqlTipos = "SELECT tipo_movimiento, SUM(monto) AS total 
+                 FROM recursos_financieros 
+                 GROUP BY tipo_movimiento";
+    $stmtTipos = $pdo->prepare($sqlTipos);
+    $stmtTipos->execute();
+    $tiposData = $stmtTipos->fetchAll(PDO::FETCH_ASSOC);
+
+    $tipos = [];
+    $totalesTipos = [];
+    $coloresTipos = [];
+
+    foreach($tiposData as $t){
+        $tipos[] = $t['tipo_movimiento'];
+        $totalesTipos[] = $t['total'];
+        switch($t['tipo_movimiento']){
+            case 'Ingreso': $coloresTipos[] = 'rgba(46, 125, 50, 0.7)'; break;
+            case 'Gasto': $coloresTipos[] = 'rgba(198, 40, 40, 0.7)'; break;
+            case 'Donacion': $coloresTipos[] = 'rgba(255, 193, 7, 0.7)'; break;
+            case 'Subsidio': $coloresTipos[] = 'rgba(0, 123, 255, 0.7)'; break;
+            default: $coloresTipos[] = 'rgba(153, 102, 255, 0.7)'; break;
+        }
+    }
+
 } catch (PDOException $e) {
     die("Error en la consulta: " . $e->getMessage());
 }
@@ -44,99 +68,26 @@ $nombre = $_SESSION['usuario_nombre'];
     <meta charset="UTF-8" />
     <title>Reportes Financieros</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            background-color: #fffde7;
-        }
-
-        .navbar {
-            background-color: #2E7D32 !important;
-        }
-
-        .navbar .nav-link:hover {
-            color: #FBC02D !important;
-        }
-
-        .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            color: #2E7D32;
-            margin-bottom: 20px;
-        }
-
-        .table thead {
-            background-color: #2E7D32;
-            color: #fff;
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .table tbody tr:hover {
-            background-color: #E8F5E9;
-        }
-
-        /* 🔥 Colores con mayor prioridad */
-        td.text-ingreso {
-            color: #2E7D32 !important; /* verde */
-            font-weight: bold;
-        }
-
-        td.text-egreso {
-            color: #c62828 !important; /* rojo */
-            font-weight: bold;
-        }
-
-        .resumen-card {
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 25px;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-            color: #fff;
-        }
-
-        .card-ingresos {
-            background: #2E7D32;
-        }
-
-        .card-egresos {
-            background: #c62828;
-        }
-
-        .card-balance {
-            background: #FBC02D;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .resumen-card h3 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        .resumen-card p {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .btn-custom {
-            background-color: #2E7D32;
-            color: #fff;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-custom:hover {
-            background-color: #FBC02D;
-            color: #333;
-        }
+        body { background-color: #fffde7; }
+        .navbar { background-color: #2E7D32 !important; }
+        .navbar .nav-link:hover { color: #FBC02D !important; }
+        .container { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #2E7D32; margin-bottom: 20px; }
+        .table thead { background-color: #2E7D32; color: #fff; }
+        .table tbody tr:nth-child(even) { background-color: #f9f9f9; }
+        .table tbody tr:hover { background-color: #E8F5E9; }
+        td.text-ingreso { color: #2E7D32 !important; font-weight: bold; }
+        td.text-egreso { color: #c62828 !important; font-weight: bold; }
+        .resumen-card { border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; box-shadow: 0px 4px 12px rgba(0,0,0,0.1); color: #fff; }
+        .card-ingresos { background: #2E7D32; }
+        .card-egresos { background: #c62828; }
+        .card-balance { background: #FBC02D; color: #333; font-weight: bold; }
+        .resumen-card h3 { margin: 0; font-size: 20px; }
+        .resumen-card p { font-size: 28px; font-weight: bold; }
+        .btn-custom { background-color: #2E7D32; color: #fff; border-radius: 8px; transition: background-color 0.3s ease; }
+        .btn-custom:hover { background-color: #FBC02D; color: #333; }
     </style>
 </head>
 <body>
@@ -178,6 +129,20 @@ $nombre = $_SESSION['usuario_nombre'];
                 <h3>Balance</h3>
                 <p>$<?= number_format($balance, 0, ',', '.') ?></p>
             </div>
+        </div>
+    </div>
+
+    <!-- Gráfica de barras -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <canvas id="graficaFinanzas" height="100"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráfica de pastel -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <canvas id="graficaTipos" width="100" height="50"></canvas>
         </div>
     </div>
 
@@ -232,5 +197,47 @@ $nombre = $_SESSION['usuario_nombre'];
 
     <a href="dashboard_tesoreria.php" class="btn btn-custom mt-3">⬅ Volver al Dashboard</a>
 </div>
+
+<!-- Scripts para las gráficas -->
+<script>
+const ctx = document.getElementById('graficaFinanzas').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Ingresos', 'Egresos', 'Balance'],
+        datasets: [{
+            label: 'Valores en $',
+            data: [<?= $totalIngresos ?>, <?= $totalEgresos ?>, <?= $balance ?>],
+            backgroundColor: ['rgba(46, 125, 50, 0.7)','rgba(198, 40, 40, 0.7)','rgba(251, 192, 45, 0.7)'],
+            borderColor: ['rgba(46, 125, 50, 1)','rgba(198, 40, 40, 1)','rgba(251, 192, 45, 1)'],
+            borderWidth: 1
+        }]
+    },
+    options: { responsive: true, plugins: { title: { display: true, text: 'Resumen Financiero' }, legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+});
+
+const ctxTipos = document.getElementById('graficaTipos').getContext('2d');
+new Chart(ctxTipos, {
+    type: 'pie',
+    data: {
+        labels: <?= json_encode($tipos) ?>,
+        datasets: [{
+            label: 'Proporción por tipo de movimiento $',
+            data: <?= json_encode($totalesTipos) ?>,
+            backgroundColor: <?= json_encode($coloresTipos) ?>,
+            borderColor: '#fff',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: { display: true, text: 'Distribución de Movimientos Financieros por Tipo' },
+            legend: { position: 'right' }
+        }
+    }
+});
+</script>
+
 </body>
 </html>

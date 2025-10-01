@@ -158,7 +158,7 @@
 
     <!-- Panel derecho con el logo -->
     <div class="right-panel">
-      <img src="../imagenes/logo1.png" alt="Logo AsoJuntaSys">
+      <img src="../imagenes/Logo_AsojuntaSys.png" alt="Logo AsoJuntaSys">
     </div>
   </div>
 </body>
