@@ -15,15 +15,16 @@ $totalDocumentos = $pdo->query("SELECT COUNT(*) AS total FROM documentos")->fetc
 $totalAgenda = $pdo->query("SELECT COUNT(*) AS total FROM correspondencia")->fetch(PDO::FETCH_ASSOC)['total'];
 
 // 🔹 Últimos registros
+$ultimasActas = $pdo->query("SELECT a.titulo, a.fecha_reunion, a.lugar
+    FROM actas a
+    ORDER BY a.fecha_reunion DESC LIMIT 5");
+
 $ultimosDocs = $pdo->query("SELECT d.titulo, c.nombre AS categoria, d.fecha_subida 
     FROM documentos d
     JOIN categorias_documentos c ON d.categoria_id = c.id
     ORDER BY d.fecha_subida DESC LIMIT 5");
 
-$ultimasActas = $pdo->query("SELECT d.titulo, a.fecha_reunion, a.lugar
-    FROM actas a
-    LEFT JOIN documentos d ON a.documento_id = d.id
-    ORDER BY a.fecha_reunion DESC LIMIT 5");
+
 
 $ultimasCorr = $pdo->query("SELECT tipo, asunto, fecha, estado
     FROM correspondencia
