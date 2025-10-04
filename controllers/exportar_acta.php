@@ -46,14 +46,24 @@ $html = '
             position: relative;
         }
         /* 🔹 Marca de agua centrada */
-        .watermark {
-            position: fixed;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.30;
-            z-index: -1;
-            
+.watermark {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 0; /* No usar negativo */
+}
+
+.watermark img {
+  display: inline-block;
+  width: 100%;       /* <- Aquí ajustamos más grande */
+  max-width: 1600px; /* <- límite más alto */
+  height: auto;
+  opacity: 0.30;    /* Transparencia */
+}  
         }
         .header {
             text-align: center;
@@ -77,7 +87,7 @@ $html = '
 </head>
 <body>
     <div class="header">
-        <h2> Junta de Acción Comunal</h2>
+        <h2> Junta de Acción Comunal Bella Vista</h2>
         <h3 class="titulo-acta">' . htmlspecialchars($acta['titulo']) . '</h3>
     </div>
 

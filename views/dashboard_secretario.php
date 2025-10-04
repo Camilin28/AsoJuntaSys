@@ -12,7 +12,7 @@ $nombre = $_SESSION['usuario_nombre'];
 // 🔹 KPIs dinámicos
 $totalActas = $pdo->query("SELECT COUNT(*) AS total FROM actas")->fetch(PDO::FETCH_ASSOC)['total'];
 $totalDocumentos = $pdo->query("SELECT COUNT(*) AS total FROM documentos")->fetch(PDO::FETCH_ASSOC)['total'];
-$totalAgenda = $pdo->query("SELECT COUNT(*) AS total FROM correspondencia")->fetch(PDO::FETCH_ASSOC)['total'];
+$totalAgenda = $pdo->query("SELECT COUNT(*) AS total FROM agenda")->fetch(PDO::FETCH_ASSOC)['total'];
 
 // 🔹 Últimos registros
 $ultimasActas = $pdo->query("SELECT a.titulo, a.fecha_reunion, a.lugar
@@ -26,8 +26,8 @@ $ultimosDocs = $pdo->query("SELECT d.titulo, c.nombre AS categoria, d.fecha_subi
 
 
 
-$ultimasCorr = $pdo->query("SELECT tipo, asunto, fecha, estado
-    FROM correspondencia
+$ultimasCorr = $pdo->query("SELECT titulo, descripcion, fecha, hora,creado_por, creado_en
+    FROM agenda
     ORDER BY fecha DESC LIMIT 5");
 ?>
 
@@ -166,6 +166,14 @@ body {
         </ul>
     </div>
     <div class="col-md-4">
+        <h4>Últimas Eventos</h4>
+        <ul class="list-group">
+            <?php while($corr = $ultimasCorr->fetch(PDO::FETCH_ASSOC)): ?>
+                <li class="list-group-item"><?= $corr['titulo'] ?>: <?= $corr['fecha'] ?> (<?= $corr['hora'] ?>)</li>
+            <?php endwhile; ?>
+        </ul>
+    </div>
+    <div class="col-md-4">
         <h4>Últimos Documentos</h4>
                 <ul class="list-group">
             <?php while($doc = $ultimosDocs->fetch(PDO::FETCH_ASSOC)): ?>
@@ -173,14 +181,7 @@ body {
             <?php endwhile; ?>
         </ul>
     </div>
-    <div class="col-md-4">
-        <h4>Últimas Correspondencias</h4>
-        <ul class="list-group">
-            <?php while($corr = $ultimasCorr->fetch(PDO::FETCH_ASSOC)): ?>
-                <li class="list-group-item"><?= $corr['tipo'] ?>: <?= $corr['asunto'] ?> (<?= $corr['estado'] ?>)</li>
-            <?php endwhile; ?>
-        </ul>
-    </div>
+    
 </div>
 
 </div>
