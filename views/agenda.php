@@ -29,7 +29,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         body { background-color: #fff9c4; }
         .navbar { background: linear-gradient(135deg, #2E7D32, #1b5e20) !important; }
         .navbar .nav-link:hover { color: #FBC02D !important; }
-        #calendar { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); }
+        #calendar { background: #ffffffff; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px #fbc02d; }
         .btn-custom { background-color: #2E7D32; color: #fff; }
         .btn-custom:hover { background-color: #FBC02D; color: #000; }
     </style>
