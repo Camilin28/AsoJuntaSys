@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redirigir según el rol
                 switch ($usuario['rol']) {
                     case 'Presidente General':
-                        header("Location: ../views/dashboard_admin.php");
+                        header("Location: ../views/dashboard_presidente.php");
                         break;
                     case 'Presidentes de JAC':
                         header("Location: ../views/dashboard_jac.php");

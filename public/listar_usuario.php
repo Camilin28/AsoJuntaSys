@@ -113,7 +113,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </table>
 
     <!-- Botón de regreso al dashboard -->
-    <a href="../views/dashboard_admin.php" class="regresar-btn">Regresar</a>
+    <a href="../views/dashboard_presidente.php" class="regresar-btn">Regresar</a>
 
 </body>
 </html>

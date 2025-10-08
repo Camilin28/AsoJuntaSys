@@ -56,6 +56,8 @@ body { background-color: #fff9c4; }
 .table tbody tr:hover { background-color: #E8F5E9; }
 .btn-custom { background-color: #2E7D32; color: #fff; border-radius: 8px; }
 .btn-custom:hover { background-color: #FBC02D; color: #000; }
+.btn-secundary { background-color: #707070ff; color: #fff; border-radius: 8px; }
+.btn-secundary:hover { background-color: #FBC02D; color: #000; }
 .alert { transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
 .filter-card {
   background: #fff;
@@ -120,7 +122,7 @@ body { background-color: #fff9c4; }
 
 <a href="subir_documento.php" class="btn btn-custom mb-3">➕ Subir Documento</a>
 <a href="categorias_documentos.php" class="btn btn-success mb-3">📁 Gestionar Categorías</a>
-<a href="dashboard_secretario.php" class="btn btn-secondary mb-3">⬅ Volver al Dashboard</a>
+<a href="dashboard_secretario.php" class="btn btn-secundary mb-3 ">⬅ Volver al Dashboard</a>
 
 <!-- 🔹 Tabla -->
 <div id="tablaDocumentos">
