@@ -119,6 +119,7 @@ body { background-color: #fff9c4; }
 </div>
 
 <a href="subir_documento.php" class="btn btn-custom mb-3">➕ Subir Documento</a>
+<a href="categorias_documentos.php" class="btn btn-success mb-3">📁 Gestionar Categorías</a>
 <a href="dashboard_secretario.php" class="btn btn-secondary mb-3">⬅ Volver al Dashboard</a>
 
 <!-- 🔹 Tabla -->
