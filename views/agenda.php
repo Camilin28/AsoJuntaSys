@@ -2,10 +2,12 @@
 session_start();
 require('../config/db.php');
 
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría') {
+if (!isset($_SESSION['usuario_id']) ||
+   !in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General'])) {
     header("Location: ../views/login.php");
     exit();
 }
+
 
 $nombre = $_SESSION['usuario_nombre'];
 
