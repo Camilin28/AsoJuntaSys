@@ -62,7 +62,11 @@ try {
     $totalActas = (int)$stmt->fetchColumn();
 
     // Eventos próximos (count)
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM agenda WHERE fecha >= CURDATE()");
+    $stmt = $pdo->prepare("
+    SELECT COUNT(*) 
+    FROM agenda 
+    WHERE STR_TO_DATE(fecha, '%Y-%m-%d') >= CURDATE()
+");
     $stmt->execute();
     $eventosProximos = (int)$stmt->fetchColumn();
 
@@ -112,8 +116,9 @@ $docsAprobado  = (int)($docsData['aprobado'] ?? 0);
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <!-- FullCalendar -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
 
   <style>
     :root{
@@ -319,7 +324,45 @@ $docsAprobado  = (int)($docsData['aprobado'] ?? 0);
           <h3>Calendario</h3>
           <div id="calendar"></div>
         </div>
+        <div class="card mt-3">
+  <h3>📊 Reportes Ejecutivos</h3>
+  <p style="color:#555;">Descarga los reportes más recientes del sistema.</p>
+  <div style="display:flex; flex-wrap:wrap; gap:5px;">
+    <a href="../controllers/reporte_financieroExcel.php" class="btn btn-success btn-sm">💰 Financiero (Excel)</a>
+    <a href="../controllers/reporte_financieroPDF.php" class="btn btn-danger btn-sm">💰 Financiero (PDF)</a>
+    <a href="../controllers/reportes_actasPdf.php" class="btn btn-primary btn-sm">📝 Actas (PDF)</a>
+    <a href="../controllers/reporte_agendaPdf.php" class="btn btn-warning btn-sm">📅 Agenda (PDF)</a>
+  </div>
+</div>
+
       </section>
+<!-- 🔹 Mini resumen de eventos -->
+<section class="card mt-3">
+  <h3>🗓️ Próximos Eventos</h3>
+  <div id="eventosResumen" class="d-flex flex-wrap gap-3">
+    <?php
+    $stmt = $pdo->query("SELECT titulo, fecha, hora, color 
+                         FROM agenda 
+                         WHERE fecha >= CURDATE() 
+                         ORDER BY fecha ASC 
+                         LIMIT 3");
+    $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (count($eventos) == 0) {
+        echo "<p class='text-muted'>No hay eventos próximos registrados.</p>";
+    } else {
+        foreach ($eventos as $ev) {
+            echo "
+            <div class='p-10 rounded' 
+                 style='background:{$ev['color']}; color:white; min-width:220px;'>
+              <strong>{$ev['titulo']}</strong><br>
+              <small>".date('d/m/Y', strtotime($ev['fecha']))." - {$ev['hora']}</small>
+            </div>";
+        }
+    }
+    ?>
+  </div>
+</section>
 
       <!-- Actas y actividad -->
       <section style="display:grid; grid-template-columns:1fr 360px; gap:16px;">
@@ -385,33 +428,32 @@ $docsAprobado  = (int)($docsData['aprobado'] ?? 0);
 
     // FullCalendar: cargar eventos desde controlador
     document.addEventListener('DOMContentLoaded', function() {
-      const calendarEl = document.getElementById('calendar');
+  const calendarEl = document.getElementById('calendar');
 
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        height: 420,
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,dayGridWeek'
-        },
-        events: '../controllers/obtener_eventos.php',
-        locale: 'es',
-        eventDidMount: function(info) {
-          // asegurar color y estilo
-          info.el.style.backgroundColor = info.event.extendedProps.color || '#2E7D32';
-          info.el.style.border = 'none';
-          info.el.style.color = '#fff';
-        },
-        eventClick: function(info) {
-          // detalle básico:
-          let title = info.event.title || 'Evento';
-          let desc  = info.event.extendedProps.description || '';
-          alert(title + (desc ? "\n\n" + desc : ""));
-        }
-      });
-      calendar.render();
-    });
+  if (!calendarEl) {
+    console.error("No se encontró el div #calendar");
+    return;
+  }
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    locale: 'es',
+    initialView: 'dayGridMonth',
+    height: 400,
+    events: '../controllers/obtener_eventos.php',  // 🔹 Ruta al archivo
+    eventDisplay: 'block',
+    eventColor: '#2E7D32', // color por defecto
+    eventDidMount: function(info) {
+      if (info.event.extendedProps.color) {
+        info.el.style.backgroundColor = info.event.extendedProps.color;
+        info.el.style.border = 'none';
+        info.el.style.color = '#fff';
+      }
+    }
+  });
+
+  calendar.render();
+});
+
 
     // Botón actualizar
     document.getElementById('refreshBtn').addEventListener('click', function(){

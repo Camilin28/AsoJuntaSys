@@ -161,5 +161,20 @@
       <img src="../imagenes/Logo_AsojuntaSys.png" alt="Logo AsoJuntaSys">
     </div>
   </div>
+  <div class="terminos">
+    <p>
+      Al iniciar sesión aceptas nuestros 
+      <a> href="../views/terminos.php" target="_blank">Términos y Condiciones</a>.
+      </p>
+  </div>
+  <div class="form-check">
+    <input type="checkbox" name="acepta_terminos" required>
+    <label>
+        He leído y acepto los 
+        <a href="terminos.php" target="_blank">
+            Términos y Condiciones
+        </a>
+    </label>
+</div>
 </body>
 </html>
