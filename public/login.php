@@ -25,10 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: ../views/dashboard.php");
             exit();
         } else {
-            echo "❌ Usuario o contraseña incorrectos.";
+            echo "Usuario o contraseña incorrectos.";
         }
     } else {
-        echo "❌ Faltan datos en el formulario.";
+        echo "Faltan datos en el formulario.";
     }
 }
 ?>

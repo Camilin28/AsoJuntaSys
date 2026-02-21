@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,9 +21,8 @@
 
     .container {
       display: flex;
-      width: 800px;
+      width: 900px;
       height: 500px;
-      background: #ff0000ff;
       border-radius: 50px;
       box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
       overflow: hidden;
@@ -72,7 +74,7 @@
       cursor: pointer;
       font-size: 16px;
       transition: background 0.3s ease;
-      width: 110%;
+      width: 105%;
     }
 
     .left-panel button:hover {
@@ -82,7 +84,7 @@
 
     .signup-link {
       margin-top: 20px;
-      font-size: 14px;
+      font-size: 17px;
       color: #333;
     }
 
@@ -101,6 +103,49 @@
       font-size: 14px;
       margin-top: 10px;
     }
+
+    .terminos-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.terminos-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.terminos-check a {
+  color: #2E7D32;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.terminos-check a:hover {
+  color: #FBC02D;
+  text-decoration: underline;
+}
+
+.error-box {
+  margin: 12px 0;
+  padding: 10px;
+  background-color: #ffebee;
+  color: #c62828;
+  border-left: 5px solid #c62828;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
     /* Panel derecho (logo) */
 .right-panel {
@@ -133,48 +178,42 @@
     <!-- Panel izquierdo -->
     <div class="left-panel">
       <h2>LOGIN</h2>
-
-      <?php
-      if (isset($_SESSION['error'])) {
-          echo "<p class='error-message'>" . $_SESSION['error'] . "</p>";
-          unset($_SESSION['error']);
-      }
-      ?>
-
+<?php
+if (isset($_SESSION['error'])) {
+    echo "<div class='error-box'>" . $_SESSION['error'] . "</div>";
+    unset($_SESSION['error']);
+}
+?>
       <form action="../public/procesar_login.php" method="POST">
         <label for="email">Usuario</label>
         <input type="email" name="email" required placeholder="Correo electrónico">
 
         <label for="password">Contraseña</label>
         <input type="password" name="password" required placeholder="Introduce tu contraseña">
-
-        <button type="submit">Iniciar Sesión</button>
-      </form>
-
-      <p class="signup-link">¿No tienes cuenta? 
-        <a href="../views/registrar.php">Por favor, Regístrate</a>
-      </p>
-    </div>
-
-    <!-- Panel derecho con el logo -->
-    <div class="right-panel">
-      <img src="../imagenes/Logo_AsojuntaSys.png" alt="Logo AsoJuntaSys">
-    </div>
-  </div>
-  <div class="terminos">
-    <p>
-      Al iniciar sesión aceptas nuestros 
-      <a> href="../views/terminos.php" target="_blank">Términos y Condiciones</a>.
-      </p>
-  </div>
-  <div class="form-check">
-    <input type="checkbox" name="acepta_terminos" required>
-    <label>
+  <div class="terminos-check">
+    <input type="checkbox" id="acepta" name="acepta_terminos" required>
+    <label for="acepta">
         He leído y acepto los 
         <a href="terminos.php" target="_blank">
             Términos y Condiciones
         </a>
     </label>
 </div>
+        <button type="submit">Iniciar Sesión</button>
+        
+      </form>
+
+      <p class="signup-link">¿No tienes cuenta? 
+        <a href="../views/registrar.php">Por favor, Regístrate</a>
+      </p>
+        </div>
+    
+
+    <!-- Panel derecho con el logo -->
+    <div class="right-panel">
+      <img src="../imagenes/Logo_AsojuntaSys.png" alt="Logo AsoJuntaSys">
+    </div>
+  </div>
+  
 </body>
 </html>

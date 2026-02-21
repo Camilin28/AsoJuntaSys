@@ -152,7 +152,15 @@ session_start();
                 <option value="Secretaría">Secretaría</option>
                 <option value="Tesorería">Tesorería</option>
             </select>
-
+            <div class="form-group" style="margin-top:15px;">
+    <input type="checkbox" name="acepta_terminos" required>
+    <label>
+        He leído y acepto los 
+        <a href="terminos.php" target="_blank">
+            Términos y Condiciones
+        </a>
+    </label>
+</div>
             <button type="submit">Registrarse</button>
         </form>
 

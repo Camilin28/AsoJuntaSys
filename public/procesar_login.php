@@ -4,7 +4,7 @@ require_once '../config/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-    $contraseña = trim($_POST['password']);
+    $contraseña = $_POST['password'];
 
     if (!empty($email) && !empty($contraseña)) {
         try {
@@ -38,15 +38,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
                 exit();
             } else {
-                $_SESSION['error'] = " Credenciales incorrectas.";
-            }
-        } catch (PDOException $e) {
-            $_SESSION['error'] = "Error en la autenticación: " . $e->getMessage();
+            $_SESSION['error'] = "Correo o contraseña incorrectos.";
+            
         }
-    } else {
-        $_SESSION['error'] = "Todos los campos son obligatorios.";
-    }
-}
 
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Error en la autenticación.";
+        
+    }
+
+} else {
+    $_SESSION['error'] = "Todos los campos son obligatorios.";
+    
+}
 header("Location: ../views/login.php");
-exit();
+exit();}
+
+ 
