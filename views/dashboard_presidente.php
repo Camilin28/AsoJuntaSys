@@ -34,6 +34,59 @@ try {
     // Balance
     $balance = $totalIngresos - $totalEgresos;
 
+    // 📅 Ingresos mes actual
+$stmt = $pdo->prepare("
+    SELECT COALESCE(SUM(monto),0)
+    FROM recursos_financieros
+    WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio')
+    AND MONTH(fecha) = MONTH(CURDATE())
+    AND YEAR(fecha) = YEAR(CURDATE())
+");
+$stmt->execute();
+$ingresosMesActual = (float)$stmt->fetchColumn();
+
+// 📅 Egresos mes actual
+$stmt = $pdo->prepare("
+    SELECT COALESCE(SUM(monto),0)
+    FROM recursos_financieros
+    WHERE tipo_movimiento = 'Gasto'
+    AND MONTH(fecha) = MONTH(CURDATE())
+    AND YEAR(fecha) = YEAR(CURDATE())
+");
+$stmt->execute();
+$egresosMesActual = (float)$stmt->fetchColumn();
+
+// 📅 Ingresos mes anterior
+$stmt = $pdo->prepare("
+    SELECT COALESCE(SUM(monto),0)
+    FROM recursos_financieros
+    WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio')
+    AND MONTH(fecha) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+    AND YEAR(fecha) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+");
+$stmt->execute();
+$ingresosMesAnterior = (float)$stmt->fetchColumn();
+
+// 📅 Egresos mes anterior
+$stmt = $pdo->prepare("
+    SELECT COALESCE(SUM(monto),0)
+    FROM recursos_financieros
+    WHERE tipo_movimiento = 'Gasto'
+    AND MONTH(fecha) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+    AND YEAR(fecha) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+");
+$stmt->execute();
+$egresosMesAnterior = (float)$stmt->fetchColumn();
+
+// 📊 Variaciones
+$varIngresos = $ingresosMesAnterior > 0 
+    ? (($ingresosMesActual - $ingresosMesAnterior) / $ingresosMesAnterior) * 100 
+    : 0;
+
+$varEgresos = $egresosMesAnterior > 0 
+    ? (($egresosMesActual - $egresosMesAnterior) / $egresosMesAnterior) * 100 
+    : 0;
+  
     // Documentos por estado (normalizamos mayúsculas/minúsculas)
     $stmt = $pdo->query("
         SELECT LOWER(estado) as estado_norm, COUNT(*) AS total
@@ -61,6 +114,10 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) FROM actas");
     $totalActas = (int)$stmt->fetchColumn();
 
+    //Total del Juntas
+    $stmt = $pdo->query("SELECT COUNT(*) FROM juntas");
+    $totalJuntas = (int)$stmt->fetchColumn();
+
     // Eventos próximos (count)
     $stmt = $pdo->prepare("
     SELECT COUNT(*) 
@@ -84,6 +141,34 @@ try {
     // ordenar por fecha descendente y limitar
     usort($notifs, function($a,$b){ return strcmp($b['fecha'],$a['fecha']); });
     $notifs = array_slice($notifs, 0, 6);
+    
+    //Grafico tendencia mensual ingresos vs egresos (últimos 6 meses)
+    $stmt = $pdo->query("
+    SELECT 
+        DATE_FORMAT(fecha, '%Y-%m') as mes,
+        SUM(CASE 
+            WHEN tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
+            THEN monto ELSE 0 END) as ingresos,
+        SUM(CASE 
+            WHEN tipo_movimiento = 'Gasto' 
+            THEN monto ELSE 0 END) as egresos
+    FROM recursos_financieros
+    WHERE fecha >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    GROUP BY mes
+    ORDER BY mes ASC
+");
+
+$datosMensuales = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$meses = [];
+$ingresosData = [];
+$egresosData = [];
+
+foreach ($datosMensuales as $fila) {
+    $meses[] = $fila['mes'];
+    $ingresosData[] = $fila['ingresos'];
+    $egresosData[] = $fila['egresos'];
+}
 
 } catch (PDOException $e) {
     // en caso de error, definir valores por defecto
@@ -171,6 +256,28 @@ $docsAprobado  = (int)($docsData['aprobado'] ?? 0);
       padding:20px;
       padding-left:34px;
     }
+    .report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+  gap: 12px;
+}
+
+.report-grid .btn {
+  width: 100%;
+  height: 150px;
+font-size: 1rem;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
     /* header row inside content */
     .page-title{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:18px; }
@@ -283,6 +390,10 @@ $docsAprobado  = (int)($docsData['aprobado'] ?? 0);
           <div class="kpi-body">
             <p class="kpi-title">Total Ingresos</p>
             <p class="kpi-value">$<?= number_format($totalIngresos,0,',','.') ?></p>
+            <small style="color:<?= $varIngresos >= 0 ? 'green' : 'red' ?>">
+            <?= $varIngresos >= 0 ? '▲' : '▼' ?>
+            <?= number_format(abs($varIngresos),1) ?>% vs mes anterior
+</small>
           </div>
         </div>
 
@@ -291,6 +402,10 @@ $docsAprobado  = (int)($docsData['aprobado'] ?? 0);
           <div class="kpi-body">
             <p class="kpi-title">Total Egresos</p>
             <p class="kpi-value">$<?= number_format($totalEgresos,0,',','.') ?></p>
+            <small style="color:<?= $varEgresos >= 0 ? 'green' : 'red' ?>">
+            <?= $varEgresos >= 0 ? '▲' : '▼' ?>
+             <?= number_format(abs($varEgresos),1) ?>% vs mes anterior
+          </small>
           </div>
         </div>
 
@@ -309,31 +424,52 @@ $docsAprobado  = (int)($docsData['aprobado'] ?? 0);
             <p class="kpi-value"><?= $eventosProximos ?></p>
           </div>
         </div>
+        <div class="kpi-card">
+  <div class="kpi-icon" style="background:linear-gradient(135deg,#1565C0,#42A5F5)">
+    <span class="material-icons">location_city</span>
+  </div>
+  <div class="kpi-body">
+    <p class="kpi-title">JAC Registradas</p>
+    <p class="kpi-value"><?= $totalJuntas ?></p>
+  </div>
+</div>
+        <?php if ($balance < 0): ?>
+<div class="alert alert-danger mt-3">
+  ⚠ Atención: El sistema presenta déficit financiero.
+</div>
+<?php endif; ?>   
       </section>
+      
 
       <!-- Charts + Calendar -->
       <section class="grid-2">
-        <div class="card">
-          <h3>Documentos por estado</h3>
-          <div class="chart-wrap">
-            <canvas id="docsChart" aria-label="Documentos por estado" role="img"></canvas>
-          </div>
-        </div>
+            <div class="card">
+             <h3>📈 Tendencia Financiera</h3>
+                <div class="chart-wrap">
+            <canvas id="finanzasChart"></canvas>
+              </div>
+             </div>
+              <div class="card">
+                <h3>Documentos por estado</h3>
+               <div class="chart-wrap">
+                  <canvas id="docsChart" aria-label="Documentos por estado" role="img"></canvas>
+               </div>
+              </div>
 
         <div class="card">
           <h3>Calendario</h3>
           <div id="calendar"></div>
         </div>
-        <div class="card mt-3">
-  <h3>📊 Reportes Ejecutivos</h3>
-  <p style="color:#555;">Descarga los reportes más recientes del sistema.</p>
-  <div style="display:flex; flex-wrap:wrap; gap:5px;">
-    <a href="../controllers/reporte_financieroExcel.php" class="btn btn-success btn-sm">💰 Financiero (Excel)</a>
-    <a href="../controllers/reporte_financieroPDF.php" class="btn btn-danger btn-sm">💰 Financiero (PDF)</a>
-    <a href="../controllers/reportes_actasPdf.php" class="btn btn-primary btn-sm">📝 Actas (PDF)</a>
-    <a href="../controllers/reporte_agendaPdf.php" class="btn btn-warning btn-sm">📅 Agenda (PDF)</a>
-  </div>
-</div>
+          <div class="card mt-3">
+          <h3>📊 Reportes Ejecutivos</h3>
+         <p style="color:#555;">Descarga los reportes más recientes del sistema.</p>
+        <div class="report-grid">
+                  <a href="../controllers/reporte_financieroExcel.php" class="btn btn-success btn-sm">💰 Financiero (Excel)</a>
+                <a href="../controllers/reporte_financieroPDF.php" class="btn btn-danger btn-sm">💰 Financiero (PDF)</a>
+              <a href="../controllers/reportes_actasPdf.php" class="btn btn-primary btn-sm">📝 Actas (PDF)</a>
+             <a href="../controllers/reporte_agendaPdf.php" class="btn btn-warning btn-sm">📅 Agenda (PDF)</a>
+            </div>
+          </div>
 
       </section>
 <!-- 🔹 Mini resumen de eventos -->
@@ -425,6 +561,41 @@ $docsAprobado  = (int)($docsData['aprobado'] ?? 0);
         }
       });
     })();
+
+    const meses = <?= json_encode($meses) ?>;
+const ingresosData = <?= json_encode($ingresosData) ?>;
+const egresosData = <?= json_encode($egresosData) ?>;
+
+new Chart(document.getElementById('finanzasChart'), {
+    type: 'line',
+    data: {
+        labels: meses,
+        datasets: [
+            {
+                label: 'Ingresos',
+                data: ingresosData,
+                borderColor: '#2E7D32',
+                backgroundColor: 'rgba(46,125,50,0.1)',
+                tension: 0.3,
+                fill: true
+            },
+            {
+                label: 'Egresos',
+                data: egresosData,
+                borderColor: '#c62828',
+                backgroundColor: 'rgba(198,40,40,0.1)',
+                tension: 0.3,
+                fill: true
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' }
+        }
+    }
+});
 
     // FullCalendar: cargar eventos desde controlador
     document.addEventListener('DOMContentLoaded', function() {
