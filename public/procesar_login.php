@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['usuario_nombre'] = $usuario['nombre'];
                 $_SESSION['usuario_rol'] = $usuario['rol'];
                 $_SESSION['jac_id'] = $usuario['jac_id'];
+                
 
                 // Redirigir según el rol
                 switch ($usuario['rol']) {

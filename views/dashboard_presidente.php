@@ -365,11 +365,12 @@ font-size: 1rem;
       <a href="agenda.php" class="side-btn" title="Agenda">
         <span class="material-icons">event</span>
       </a>
-
-      <a href="estadisticas.php" class="side-btn" title="Estadísticas">
-        <span class="material-icons">bar_chart</span>
+      <?php if ($_SESSION['usuario_rol'] === 'Presidente General'): ?>
+      <a href="gestionar_jac.php" class="side-btn" title="Gestión JAC">
+        <span class="material-icons">location_city</span>
       </a>
-    </nav>
+<?php endif; ?>
+        </nav>
 
     <!-- content -->
     <main class="content">
