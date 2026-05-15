@@ -7,11 +7,16 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && docker-php-ext-install gd pdo pdo_mysql
 
-COPY . /var/www/html/
+# Limpiar MPMs existentes
+RUN a2dismod mpm_event || true
+RUN a2dismod mpm_worker || true
+RUN a2dismod mpm_prefork || true
 
-RUN a2dismod mpm_event
+# Activar solo uno
 RUN a2enmod mpm_prefork
 RUN a2enmod rewrite
+
+COPY . /var/www/html/
 
 EXPOSE 80
 
