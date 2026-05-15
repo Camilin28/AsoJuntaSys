@@ -142,8 +142,8 @@ session_start();
             <label for="email">Correo Electrónico:</label>
             <input type="email" name="email" required placeholder="Introduce tu correo electrónico">
 
-            <label for="contraseña">Contraseña:</label>
-            <input type="password" name="contraseña" required placeholder="Introduce tu contraseña">
+            <label for="password">Contraseña:</label>
+            <input type="password" name="password" required placeholder="Introduce tu contraseña">
 
             <label for="rol">Rol:</label>
             <select name="rol" required>
