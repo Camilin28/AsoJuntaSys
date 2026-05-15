@@ -5,7 +5,13 @@ require_once '../config/db.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = trim($_POST['nombre']);
     $email = trim($_POST['email']);
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $passwordPlano = $_POST['password'] ?? '';
+if (empty($passwordPlano)) {
+    die("La contraseña es obligatoria");
+}
+
+$password = password_hash($passwordPlano, PASSWORD_DEFAULT);
+
     $rol = $_POST['rol'];
 
     // Validar aceptación de términos
