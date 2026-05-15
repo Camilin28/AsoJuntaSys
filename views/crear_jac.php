@@ -1,11 +1,26 @@
 <?php
+session_start();
 require('../config/db.php');
+
+// Seguridad: solo Presidente General puede entrar
+if (
+    !isset($_SESSION['usuario_id']) ||
+    !isset($_SESSION['usuario_rol']) ||
+    $_SESSION['usuario_rol'] !== 'Presidente General'
+) {
+    header("Location: login.php");
+    exit();
+}
+
+/* ===========================
+   Obtener usuarios disponibles
+   =========================== */
 
 // Presidentes disponibles
 $stmt = $pdo->prepare("
     SELECT id, nombre 
     FROM usuarios 
-    WHERE rol = 'presidentes de jac' 
+    WHERE rol = 'Presidentes de JAC' 
     AND jac_id IS NULL
 ");
 $stmt->execute();
@@ -15,7 +30,7 @@ $presidentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("
     SELECT id, nombre 
     FROM usuarios 
-    WHERE rol = 'secretaria' 
+    WHERE rol = 'Secretaría' 
     AND jac_id IS NULL
 ");
 $stmt->execute();
@@ -25,18 +40,40 @@ $secretarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("
     SELECT id, nombre 
     FROM usuarios 
-    WHERE rol = 'tesorero' 
+    WHERE rol = 'Tesorería' 
     AND jac_id IS NULL
 ");
 $stmt->execute();
 $tesoreros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear JAC</title>
+</head>
+<body>
+
+<h2>Crear Nueva JAC</h2>
+
 <form action="../controllers/guardar_jac.php" method="POST">
 
+    <!-- Nombre -->
     <label>Nombre de la JAC</label>
     <input type="text" name="nombre_jac" required class="form-control">
 
+    <!-- Ubicación -->
+    <label class="mt-3">Direccion</label>
+    <input type="text" name="direccion" required class="form-control">
+
+    <!-- Teléfono -->
+    <label class="mt-3">Teléfono (Opcional)</label>
+    <input type="text" name="telefono" class="form-control">
+
+    <hr>
+
+    <!-- Presidente -->
     <label class="mt-3">Presidente</label>
     <select name="presidente_id" required class="form-control">
         <option value="">Seleccionar</option>
@@ -47,7 +84,8 @@ $tesoreros = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
     </select>
 
-    <label class="mt-3">Secretario</label>
+    <!-- Secretaría -->
+    <label class="mt-3">Secretaría</label>
     <select name="secretario_id" required class="form-control">
         <option value="">Seleccionar</option>
         <?php foreach ($secretarios as $s): ?>
@@ -57,7 +95,8 @@ $tesoreros = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
     </select>
 
-    <label class="mt-3">Tesorero</label>
+    <!-- Tesorería -->
+    <label class="mt-3">Tesorería</label>
     <select name="tesorero_id" required class="form-control">
         <option value="">Seleccionar</option>
         <?php foreach ($tesoreros as $t): ?>
@@ -67,8 +106,13 @@ $tesoreros = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
     </select>
 
-    <button type="submit" class="btn btn-success mt-3">
+    <br><br>
+
+    <button type="submit" class="btn btn-success">
         Crear JAC
     </button>
 
 </form>
+
+</body>
+</html>
