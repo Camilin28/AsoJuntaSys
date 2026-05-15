@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -7,17 +7,10 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && docker-php-ext-install gd pdo pdo_mysql
 
-# Limpiar MPMs existentes
-RUN a2dismod mpm_event || true
-RUN a2dismod mpm_worker || true
-RUN a2dismod mpm_prefork || true
+WORKDIR /app
 
-# Activar solo uno
-RUN a2enmod mpm_prefork
-RUN a2enmod rewrite
+COPY . .
 
-COPY . /var/www/html/
+EXPOSE 8080
 
-EXPOSE 80
-
-CMD ["apache2-foreground"]
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "."]
