@@ -1,8 +1,8 @@
 <?php
-$host = "localhost";
-$dbname = "asojuntasys";
+$host = "mysql.railway.internal";
+$dbname = "railway";
 $username = "root";
-$password = "";
+$password = "BjJnNBPbpmyxmxCjYhXyrxYyzKnHSSkq";
 $port = 3306;
 
 try {
