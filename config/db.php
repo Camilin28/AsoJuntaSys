@@ -1,5 +1,5 @@
 <?php
-$host = "mysql://root:BjJnNBPbpmyxmxCjYhXyrxYyzKnHSSkq@yamanote.proxy.rlwy.net:53260/railway";
+$host = "mysql.railway.internal";
 $dbname = "railway";
 $username = "root";
 $password = "BjJnNBPbpmyxmxCjYhXyrxYyzKnHSSkq";
