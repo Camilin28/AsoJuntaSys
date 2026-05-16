@@ -1,6 +1,13 @@
 <?php
-require('../config/db.php');
-session_start();
+
+require_once '../includes/auth.php';
+
+requireRole([
+    'Tesorería',
+    'Presidente General'
+]);
+
+require_once '../config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descripcion = $_POST['descripcion'];
