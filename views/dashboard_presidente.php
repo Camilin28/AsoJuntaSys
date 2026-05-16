@@ -338,6 +338,7 @@ font-size: 1rem;
           <small style="color:var(--muted)">Presidente General</small>
         </div>
         <a href="../public/logout.php" class="btn btn-sm" style="margin-left:12px; background:var(--amarillo); color:#000;">Cerrar sesión</a>
+        <a href="registrar.php" class="btn btn-sm" style="margin-left:12px;">+ Crear nuevo usuario </a>
       </div>
     </div>
   </header>
@@ -356,10 +357,6 @@ font-size: 1rem;
 
       <a href="documentos.php" class="side-btn" title="Documentos">
         <span class="material-icons">folder_open</span>
-      </a>
-
-      <a href="registrar.php" class="btn btn-primary">
-        + Crear nuevo usuario
       </a>
 
       <a href="actas.php" class="side-btn" title="Actas">
