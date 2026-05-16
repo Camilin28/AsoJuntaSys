@@ -80,7 +80,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         }
 
         .btn-primary{
-            background: #edfd0d;
+            background: #21fd0d;
             border: none;
             border-radius: 12px;
             padding: 12px;
@@ -94,8 +94,8 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         }
 
         .btn-secondary-custom{
-            background: white;
-            border: 1px solid #d9ec09;
+            background: #d9ec09;
+            border: 1px solid #e8e9e1;
             border-radius: 12px;
             padding: 10px 16px;
             color: #495057;
