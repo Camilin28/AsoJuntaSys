@@ -1,51 +1,72 @@
 <?php
 session_start();
 require_once '../config/db.php';
+require_once '../includes/auth.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nombre = trim($_POST['nombre']);
-    $email = trim($_POST['email']);
-    $passwordPlano = $_POST['password'] ?? '';
-if (empty($passwordPlano)) {
-    die("La contraseña es obligatoria");
+// Solo el Presidente General puede crear usuarios
+requireRole(['Presidente General']);
+
+if ($_SERVER["REQUEST_METHOD"] !== 'POST') {
+    header("Location: ../views/dashboard_presidente.php");
+    exit();
+}
+
+$nombre       = trim($_POST['nombre'] ?? '');
+$email        = trim($_POST['email'] ?? '');
+$passwordPlano = $_POST['password'] ?? '';
+$rol          = $_POST['rol'] ?? '';
+$jac_id       = !empty($_POST['jac_id']) ? (int)$_POST['jac_id'] : null;
+
+// Validaciones básicas
+if (empty($nombre) || empty($email) || empty($passwordPlano) || empty($rol)) {
+    $_SESSION['error'] = "❌ Todos los campos son obligatorios.";
+    header("Location: ../views/registrar.php");
+    exit();
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $_SESSION['error'] = "❌ El correo electrónico no es válido.";
+    header("Location: ../views/registrar.php");
+    exit();
+}
+
+$rolesPermitidos = ['Presidentes de JAC', 'Secretaría', 'Tesorería'];
+if (!in_array($rol, $rolesPermitidos)) {
+    $_SESSION['error'] = "❌ Rol no válido.";
+    header("Location: ../views/registrar.php");
+    exit();
 }
 
 $password = password_hash($passwordPlano, PASSWORD_DEFAULT);
 
-    $rol = $_POST['rol'];
-
-    // Validar aceptación de términos
-    $acepta = isset($_POST['acepta_terminos']) ? 1 : 0;
-
-    if ($acepta != 1) {
-        $_SESSION['error'] = "❌ Debes aceptar los términos y condiciones para registrarte.";
+try {
+    // Verificar que el email no esté registrado
+    $check = $pdo->prepare("SELECT id FROM usuarios WHERE email = :email");
+    $check->execute([':email' => $email]);
+    if ($check->fetch()) {
+        $_SESSION['error'] = "❌ Ya existe un usuario con ese correo electrónico.";
         header("Location: ../views/registrar.php");
         exit();
     }
 
-    if (!empty($nombre) && !empty($email) && !empty($password)) {
-        try {
-            $sql = "INSERT INTO usuarios (nombre, email, contraseña, rol) VALUES (:nombre, :email, :password, :rol)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':nombre' => $nombre,
-                ':email' => $email,
-                ':password' => $password,
-                ':rol'=> $rol
-                
-            ]);
+    $sql = "INSERT INTO usuarios (nombre, email, contraseña, rol, jac_id) 
+            VALUES (:nombre, :email, :password, :rol, :jac_id)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':nombre'   => $nombre,
+        ':email'    => $email,
+        ':password' => $password,
+        ':rol'      => $rol,
+        ':jac_id'   => $jac_id,
+    ]);
 
-            header("Location: ../views/login.php");
-            $_SESSION['mensaje'] = "✅ Registro exitoso. Inicia sesión.";
-            
-            exit();
-        } catch (PDOException $e) {
-            $_SESSION['error'] = "❌ Error en el registro: " . $e->getMessage();
-        }
-    } else {
-        $_SESSION['error'] = "❌ Todos los campos son obligatorios.";
-    }
+    $_SESSION['mensaje'] = "✅ Usuario '{$nombre}' creado correctamente.";
+    header("Location: ../views/registrar.php");
+    exit();
+
+} catch (PDOException $e) {
+    $_SESSION['error'] = "❌ Error al crear el usuario.";
+    header("Location: ../views/registrar.php");
+    exit();
 }
-
-header("Location: ../views/registrar.php");
-exit();
+?>

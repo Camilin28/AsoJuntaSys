@@ -203,9 +203,7 @@ if (isset($_SESSION['error'])) {
         
       </form>
 
-      <p class="signup-link">¿No tienes cuenta? 
-        <a href="../views/registrar.php">Por favor, Regístrate</a>
-      </p>
+      
         </div>
     
 

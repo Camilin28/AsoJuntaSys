@@ -1,170 +1,94 @@
 <?php
 session_start();
-?>
+require_once '../config/db.php';
+require_once '../includes/auth.php';
 
+requireRole(['Presidente General']);
+
+// Cargar JAC disponibles para asignar al usuario
+$jacs = $pdo->query("SELECT id, nombre FROM juntas ORDER BY nombre ASC")->fetchAll();
+
+$error   = $_SESSION['error']   ?? null;
+$mensaje = $_SESSION['mensaje'] ?? null;
+unset($_SESSION['error'], $_SESSION['mensaje']);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Usuario</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <style>
-        
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fff9c4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .register-container {
-            /* Usamos Blanco #FFFFFF para la base de la caja */
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 8px 8px 15px #fbc02d, -8px -8px 15px #2e7d32;
-            width: 350px;
-            text-align: center;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #2e7d32; /* Gris Oscuro para el título */
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #2e7d32;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            border: none;
-            font-size: 16px;
-            background: #fff9c4;
-            
-            color: #424242; /* Gris Oscuro para el texto de entrada */
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        select:focus {
-            outline: none;
-            box-shadow: 0 0 5px 2px #2e7d32;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #2E7D32 5%, #FBC02D 70%); 
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 6px 6px 12px #fbc02d, -4px -4px 10px #ffffff;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #45a049; /* Un poco más claro que el principal para el hover */
-        }
-
-        button:active {
-            box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
-            background-color: #2E7D32; /* Vuelve al color principal al ser presionado */
-        }
-
-        .error-message {
-            color: red; /* Mantenemos el rojo para mensajes de error */
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        .success-message {
-            color: #FBC02D; /* 🟡 Amarillo Principal para mensajes de éxito */
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .signup-link {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #424242; /* Gris Oscuro para el texto del link */
-        }
-
-        .signup-link a {
-            text-decoration: none;
-            color: #2E7D32; /* 🟢 Verde Principal para el link */
-            font-weight: bold;
-        }
-
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <title>Crear Usuario — AsoJuntaSys</title>
+    <!-- Usa los mismos estilos que el resto de tus vistas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
-    <div class="register-container">
-        <h2>Registro de Usuario</h2>
+<body class="bg-light">
 
-        <?php
-        if (isset($_SESSION['mensaje'])) {
-            echo "<p class='success-message'>" . $_SESSION['mensaje'] . "</p>";
-            unset($_SESSION['mensaje']); 
-        }
-        if (isset($_SESSION['error'])) {
-            echo "<p class='error-message'>" . $_SESSION['error'] . "</p>";
-            unset($_SESSION['error']);
-        }
-        ?>
+<div class="container py-4" style="max-width: 600px;">
 
-        <form action="../public/procesar_registro.php" method="POST">
-            <label for="nombre">Nombre:</label>
-            <input type="text" name="nombre" required placeholder="Introduce tu nombre">
-
-            <label for="email">Correo Electrónico:</label>
-            <input type="email" name="email" required placeholder="Introduce tu correo electrónico">
-
-            <label for="password">Contraseña:</label>
-            <input type="password" name="password" required placeholder="Introduce tu contraseña">
-
-            <label for="rol">Rol:</label>
-            <select name="rol" required>
-                <option value="Presidente General">Presidente General</option>
-                <option value="Presidentes de JAC">Presidentes de JAC</option>
-                <option value="Secretaría">Secretaría</option>
-                <option value="Tesorería">Tesorería</option>
-            </select>
-            <div class="form-group" style="margin-top:15px;">
-    <input type="checkbox" name="acepta_terminos" required>
-    <label>
-        He leído y acepto los 
-        <a href="terminos.php" target="_blank">
-            Términos y Condiciones
-        </a>
-    </label>
-</div>
-            <button type="submit">Registrarse</button>
-        </form>
-
-        <p class="signup-link">¿Ya tienes una cuenta? <a href="login.php">Iniciar sesión</a></p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Crear nuevo usuario</h4>
+        <a href="dashboard_presidente.php" class="btn btn-sm btn-outline-secondary">← Volver</a>
     </div>
+
+    <?php if ($error): ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
+
+    <?php if ($mensaje): ?>
+        <div class="alert alert-success"><?= htmlspecialchars($mensaje) ?></div>
+    <?php endif; ?>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="POST" action="../public/procesar_registro.php">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nombre completo</label>
+                    <input type="text" name="nombre" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Correo electrónico</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Contraseña temporal</label>
+                    <input type="password" name="password" class="form-control" 
+                           minlength="8" required>
+                    <div class="form-text">Mínimo 8 caracteres. El usuario podrá cambiarla después.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Rol</label>
+                    <select name="rol" class="form-select" required>
+                        <option value="">— Selecciona un rol —</option>
+                        <option value="Presidentes de JAC">Presidente de JAC</option>
+                        <option value="Secretaría">Secretaría</option>
+                        <option value="Tesorería">Tesorería</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Junta de Acción Comunal</label>
+                    <select name="jac_id" class="form-select">
+                        <option value="">— Sin asignar por ahora —</option>
+                        <?php foreach ($jacs as $jac): ?>
+                            <option value="<?= $jac['id'] ?>">
+                                <?= htmlspecialchars($jac['nombre']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="form-text">Puedes asignar la JAC después desde Gestionar JAC.</div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Crear usuario</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
 </body>
 </html>

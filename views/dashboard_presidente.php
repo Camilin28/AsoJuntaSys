@@ -358,6 +358,10 @@ font-size: 1rem;
         <span class="material-icons">folder_open</span>
       </a>
 
+      <a href="registrar.php" class="btn btn-primary">
+        + Crear nuevo usuario
+      </a>
+
       <a href="actas.php" class="side-btn" title="Actas">
         <span class="material-icons">description</span>
       </a>
