@@ -35,7 +35,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         }
 
         .page-header{
-            background: linear-gradient(135deg, #0d6efd, #084298);
+            background: linear-gradient(135deg, #15fd0d, #229808);
             color: white;
             padding: 25px;
             border-radius: 18px;
@@ -52,7 +52,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
 
         .card-header-custom{
             background: white;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #f5f917;
             padding: 20px 25px;
         }
 
@@ -69,18 +69,18 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         .form-select{
             border-radius: 12px;
             padding: 12px;
-            border: 1px solid #ced4da;
+            border: 1px solid #d1dace;
             transition: 0.2s ease;
         }
 
         .form-control:focus,
         .form-select:focus{
-            border-color: #0d6efd;
+            border-color: #0dfd25;
             box-shadow: 0 0 0 0.15rem rgba(13,110,253,.15);
         }
 
         .btn-primary{
-            background: #0d6efd;
+            background: #fde50d;
             border: none;
             border-radius: 12px;
             padding: 12px;
@@ -89,7 +89,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         }
 
         .btn-primary:hover{
-            background: #0b5ed7;
+            background: #d0d70b;
             transform: translateY(-1px);
         }
 
