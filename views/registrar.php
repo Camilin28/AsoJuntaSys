@@ -35,7 +35,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         }
 
         .page-header{
-            background: linear-gradient(135deg, #15fd0d, #229808);
+            background: linear-gradient(135deg, #0fb70a, #229808);
             color: white;
             padding: 25px;
             border-radius: 18px;
@@ -52,7 +52,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
 
         .card-header-custom{
             background: white;
-            border-bottom: 1px solid #f5f917;
+            border-bottom: 1px solid #fdfdfd;
             padding: 20px 25px;
         }
 
@@ -80,7 +80,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         }
 
         .btn-primary{
-            background: #fde50d;
+            background: #edfd0d;
             border: none;
             border-radius: 12px;
             padding: 12px;
@@ -89,13 +89,13 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         }
 
         .btn-primary:hover{
-            background: #d0d70b;
+            background: #0bd70e;
             transform: translateY(-1px);
         }
 
         .btn-secondary-custom{
             background: white;
-            border: 1px solid #dee2e6;
+            border: 1px solid #d9ec09;
             border-radius: 12px;
             padding: 10px 16px;
             color: #495057;
@@ -104,7 +104,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         }
 
         .btn-secondary-custom:hover{
-            background: #f1f3f5;
+            background: #e2ee05;
             color: #000;
         }
 
