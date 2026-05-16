@@ -1,0 +1,17 @@
+# Dependencias PHP
+vendor/
+
+# Archivos subidos por usuarios
+uploads/documentos/*
+uploads/documentos/.gitkeep
+
+# Archivos de log
+*.log
+error_log
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos temporales de PHP
+*.cache
