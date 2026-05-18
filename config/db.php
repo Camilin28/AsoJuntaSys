@@ -2,7 +2,7 @@
 $host   = getenv('DB_HOST')              ?: 'mysql.railway.internal';
 $dbname = getenv('DB_NAME')              ?: 'railway';
 $user   = getenv('MYSQLUSER')            ?: 'root';
-$pass   = getenv('MYSQL_ROOT_PASSWORD')  ?: 'BjJnNBPbpmyxmxCjYhXyrxYyzKnHSSkq';
+$pass   = getenv('MYSQL_ROOT_PASSWORD')  ?: '';
 $port   = getenv('MYSQLPORT')            ?: 3306;
 
 try {

@@ -1,6 +1,9 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+session_unset();
 session_destroy();
-header("Location: ../views/login.php"); // Redirige al login después de cerrar sesión
+header("Location: ../views/login.php");
 exit();
 ?>
