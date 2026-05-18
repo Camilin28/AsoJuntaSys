@@ -1,9 +1,9 @@
 <?php
-$host   = getenv('MYSQLHOST');
-$dbname = getenv('MYSQLDATABASE');
-$user   = getenv('MYSQLUSER');
-$pass   = getenv('MYSQL_ROOT_PASSWORD');
-$port   = getenv('MYSQLPORT') ?: 3306;
+$host   = getenv('DB_HOST')              ?: 'mysql.railway.internal';
+$dbname = getenv('DB_NAME')              ?: 'railway';
+$user   = getenv('MYSQLUSER')            ?: 'root';
+$pass   = getenv('MYSQL_ROOT_PASSWORD')  ?: 'BjJnNBPbpmyxmxCjYhXyrxYyzKnHSSkq';
+$port   = getenv('MYSQLPORT')            ?: 3306;
 
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
