@@ -67,8 +67,7 @@ $html = '
   max-width: 1600px; /* <- límite más alto */
   height: auto;
   opacity: 0.30;    /* Transparencia */
-}  
-        }
+}
         .header {
             text-align: center;
             margin-bottom: 25px;
