@@ -1,5 +1,8 @@
 <?php
-require_once '../includes/auth.php';
+
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 requireLogin();
 
@@ -33,7 +36,7 @@ $options->set('isRemoteEnabled', true);
 $dompdf = new Dompdf($options);
 
 // ✅ Logo en Base64 como marca de agua
-$logoPath = realpath(__DIR__ . '/../imagenes/Logo_AsojuntaSys.png'); // Ajusta la ruta según tu proyecto
+$logoPath = __DIR__ . '/../imagenes/Logo_AsojuntaSys.png'; // Ajusta la ruta según tu proyecto
 $logoBase64 = base64_encode(file_get_contents($logoPath));
 $logoSrc = 'data:image/png;base64,' . $logoBase64;
 
