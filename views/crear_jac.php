@@ -228,11 +228,9 @@ body{
                         <select
                             name="presidente_id"
                             class="form-select"
-                            required>
+                            >
 
-                            <option value="">
-                                Seleccionar...
-                            </option>
+                            <option value="">No asignar por ahora</option>
 
                             <?php foreach($presidentes as $p): ?>
 
@@ -255,11 +253,9 @@ body{
                         <select
                             name="secretario_id"
                             class="form-select"
-                            required>
+                            >
 
-                            <option value="">
-                                Seleccionar...
-                            </option>
+                            <option value="">No asignar por ahora</option>
 
                             <?php foreach($secretarios as $s): ?>
 
@@ -282,11 +278,9 @@ body{
                         <select
                             name="tesorero_id"
                             class="form-select"
-                            required>
+                            >
 
-                            <option value="">
-                                Seleccionar...
-                            </option>
+                            <option value="">No asignar por ahora</option>
 
                             <?php foreach($tesoreros as $t): ?>
 

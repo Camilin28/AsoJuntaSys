@@ -27,7 +27,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = intval($_GET['id']);
 
 /* ===========================
-   Obtener datos de la JAC
+   Obtener JAC
    =========================== */
 
 $stmt = $pdo->prepare("
@@ -46,6 +46,20 @@ if (!$jac) {
 }
 
 /* ===========================
+   Total usuarios
+   =========================== */
+
+$stmt = $pdo->prepare("
+    SELECT COUNT(*)
+    FROM usuarios
+    WHERE jac_id = ?
+");
+
+$stmt->execute([$id]);
+
+$totalUsuarios = $stmt->fetchColumn();
+
+/* ===========================
    Actualizar datos
    =========================== */
 
@@ -54,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre']);
     $direccion = trim($_POST['direccion']);
     $telefono = trim($_POST['telefono']);
+    $estado = $_POST['estado'];
 
     if (!empty($nombre) && !empty($direccion)) {
 
@@ -61,7 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             UPDATE juntas
             SET nombre = ?,
                 direccion = ?,
-                telefono = ?
+                telefono = ?,
+                estado = ?
             WHERE id = ?
         ");
 
@@ -69,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nombre,
             $direccion,
             !empty($telefono) ? $telefono : null,
+            $estado,
             $id
         ]);
 
@@ -96,7 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     --verde-principal:#2E7D32;
     --verde-secundario:#81C784;
     --amarillo:#FBC02D;
-    --amarillo-suave:#FFF9C4;
     --gris:#424242;
 }
 
@@ -162,7 +178,8 @@ body{
     border-left:5px solid var(--amarillo);
     padding:15px;
     border-radius:10px;
-    margin-bottom:20px;
+    margin-bottom:15px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
 
 .input-group-text{
@@ -170,6 +187,18 @@ body{
     border:none;
     color:#000;
     font-weight:600;
+}
+
+.stat-card{
+    border:none;
+    border-radius:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.stat-number{
+    font-size:2rem;
+    font-weight:bold;
+    color:var(--verde-principal);
 }
 
 </style>
@@ -182,7 +211,7 @@ body{
 
     <div class="header-card">
 
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
 
             <div>
                 <h2 class="mb-2">
@@ -190,7 +219,7 @@ body{
                 </h2>
 
                 <p class="mb-0">
-                    Actualiza la información de la Junta registrada en el sistema.
+                    Actualiza la información general de la Junta.
                 </p>
             </div>
 
@@ -202,20 +231,56 @@ body{
 
     </div>
 
+    <div class="row mb-4">
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card stat-card">
+
+                <div class="card-body text-center">
+
+                    <div class="stat-number">
+                        <?= $totalUsuarios ?>
+                    </div>
+
+                    <div>
+                        Usuarios Asociados
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-8">
+
+            <div class="info-box">
+                <strong>ID:</strong>
+                <?= $jac['id'] ?>
+            </div>
+
+            <div class="info-box">
+                <strong>Fecha de creación:</strong>
+
+                <?= !empty($jac['fecha_creacion'])
+                    ? date('d/m/Y', strtotime($jac['fecha_creacion']))
+                    : 'No registrada'; ?>
+            </div>
+
+        </div>
+
+    </div>
+
     <div class="card form-card">
 
         <div class="card-header-custom">
             <h5 class="mb-0">
-                Información General de la JAC
+                Información General
             </h5>
         </div>
 
         <div class="card-body p-4">
-
-            <div class="info-box">
-                <strong>ID de la JAC:</strong>
-                <?= $jac['id'] ?>
-            </div>
 
             <form method="POST">
 
@@ -226,7 +291,10 @@ body{
                     </label>
 
                     <div class="input-group">
-                        <span class="input-group-text">🏘️</span>
+
+                        <span class="input-group-text">
+                            🏘️
+                        </span>
 
                         <input
                             type="text"
@@ -234,6 +302,7 @@ body{
                             class="form-control"
                             value="<?= htmlspecialchars($jac['nombre']) ?>"
                             required>
+
                     </div>
 
                 </div>
@@ -245,7 +314,10 @@ body{
                     </label>
 
                     <div class="input-group">
-                        <span class="input-group-text">📍</span>
+
+                        <span class="input-group-text">
+                            📍
+                        </span>
 
                         <input
                             type="text"
@@ -253,6 +325,7 @@ body{
                             class="form-control"
                             value="<?= htmlspecialchars($jac['direccion']) ?>"
                             required>
+
                     </div>
 
                 </div>
@@ -264,30 +337,74 @@ body{
                     </label>
 
                     <div class="input-group">
-                        <span class="input-group-text">📞</span>
+
+                        <span class="input-group-text">
+                            📞
+                        </span>
 
                         <input
                             type="text"
                             name="telefono"
                             class="form-control"
                             value="<?= htmlspecialchars($jac['telefono']) ?>">
+
                     </div>
 
                 </div>
 
-                <div class="d-flex justify-content-end gap-2">
+                <div class="mb-4">
 
-                    <a href="gestionar_jac.php" class="btn btn-secondary">
-                        Cancelar
+                    <label class="form-label">
+                        Estado
+                    </label>
+
+                    <select
+                        name="estado"
+                        class="form-select">
+
+                        <option value="Activa"
+                            <?= $jac['estado'] == 'Activa' ? 'selected' : '' ?>>
+                            Activa
+                        </option>
+
+                        <option value="Inactiva"
+                            <?= $jac['estado'] == 'Inactiva' ? 'selected' : '' ?>>
+                            Inactiva
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="d-flex justify-content-between flex-wrap gap-2">
+
+                    <a
+                        href="usuarios_jac.php?id=<?= $id ?>"
+                        class="btn btn-outline-success">
+
+                        👥 Ver Usuarios
+
                     </a>
 
-                    <button
-                        type="submit"
-                        class="btn btn-guardar btn-lg text-white">
+                    <div>
 
-                        💾 Actualizar JAC
+                        <a
+                            href="gestionar_jac.php"
+                            class="btn btn-secondary">
 
-                    </button>
+                            Cancelar
+
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-guardar text-white">
+
+                            💾 Actualizar JAC
+
+                        </button>
+
+                    </div>
 
                 </div>
 

@@ -18,32 +18,76 @@ if (!isset($_GET['id'])) {
 $jac_id = intval($_GET['id']);
 
 $stmt = $pdo->prepare("
-    SELECT j.nombre AS nombre_jac,
-           u.*
-    FROM usuarios u
-    INNER JOIN juntas j
-        ON j.id = u.jac_id
-    WHERE u.jac_id = ?
-    ORDER BY u.rol
+    SELECT *
+    FROM juntas
+    WHERE id = ?
+");
+$stmt->execute([$jac_id]);
+
+$jac = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$jac) {
+    die("JAC no encontrada.");
+}
+
+/*
+|--------------------------------------------------------------------------
+| Usuarios pertenecientes a la JAC
+|--------------------------------------------------------------------------
+*/
+
+$stmt = $pdo->prepare("
+    SELECT
+        id,
+        nombre,
+        email,
+        rol,
+        fecha_registro
+    FROM usuarios
+    WHERE jac_id = ?
+    ORDER BY rol, nombre
 ");
 
 $stmt->execute([$jac_id]);
 
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$nombreJac = $usuarios[0]['nombre_jac'] ?? 'JAC';
+/*
+|--------------------------------------------------------------------------
+| Estadísticas
+|--------------------------------------------------------------------------
+*/
+
+$totalUsuarios = count($usuarios);
+
+$presidentes = 0;
+$secretarios = 0;
+$tesoreros = 0;
+
+foreach ($usuarios as $usuario) {
+
+    if ($usuario['rol'] === 'Presidentes de JAC') {
+        $presidentes++;
+    }
+
+    if ($usuario['rol'] === 'Secretaría') {
+        $secretarios++;
+    }
+
+    if ($usuario['rol'] === 'Tesorería') {
+        $tesoreros++;
+    }
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Usuarios JAC</title>
+<title>Usuarios de la JAC</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -52,6 +96,7 @@ $nombreJac = $usuarios[0]['nombre_jac'] ?? 'JAC';
 :root{
     --verde:#2E7D32;
     --verde-claro:#81C784;
+    --amarillo:#FBC02D;
 }
 
 body{
@@ -61,117 +106,229 @@ body{
 .header-card{
     background:linear-gradient(135deg,var(--verde),var(--verde-claro));
     color:white;
-    padding:25px;
     border-radius:20px;
+    padding:25px;
     margin-bottom:25px;
+}
+
+.card-custom{
+    border:none;
+    border-radius:18px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.stat-number{
+    font-size:2rem;
+    font-weight:bold;
+    color:var(--verde);
 }
 
 .table-card{
     border:none;
-    border-radius:15px;
+    border-radius:18px;
     overflow:hidden;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.table thead{
+    background:var(--verde);
+    color:white;
+}
+
+.badge-presidente{
+    background:#198754;
+}
+
+.badge-secretario{
+    background:#0dcaf0;
+}
+
+.badge-tesorero{
+    background:#ffc107;
+    color:black;
 }
 
 </style>
 
 </head>
-
 <body>
 
 <div class="container py-4">
 
-<div class="header-card">
+    <div class="header-card">
 
-    <h2>👥 Usuarios de <?= htmlspecialchars($nombreJac) ?></h2>
+        <div class="d-flex justify-content-between align-items-center">
 
-    <p class="mb-0">
-        Gestión de integrantes de la Junta de Acción Comunal
-    </p>
+            <div>
+                <h2 class="mb-1">
+                    👥 Usuarios de la JAC
+                </h2>
 
-</div>
+                <h5>
+                    <?= htmlspecialchars($jac['nombre']) ?>
+                </h5>
+            </div>
 
-<div class="card table-card">
-
-    <div class="card-body">
-
-        <div class="table-responsive">
-
-            <table class="table table-hover align-middle">
-
-                <thead class="table-success">
-
-                    <tr>
-
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Rol</th>
-                        <th>ID Usuario</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                <?php foreach($usuarios as $usuario): ?>
-
-                    <tr>
-
-                        <td>
-                            <?= htmlspecialchars($usuario['nombre']) ?>
-                        </td>
-
-                        <td>
-                            <?= htmlspecialchars($usuario['email']) ?>
-                        </td>
-
-                        <td>
-
-                            <?php
-
-                            if($usuario['rol']=='Presidentes de JAC'){
-                                echo '<span class="badge bg-primary">Presidente</span>';
-                            }
-                            elseif($usuario['rol']=='Secretaría'){
-                                echo '<span class="badge bg-warning text-dark">Secretaría</span>';
-                            }
-                            elseif($usuario['rol']=='Tesorería'){
-                                echo '<span class="badge bg-success">Tesorería</span>';
-                            }
-                            else{
-                                echo $usuario['rol'];
-                            }
-
-                            ?>
-
-                        </td>
-
-                        <td>
-                            <?= $usuario['id'] ?>
-                        </td>
-
-                    </tr>
-
-                <?php endforeach; ?>
-
-                </tbody>
-
-            </table>
+            <div>
+                <a href="ver_jac.php?id=<?= $jac_id ?>"
+                   class="btn btn-light">
+                    ← Volver
+                </a>
+            </div>
 
         </div>
 
     </div>
 
-</div>
+    <div class="row mb-4">
 
-<div class="mt-4">
+        <div class="col-md-4 mb-3">
 
-    <a href="gestionar_jac.php" class="btn btn-secondary">
-        ← Volver
-    </a>
+            <div class="card card-custom">
 
-</div>
+                <div class="card-body text-center">
+
+                    <div class="stat-number">
+                        <?= $totalUsuarios ?>
+                    </div>
+
+                    <div>Total Usuarios</div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-8">
+
+            <div class="card card-custom">
+
+                <div class="card-body">
+
+                    <div class="row text-center">
+
+                        <div class="col">
+                            <h4><?= $presidentes ?></h4>
+                            <small>Presidentes</small>
+                        </div>
+
+                        <div class="col">
+                            <h4><?= $secretarios ?></h4>
+                            <small>Secretarios</small>
+                        </div>
+
+                        <div class="col">
+                            <h4><?= $tesoreros ?></h4>
+                            <small>Tesoreros</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card table-card">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0">
+                Listado de usuarios
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Cargo</th>
+                            <th>Registro</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <?php if(empty($usuarios)): ?>
+
+                        <tr>
+                            <td colspan="4" class="text-center">
+                                No hay usuarios asociados.
+                            </td>
+                        </tr>
+
+                    <?php else: ?>
+
+                        <?php foreach($usuarios as $usuario): ?>
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    <?= htmlspecialchars($usuario['nombre']) ?>
+                                </strong>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars($usuario['email']) ?>
+                            </td>
+
+                            <td>
+
+                                <?php
+
+                                $clase = 'bg-secondary';
+
+                                if($usuario['rol'] == 'Presidentes de JAC'){
+                                    $clase = 'badge-presidente';
+                                }
+
+                                if($usuario['rol'] == 'Secretaría'){
+                                    $clase = 'badge-secretario';
+                                }
+
+                                if($usuario['rol'] == 'Tesorería'){
+                                    $clase = 'badge-tesorero';
+                                }
+
+                                ?>
+
+                                <span class="badge <?= $clase ?>">
+                                    <?= htmlspecialchars($usuario['rol']) ?>
+                                </span>
+
+                            </td>
+
+                            <td>
+                                <?= date('d/m/Y', strtotime($usuario['fecha_registro'])) ?>
+                            </td>
+
+                        </tr>
+
+                        <?php endforeach; ?>
+
+                    <?php endif; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

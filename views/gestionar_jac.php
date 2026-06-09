@@ -172,6 +172,12 @@ foreach ($juntas as $jac) {
 
 </nav>
 
+<?php if(isset($_GET['updated'])): ?>
+<div class="alert alert-success">
+    ✅ La JAC fue actualizada correctamente.
+</div>
+<?php endif; ?>
+
 <div class="container py-4">
 
     <!-- HEADER -->
