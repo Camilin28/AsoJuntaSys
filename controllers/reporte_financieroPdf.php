@@ -1,6 +1,7 @@
 <?php
 require '../config/db.php';
 require '../vendor/autoload.php'; // Debes tener Dompdf instalado
+echo "autoload OK";
 
 use Dompdf\Dompdf;
 
