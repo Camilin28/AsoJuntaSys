@@ -449,10 +449,6 @@ font-size: 1rem;
     <div class="row align-items-center">
         <div class="col-md-8">
             <h2 class="mb-2">🏛️ Panel Ejecutivo AsoJuntaSys</h2>
-            <p class="mb-0"> Bienvenido <?= htmlspecialchars($nombre) ?>.
-                Desde este panel puede supervisar todas las Juntas de Acción Comunal registradas,
-                controlar documentación, actas, recursos financieros y actividades institucionales.
-            </p>
         </div>
         <div class="col-md-4 text-end">
             <div class="executive-number">
@@ -491,7 +487,7 @@ font-size: 1rem;
         </span>
         Gestión de JAC
     </a>
-    <a href="actas.php"
+    <a href="actas_general.php"
        class="quick-action action-blue">
         <span class="material-icons">
             description
