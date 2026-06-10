@@ -120,7 +120,7 @@ try {
        JUNTAS REGISTRADAS
        ========================== */
 
-    $stmt = $pdo->query(" SELECT j.id,  j.nombre,  COUNT(DISTINCT u.id) AS usuarios,  COUNT(DISTINCT a.id) AS actas,  COUNT(DISTINCT d.id) AS documentosFROM juntas j LEFT JOIN usuarios u ON u.jac_id = j.id LEFT JOIN actas a ON a.jac_id = j.id LEFT JOIN documentos d ON d.jac_id = j.id GROUP BY j.id ORDER BY j.nombre ASC");
+    $stmt = $pdo->query(" SELECT j.id,  j.nombre,  COUNT(DISTINCT u.id) AS usuarios,  COUNT(DISTINCT a.id) AS actas,  COUNT(DISTINCT d.id) AS documentos FROM juntas j LEFT JOIN usuarios u ON u.jac_id = j.id LEFT JOIN actas a ON a.jac_id = j.id LEFT JOIN documentos d ON d.jac_id = j.id GROUP BY j.id ORDER BY j.nombre ASC");
 
     $juntasResumen = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
