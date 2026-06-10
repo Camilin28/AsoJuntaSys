@@ -1,7 +1,6 @@
 <?php
-// ../views/dashboard_presidente.php
 session_start();
-require('../config/db.php'); // debe definir $pdo (PDO)
+require('../config/db.php');
 
 // seguridad: sólo Presidente General
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Presidente General') {
@@ -11,179 +10,248 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Presidente 
 
 $nombre = $_SESSION['usuario_nombre'] ?? 'Presidente';
 
-// ---------- Consultas (seguras) ----------
 try {
-    // Ingresos: incluir Ingreso, Donacion, Subsidio
-    $stmt = $pdo->prepare("
-        SELECT COALESCE(SUM(monto),0) AS total_ingresos
-        FROM recursos_financieros
-        WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio')
-    ");
+
+    /* ==========================
+       RESUMEN FINANCIERO GLOBAL
+       ========================== */
+
+    $stmt = $pdo->prepare("SELECT COALESCE(SUM(monto),0) FROM recursos_financieros WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') ");
     $stmt->execute();
     $totalIngresos = (float)$stmt->fetchColumn();
 
-    // Egresos: tipo_movimiento = 'Gasto'
-    $stmt = $pdo->prepare("
-        SELECT COALESCE(SUM(monto),0) AS total_egresos
-        FROM recursos_financieros
-        WHERE tipo_movimiento = 'Gasto'
-    ");
+    $stmt = $pdo->prepare(" SELECT COALESCE(SUM(monto),0) FROM recursos_financieros WHERE tipo_movimiento = 'Gasto'");
     $stmt->execute();
     $totalEgresos = (float)$stmt->fetchColumn();
-
-    // Balance
     $balance = $totalIngresos - $totalEgresos;
+    /* ==========================
+       INGRESOS Y EGRESOS MES ACTUAL
+       ========================== */
+    $stmt = $pdo->prepare(" SELECT COALESCE(SUM(monto),0) FROM recursos_financieros WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') AND MONTH(fecha)=MONTH(CURDATE()) AND YEAR(fecha)=YEAR(CURDATE()) ");
+    $stmt->execute();
+    $ingresosMesActual = (float)$stmt->fetchColumn();
 
-    // 📅 Ingresos mes actual
-$stmt = $pdo->prepare("
-    SELECT COALESCE(SUM(monto),0)
-    FROM recursos_financieros
-    WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio')
-    AND MONTH(fecha) = MONTH(CURDATE())
-    AND YEAR(fecha) = YEAR(CURDATE())
-");
-$stmt->execute();
-$ingresosMesActual = (float)$stmt->fetchColumn();
+    $stmt = $pdo->prepare(" SELECT COALESCE(SUM(monto),0) FROM recursos_financieros WHERE tipo_movimiento='Gasto' AND MONTH(fecha)=MONTH(CURDATE()) AND YEAR(fecha)=YEAR(CURDATE()) ");
+    $stmt->execute();
+    $egresosMesActual = (float)$stmt->fetchColumn();
 
-// 📅 Egresos mes actual
-$stmt = $pdo->prepare("
-    SELECT COALESCE(SUM(monto),0)
-    FROM recursos_financieros
-    WHERE tipo_movimiento = 'Gasto'
-    AND MONTH(fecha) = MONTH(CURDATE())
-    AND YEAR(fecha) = YEAR(CURDATE())
-");
-$stmt->execute();
-$egresosMesActual = (float)$stmt->fetchColumn();
+    /* ==========================
+       MES ANTERIOR
+       ========================== */
 
-// 📅 Ingresos mes anterior
-$stmt = $pdo->prepare("
-    SELECT COALESCE(SUM(monto),0)
-    FROM recursos_financieros
-    WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio')
-    AND MONTH(fecha) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
-    AND YEAR(fecha) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
-");
-$stmt->execute();
-$ingresosMesAnterior = (float)$stmt->fetchColumn();
+    $stmt = $pdo->prepare(" SELECT COALESCE(SUM(monto),0) FROM recursos_financieros WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') AND MONTH(fecha)=MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) AND YEAR(fecha)=YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))");
+    $stmt->execute();
+    $ingresosMesAnterior = (float)$stmt->fetchColumn();
+    $stmt = $pdo->prepare("SELECT COALESCE(SUM(monto),0) FROM recursos_financieros WHERE tipo_movimiento='Gasto' AND MONTH(fecha)=MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) AND YEAR(fecha)=YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))");
+    $stmt->execute();
+    $egresosMesAnterior = (float)$stmt->fetchColumn();
+    $varIngresos = $ingresosMesAnterior > 0
+        ? (($ingresosMesActual - $ingresosMesAnterior) / $ingresosMesAnterior) * 100
+        : 0;
+    $varEgresos = $egresosMesAnterior > 0
+        ? (($egresosMesActual - $egresosMesAnterior) / $egresosMesAnterior) * 100
+        : 0;
+    /* ==========================
+       DOCUMENTOS POR ESTADO
+       ========================== */
+    $stmt = $pdo->query(" SELECT LOWER(estado) AS estado_norm, COUNT(*) AS total FROM documentos GROUP BY estado_norm ");
 
-// 📅 Egresos mes anterior
-$stmt = $pdo->prepare("
-    SELECT COALESCE(SUM(monto),0)
-    FROM recursos_financieros
-    WHERE tipo_movimiento = 'Gasto'
-    AND MONTH(fecha) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
-    AND YEAR(fecha) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
-");
-$stmt->execute();
-$egresosMesAnterior = (float)$stmt->fetchColumn();
-
-// 📊 Variaciones
-$varIngresos = $ingresosMesAnterior > 0 
-    ? (($ingresosMesActual - $ingresosMesAnterior) / $ingresosMesAnterior) * 100 
-    : 0;
-
-$varEgresos = $egresosMesAnterior > 0 
-    ? (($egresosMesActual - $egresosMesAnterior) / $egresosMesAnterior) * 100 
-    : 0;
-  
-    // Documentos por estado (normalizamos mayúsculas/minúsculas)
-    $stmt = $pdo->query("
-        SELECT LOWER(estado) as estado_norm, COUNT(*) AS total
-        FROM documentos
-        GROUP BY estado_norm
-    ");
-    $docGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // Inicializar
     $docsData = [
         'pendiente' => 0,
-        'revisado'  => 0,
-        'aprobado'  => 0
+        'revisado' => 0,
+        'aprobado' => 0
     ];
-    foreach ($docGroups as $r) {
-        $key = $r['estado_norm'];
-        if (isset($docsData[$key])) {
-            $docsData[$key] = (int)$r['total'];
-        } else {
-            // si hay otros estados, agruparlos en 'pendiente' por defecto
-            $docsData[$key] = (int)$r['total'];
+
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+
+        $estado = $row['estado_norm'];
+
+        if(isset($docsData[$estado])) {
+            $docsData[$estado] = (int)$row['total'];
         }
     }
 
-    // Total actas
+    /* ==========================
+       TOTALES GENERALES
+       ========================== */
+
     $stmt = $pdo->query("SELECT COUNT(*) FROM actas");
     $totalActas = (int)$stmt->fetchColumn();
 
-    //Total del Juntas
     $stmt = $pdo->query("SELECT COUNT(*) FROM juntas");
     $totalJuntas = (int)$stmt->fetchColumn();
 
-    // Eventos próximos (count)
-    $stmt = $pdo->prepare("
-    SELECT COUNT(*) 
-    FROM agenda 
-    WHERE STR_TO_DATE(fecha, '%Y-%m-%d') >= CURDATE()
-");
+    $stmt = $pdo->query("SELECT COUNT(*) FROM usuarios    WHERE cargo='Presidente'");
+    $totalPresidentes = (int)$stmt->fetchColumn();
+
+
+
+$stmt = $pdo->query(" SELECT COUNT(*) FROM usuarios WHERE cargo='Secretario'");
+
+$totalSecretarios = (int)$stmt->fetchColumn();
+
+
+/******************************
+ TOTAL TESOREROS
+******************************/
+$stmt = $pdo->query(" SELECT COUNT(*) FROM usuarios WHERE cargo='Tesorero' ");
+
+$totalTesoreros = (int)$stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT COUNT(*) FROM usuarios");
+    $totalUsuarios = (int)$stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT COUNT(*) FROM documentos");
+    $totalDocumentos = (int)$stmt->fetchColumn();
+
+    $stmt = $pdo->query(" SELECT COUNT(*) FROM documentos WHERE estado='Pendiente'");
+    $documentosPendientes = (int)$stmt->fetchColumn();
+
+    /* ==========================
+       EVENTOS PRÓXIMOS
+       ========================== */
+
+    $stmt = $pdo->prepare("  SELECT COUNT(*) FROM agenda WHERE STR_TO_DATE(fecha,'%Y-%m-%d') >= CURDATE() ");
     $stmt->execute();
     $eventosProximos = (int)$stmt->fetchColumn();
 
-    // Últimas actividades (limit 6): combinamos documentos, actas y movimientos
-    $notifs = [];
-    // docs
-    $stmt = $pdo->query("SELECT 'Documento' AS tipo, titulo AS item, fecha_subida AS fecha FROM documentos ORDER BY fecha_subida DESC LIMIT 3");
-    $notifs = array_merge($notifs, $stmt->fetchAll(PDO::FETCH_ASSOC));
-    // actas
-    $stmt = $pdo->query("SELECT 'Acta' AS tipo, titulo AS item, fecha_reunion AS fecha FROM actas ORDER BY fecha_reunion DESC LIMIT 3");
-    $notifs = array_merge($notifs, $stmt->fetchAll(PDO::FETCH_ASSOC));
-    // movimientos (recursos_financieros)
-    $stmt = $pdo->query("SELECT 'Movimiento' AS tipo, CONCAT(tipo_movimiento, ' - ', COALESCE(descripcion,'')) AS item, fecha AS fecha FROM recursos_financieros ORDER BY fecha DESC LIMIT 3");
-    $notifs = array_merge($notifs, $stmt->fetchAll(PDO::FETCH_ASSOC));
-    // ordenar por fecha descendente y limitar
-    usort($notifs, function($a,$b){ return strcmp($b['fecha'],$a['fecha']); });
-    $notifs = array_slice($notifs, 0, 6);
-    
-    //Grafico tendencia mensual ingresos vs egresos (últimos 6 meses)
-    $stmt = $pdo->query("
-    SELECT 
-        DATE_FORMAT(fecha, '%Y-%m') as mes,
-        SUM(CASE 
-            WHEN tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
-            THEN monto ELSE 0 END) as ingresos,
-        SUM(CASE 
-            WHEN tipo_movimiento = 'Gasto' 
-            THEN monto ELSE 0 END) as egresos
-    FROM recursos_financieros
-    WHERE fecha >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-    GROUP BY mes
-    ORDER BY mes ASC
-");
+    /* ==========================
+       JUNTAS REGISTRADAS
+       ========================== */
 
-$datosMensuales = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->query(" SELECT j.id,  j.nombre,  COUNT(DISTINCT u.id) AS usuarios,  COUNT(DISTINCT a.id) AS actas,  COUNT(DISTINCT d.id) AS documentosFROM juntas jLEFT JOIN usuarios u ON u.jac_id = j.id LEFT JOIN actas a ON a.jac_id = j.id LEFT JOIN documentos d ON d.jac_id = j.id GROUP BY j.id ORDER BY j.nombre ASC");
 
-$meses = [];
-$ingresosData = [];
-$egresosData = [];
+    $juntasResumen = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-foreach ($datosMensuales as $fila) {
-    $meses[] = $fila['mes'];
-    $ingresosData[] = $fila['ingresos'];
-    $egresosData[] = $fila['egresos'];
+    /* ==========================
+   PRESIDENTES DE JAC
+   ========================== */
+
+$stmt = $pdo->query(" SELECT j.id, j.nombre AS jac, u.nombre AS presidente FROM juntas j LEFT JOIN usuarios u  ON u.jac_id = j.id  AND u.cargo = 'Presidente' ORDER BY j.nombre ");
+
+$presidentesJAC = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    /* ==========================
+       ULTIMAS ACTAS
+       ========================== */
+
+    $stmt = $pdo->query(" SELECT a.id, a.titulo, a.fecha_reunion,  j.nombre AS junta FROM actas a LEFT JOIN juntas j ON a.jac_id = j.id ORDER BY a.fecha_reunion DESC  LIMIT 5");
+    $ultimasActas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    /* ==========================
+       ULTIMOS DOCUMENTOS
+       ========================== */
+    $stmt = $pdo->query(" SELECT d.id, d.titulo, d.estado,  d.fecha_subida,  j.nombre AS junta FROM documentos d LEFT JOIN juntas j ON d.jac_id = j.id ORDER BY d.fecha_subida DESC LIMIT 5 ");
+
+    $ultimosDocumentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    /* ==========================
+       USUARIOS POR JAC
+       ========================== */
+
+    $stmt = $pdo->query(" SELECT j.nombre, COUNT(u.id) AS total FROM juntas j  LEFT JOIN usuarios u ON u.jac_id = j.id GROUP BY j.id ORDER BY j.nombre ");
+    $labelsJAC = [];
+    $dataJAC = [];
+
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
+
+        $labelsJAC[] = $fila['nombre'];
+        $dataJAC[] = (int)$fila['total'];
+
+    }
+
+    /* ==========================
+       GRAFICO FINANCIERO
+       ========================== */
+
+    $stmt = $pdo->query(" SELECT
+            DATE_FORMAT(fecha,'%Y-%m') AS mes,
+
+            SUM(
+                CASE
+                WHEN tipo_movimiento IN ('Ingreso','Donacion','Subsidio')
+                THEN monto
+                ELSE 0
+                END
+            ) AS ingresos,
+
+            SUM(
+                CASE
+                WHEN tipo_movimiento='Gasto'
+                THEN monto
+                ELSE 0
+                END
+            ) AS egresos
+
+        FROM recursos_financieros
+
+        WHERE fecha >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+
+        GROUP BY mes
+        ORDER BY mes ASC
+    ");
+
+    $datosMensuales = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $meses = [];
+    $ingresosData = [];
+    $egresosData = [];
+
+    foreach ($datosMensuales as $fila) {
+
+        $meses[] = $fila['mes'];
+        $ingresosData[] = $fila['ingresos'];
+        $egresosData[] = $fila['egresos'];
+
+    }
+
+} catch(PDOException $e) {
+
+    $totalIngresos = 0;
+    $totalEgresos = 0;
+    $balance = 0;
+
+    $totalActas = 0;
+    $totalJuntas = 0;
+    $totalUsuarios = 0;
+    $totalDocumentos = 0;
+
+    $eventosProximos = 0;
+
+    $ultimasActas = [];
+    $ultimosDocumentos = [];
+    $juntasResumen = [];
+
+    $labelsJAC = [];
+    $dataJAC = [];
+
+    $meses = [];
+    $ingresosData = [];
+    $egresosData = [];
+
+    $docsData = [
+        'pendiente' => 0,
+        'revisado' => 0,
+        'aprobado' => 0
+    ];
 }
 
-} catch (PDOException $e) {
-    // en caso de error, definir valores por defecto
-    $totalIngresos = $totalEgresos = $balance = 0;
-    $docsData = ['pendiente'=>0,'revisado'=>0,'aprobado'=>0];
-    $totalActas = $eventosProximos = 0;
-    $notifs = [];
-    // opcional: loguear $e->getMessage();
-}
+/* ==========================
+   VARIABLES JS
+   ========================== */
 
-// preparar datos para JS
 $docsPendiente = (int)($docsData['pendiente'] ?? 0);
-$docsRevisado  = (int)($docsData['revisado'] ?? 0);
-$docsAprobado  = (int)($docsData['aprobado'] ?? 0);
+$docsRevisado = (int)($docsData['revisado'] ?? 0);
+$docsAprobado = (int)($docsData['aprobado'] ?? 0);
+
+$juntasLabelsJson = json_encode($labelsJAC);
+$juntasDataJson = json_encode($dataJAC);
+
+$mesesJson = json_encode($meses);
+$ingresosJson = json_encode($ingresosData);
+$egresosJson = json_encode($egresosData);
+
 ?>
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -284,8 +352,9 @@ font-size: 1rem;
     .page-title h1{ font-size:18px; margin:0; color:var(--verde-osc); }
 
     /* KPI cards */
-    .kpis { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:16px; margin-bottom:18px; }
+    .kpis { display:grid;grid-template-columns: repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:18px;}
     .kpi-card { background:var(--card-bg); padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(16,24,40,0.04); display:flex; align-items:center; gap:12px; }
+    .kpi-card:hover{transform: translateY(-3px);transition:.3s;}
     .kpi-icon{ width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; }
     .kpi-body{ flex:1; }
     .kpi-title{ font-size:0.85rem; color:var(--muted); margin:0 0 6px 0; }
@@ -293,8 +362,30 @@ font-size: 1rem;
 
     /* grid for charts/calendar */
     .grid-2 { display:grid; grid-template-columns: 1fr 420px; gap:16px; margin-bottom:16px; }
+    .grid-3{ display:grid;grid-template-columns:1fr 1fr 1fr; gap:16px;margin-bottom:20px;}
+    @media(max-width:1000px){.grid-3{grid-template-columns:1fr;}}
     .card { background:var(--card-bg); border-radius:12px; padding:14px; box-shadow:0 6px 18px rgba(16,24,40,0.04); }
+    .card:hover{box-shadow:0 10px 25px rgba(0,0,0,.08);transition:.3s;}
     .card h3{ margin:0 0 8px 0; font-size:1rem; color:var(--verde-osc); }
+
+    /*JACS */
+    .jac-card{border:none;border-radius:15px;overflow:hidden;transition:.3s;}
+    .jac-card:hover{transform:translateY(-5px);}
+    .jac-header{background:linear-gradient(135deg,var(--verde),var(--verde-osc) );color:white;padding:15px;}
+    .jac-body{padding:15px;}
+    .executive-card{ background:linear-gradient(135deg,var(--verde),var(--verde-osc)); color:white; border-radius:15px; padding:20px; margin-bottom:20px; }
+    .executive-number{ font-size:2rem;font-weight:bold; }
+    .table-jac{font-size:.9rem;}
+    .badge-documento{padding:6px 10px; border-radius:20px;}
+    .estado-pendiente{ background:#FFF3CD; color:#856404;}
+    .estado-aprobado{background:#D4EDDA;color:#155724;}
+    .estado-revisado{ background:#CCE5FF; color:#004085;}
+    .quick-action{text-decoration:none;color:white;padding:15px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;transition:.3s;}
+    .quick-action:hover{transform:translateY(-4px);color:white;}
+    .action-green{background:linear-gradient(135deg,#2E7D32,#1B5E20);}
+    .action-yellow{background:linear-gradient(135deg,#FBC02D,#e0a800);color:black;}
+    .action-blue{background:linear-gradient(135deg,#1976D2,#0D47A1);}
+    .action-red{background:linear-gradient(135deg,#C62828,#8E0000);}
 
     /* chart sizing */
     .chart-wrap { height:260px; display:flex; align-items:center; justify-content:center; }
@@ -304,6 +395,8 @@ font-size: 1rem;
     .notif-list { display:flex; flex-direction:column; gap:8px; }
     .notif-item { display:flex; justify-content:space-between; gap:10px; padding:8px; border-radius:8px; background:#fbfbfb; border:1px solid #f0f0f0; }
     .notif-item small { color:var(--muted); }
+    .table-modern thead{ background:var(--verde); color:white;}
+    .table-modern tbody tr:hover{background:#f7fff7;}
 
     /* responsive */
     @media (max-width: 1000px){
@@ -314,6 +407,9 @@ font-size: 1rem;
     }
   </style>
 </head>
+
+
+
 <body>
 
   <!-- topbar -->
@@ -375,105 +471,298 @@ font-size: 1rem;
 
     <!-- content -->
     <main class="content">
-      <div class="page-title">
-        <div>
-          <h1>Vista Ejecutiva</h1>
-          <small style="color:var(--muted)">Resumen de la actividad reciente y métricas financieras</small>
+      <div class="executive-card">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h2 class="mb-2">🏛️ Panel Ejecutivo AsoJuntaSys</h2>
+            <p class="mb-0"> Bienvenido <?= htmlspecialchars($nombre) ?>.
+                Desde este panel puede supervisar todas las Juntas de Acción Comunal registradas,
+                controlar documentación, actas, recursos financieros y actividades institucionales.
+            </p>
         </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button class="btn btn-outline-secondary btn-sm" id="refreshBtn">Actualizar</button>
+        <div class="col-md-4 text-end">
+            <div class="executive-number">
+                <?= $totalJuntas ?>
+            </div>
+            <div>
+                Juntas Registradas
+            </div>
         </div>
-      </div>
+    </div>
+</div>
+<div class="page-title">
+    <div>
+        <h1>Vista Ejecutiva General</h1>
+        <small style="color:var(--muted)">Información consolidada de todas las Juntas de Acción Comunal</small>
+    </div>
+    <div style="display:flex;gap:10px;">
+        <button
+            class="btn btn-outline-secondary"
+            id="refreshBtn">
+            Actualizar
+        </button>
+        <a
+            href="gestionar_jac.php"
+            class="btn btn-success">
+            🏘️ Gestionar JAC
+        </a>
+    </div>
+</div>
+<!-- ACCESOS RÁPIDOS -->
+<div class="grid-3 mb-4">
+    <a href="gestionar_jac.php"
+       class="quick-action action-green">
+        <span class="material-icons">
+            location_city
+        </span>
+        Gestión de JAC
+    </a>
+    <a href="actas.php"
+       class="quick-action action-blue">
+        <span class="material-icons">
+            description
+        </span>
+        Actas
+    </a>
+    <a href="documentos.php"
+       class="quick-action action-yellow">
+        <span class="material-icons">
+            folder
+        </span>
+        Documentos
+    </a>
+</div>
+<div class="grid-3 mb-4">
+    <a href="agenda.php"
+       class="quick-action action-red">
+        <span class="material-icons">
+            event
+        </span>
+        Agenda
+    </a>
+    <a href="../public/listar_usuario.php"
+       class="quick-action action-green">
+        <span class="material-icons">
+            people
+        </span>
+        Usuarios
+    </a>
+    <a href="registrar.php"
+       class="quick-action action-blue">
+        <span class="material-icons">
+            person_add
+        </span>
+        Crear Usuario
+    </a>
+</div>
 
       <!-- KPIs -->
-      <section class="kpis" aria-label="Indicadores">
-        <div class="kpi-card">
-          <div class="kpi-icon" style="background:linear-gradient(135deg,var(--verde),var(--verde-osc));"><span class="material-icons">attach_money</span></div>
-          <div class="kpi-body">
-            <p class="kpi-title">Total Ingresos</p>
-            <p class="kpi-value">$<?= number_format($totalIngresos,0,',','.') ?></p>
-            <small style="color:<?= $varIngresos >= 0 ? 'green' : 'red' ?>">
-            <?= $varIngresos >= 0 ? '▲' : '▼' ?>
-            <?= number_format(abs($varIngresos),1) ?>% vs mes anterior
-</small>
-          </div>
-        </div>
 
-        <div class="kpi-card">
-          <div class="kpi-icon" style="background:linear-gradient(135deg,var(--amarillo),#e6b800); color:#000;"><span class="material-icons">money_off</span></div>
-          <div class="kpi-body">
+      <section class="kpis" aria-label="Indicadores">
+    <!-- INGRESOS -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,var(--verde),var(--verde-osc));">
+            <span class="material-icons">attach_money</span>
+        </div>
+        <div class="kpi-body">
+            <p class="kpi-title">Total Ingresos</p>
+            <p class="kpi-value"> $<?= number_format($totalIngresos,0,',','.') ?></p>
+            <small style="color:<?= $varIngresos >= 0 ? 'green' : 'red' ?>">
+                <?= $varIngresos >= 0 ? '▲' : '▼' ?>
+                <?= number_format(abs($varIngresos),1) ?>%
+                vs mes anterior
+            </small>
+        </div>
+    </div>
+    <!-- EGRESOS -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,var(--amarillo),#e6b800);color:black;">
+            <span class="material-icons">money_off</span>
+        </div>
+        <div class="kpi-body">
             <p class="kpi-title">Total Egresos</p>
             <p class="kpi-value">$<?= number_format($totalEgresos,0,',','.') ?></p>
             <small style="color:<?= $varEgresos >= 0 ? 'green' : 'red' ?>">
-            <?= $varEgresos >= 0 ? '▲' : '▼' ?>
-             <?= number_format(abs($varEgresos),1) ?>% vs mes anterior
-          </small>
-          </div>
+                <?= $varEgresos >= 0 ? '▲' : '▼' ?>
+                <?= number_format(abs($varEgresos),1) ?>%
+                vs mes anterior
+            </small>
         </div>
-
-        <div class="kpi-card">
-          <div class="kpi-icon" style="background:linear-gradient(135deg,#8bc34a,var(--verde));"><span class="material-icons">balance</span></div>
-          <div class="kpi-body">
-            <p class="kpi-title">Balance</p>
-            <p class="kpi-value" style="color:<?= $balance < 0 ? '#c62828' : 'var(--verde-osc)' ?>">$<?= number_format($balance,0,',','.') ?></p>
-          </div>
+    </div>
+    <!-- BALANCE -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#8bc34a,var(--verde));">
+            <span class="material-icons">balance</span>
         </div>
-
-        <div class="kpi-card">
-          <div class="kpi-icon" style="background:linear-gradient(135deg,var(--verde),#4caf50)"><span class="material-icons">event_available</span></div>
-          <div class="kpi-body">
-            <p class="kpi-title">Eventos próximos</p>
-            <p class="kpi-value"><?= $eventosProximos ?></p>
-          </div>
+        <div class="kpi-body">
+            <p class="kpi-title">Balance General</p>
+            <p class="kpi-value"style="color:<?= $balance < 0 ? '#c62828' : 'var(--verde-osc)' ?>">
+                $<?= number_format($balance,0,',','.') ?>
+            </p>
         </div>
-        <div class="kpi-card">
-  <div class="kpi-icon" style="background:linear-gradient(135deg,#1565C0,#42A5F5)">
-    <span class="material-icons">location_city</span>
-  </div>
-  <div class="kpi-body">
-    <p class="kpi-title">JAC Registradas</p>
-    <p class="kpi-value"><?= $totalJuntas ?></p>
-  </div>
+    </div> 
+    <!-- EVENTOS -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,var(--verde),#4caf50)">
+            <span class="material-icons"> event_available</span>
+        </div>
+        <div class="kpi-body">
+            <p class="kpi-title">Eventos Próximos</p>
+            <p class="kpi-value"> <?= $eventosProximos ?> </p>
+        </div>
+    </div>
+    <!-- JAC -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#1565C0,#42A5F5)">
+            <span class="material-icons">location_city</span>
+        </div>
+        <div class="kpi-body">
+            <p class="kpi-title">JAC Registradas</p>
+            <p class="kpi-value"> <?= $totalJuntas ?></p>
+        </div>
+    </div>
+    <!-- USUARIOS -->
+    <div class="kpi-card">
+        <div class="kpi-icon"style="background:linear-gradient(135deg,#6A1B9A,#AB47BC)">
+            <span class="material-icons">people </span>
+        </div>
+        <div class="kpi-body">
+            <p class="kpi-title">Usuarios Totales </p>
+            <p class="kpi-value"><?= $totalUsuarios ?></p>
+        </div>
+    </div>
+    <!-- DOCUMENTOS -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#EF6C00,#FB8C00)">
+            <span class="material-icons">folder</span>
+        </div>
+        <div class="kpi-body">
+            <p class="kpi-title">Documentos</p>
+            <p class="kpi-value"> <?= $totalDocumentos ?></p>
+        </div>
+    </div>
+    <!-- ACTAS -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#00897B,#26A69A)">
+            <span class="material-icons"> description</span>
+        </div>
+        <div class="kpi-body">
+            <p class="kpi-title"> Actas Registradas</p>
+            <p class="kpi-value"> <?= $totalActas ?></p>
+      </div>
+    </div>
+    <!-- DOCUMENTOS PENDIENTES -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#C62828,#EF5350)">
+            <span class="material-icons">pending_actions</span>
+        </div>
+        <div class="kpi-body">
+            <p class="kpi-title">Pendientes Revisión</p>
+            <p class="kpi-value"> <?= $docsData['pendiente'] ?></p>
+        </div>
+    </div>
+</section>
+<?php if ($balance < 0): ?>
+<div class="alert alert-danger">
+    ⚠ Atención: El sistema presenta déficit financiero.
 </div>
-        <?php if ($balance < 0): ?>
-<div class="alert alert-danger mt-3">
-  ⚠ Atención: El sistema presenta déficit financiero.
-</div>
-<?php endif; ?>   
-      </section>
-      
-
+<?php endif; ?>
+  
       <!-- Charts + Calendar -->
       <section class="grid-2">
-            <div class="card">
-             <h3>📈 Tendencia Financiera</h3>
-                <div class="chart-wrap">
+    <!-- TENDENCIA FINANCIERA -->
+    <div class="card">
+        <h3>📈 Tendencia Financiera Global</h3>
+        <div class="chart-wrap">
             <canvas id="finanzasChart"></canvas>
-              </div>
-             </div>
-              <div class="card">
-                <h3>Documentos por estado</h3>
-               <div class="chart-wrap">
-                  <canvas id="docsChart" aria-label="Documentos por estado" role="img"></canvas>
-               </div>
-              </div>
-
-        <div class="card">
-          <h3>Calendario</h3>
-          <div id="calendar"></div>
         </div>
-          <div class="card mt-3">
-          <h3>📊 Reportes Ejecutivos</h3>
-         <p style="color:#555;">Descarga los reportes más recientes del sistema.</p>
-        <div class="report-grid">
-                  <a href="../controllers/reporte_financieroExcel.php" class="btn btn-success btn-sm">💰 Financiero (Excel)</a>
-                <a href="../controllers/reporte_financieroPDF.php" class="btn btn-danger btn-sm">💰 Financiero (PDF)</a>
-              <a href="../controllers/reportes_actasPdf.php" class="btn btn-primary btn-sm">📝 Actas (PDF)</a>
-             <a href="../controllers/reporte_agendaPdf.php" class="btn btn-warning btn-sm">📅 Agenda (PDF)</a>
-            </div>
-          </div>
+    </div>
+    <!-- DOCUMENTOS -->
+    <div class="card">
+        <h3>📄 Estado de Documentación</h3>
+        <div class="chart-wrap">
+            <canvas id="docsChart"></canvas>
+        </div>
+    </div>
+    <!-- USUARIOS POR JAC -->
+    <div class="card">
+        <h3>👥 Usuarios por Junta</h3>
+        <div class="chart-wrap">
+            <canvas id="usuariosJacChart"></canvas>
+        </div>
+    </div>
+    <!-- CALENDARIO -->
+    <div class="card">
+        <h3>📅 Agenda General</h3>
+        <div id="calendar"></div>
+    </div>
+</section>
+<!-- RESUMEN DE JUNTAS -->
+<div class="card mb-4">
+    <h3 class="mb-3">
+        🏘️ Estado General de las Juntas
+    </h3>
+    <div class="table-responsive">
+        <table class="table table-modern align-middle">
+            <thead>
+                <tr>
+                    <th>Junta</th>
+                    <th>Usuarios</th>
+                    <th>Actas</th>
+                    <th>Documentos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($juntasResumen as $jac): ?>
+                <tr>
+                    <td>
+                        <strong>
+                            <?= htmlspecialchars($jac['nombre']) ?>
+                        </strong>
+                    </td>
+                    <td>
+                        <?= $jac['usuarios'] ?>
+                    </td>
+                    <td>
+                        <?= $jac['actas'] ?>
+                    </td>
+                    <td>
+                        <?= $jac['documentos'] ?>
+                    </td>
+                    <td>
+                        <a
+                            href="ver_jac.php?id=<?= $jac['id'] ?>"
+                            class="btn btn-success btn-sm">Ver
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-      </section>
+<!-- REPORTES -->
+<div class="card mb-4">
+    <h3>📊 Reportes Ejecutivos</h3>
+    <p class="text-muted">Descarga información consolidada de la Asociaciónn</p>
+    <div class="report-grid">
+        <a href="../controllers/reporte_financieroExcel.php"
+           class="btn btn-success">💰 Financiero Excel
+        </a>
+        <a href="../controllers/reporte_financieroPDF.php"
+           class="btn btn-danger">💰 Financiero PDF
+        </a>
+        <a href="../controllers/reportes_actasPdf.php"
+           class="btn btn-primary">📝 Actas PDF
+        </a>
+        <a href="../controllers/reporte_agendaPdf.php"
+           class="btn btn-warning">📅 Agenda PDF
+        </a>
+    </div>
+</div>
+
 <!-- 🔹 Mini resumen de eventos -->
 <section class="card mt-3">
   <h3>🗓️ Próximos Eventos</h3>
@@ -502,32 +791,100 @@ font-size: 1rem;
   </div>
 </section>
 
-      <!-- Actas y actividad -->
-      <section style="display:grid; grid-template-columns:1fr 360px; gap:16px;">
-        <div class="card">
-          <h3>Total de actas registradas</h3>
-          <div style="font-size:2.6rem; color:var(--verde-osc); font-weight:700; margin-top:8px;"><?= $totalActas ?></div>
-        </div>
+      <!-- ==========================
+     PANEL GENERAL DE JAC
+========================== -->
 
-        <aside class="card">
-          <h3>Actividad reciente</h3>
-          <div class="notif-list" aria-live="polite">
-            <?php if (count($notifs) === 0): ?>
-              <p class="small text-muted">No hay actividad reciente.</p>
-            <?php else: ?>
-              <?php foreach ($notifs as $n): ?>
-                <div class="notif-item">
-                  <div>
-                    <strong><?= htmlspecialchars($n['tipo']) ?></strong>
-                    <div class="small" style="color:var(--muted)"><?= htmlspecialchars(substr($n['item'],0,80)) ?><?= (strlen($n['item'])>80)?'...':'' ?></div>
-                  </div>
-                  <small><?= htmlspecialchars(substr($n['fecha'],0,16)) ?></small>
+<div class="row mt-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <h3>🏘️ Juntas Registradas</h3>
+            <div class="row">
+                <?php foreach($juntasResumen as $jac): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card jac-card">
+                        <div class="jac-header">
+                            <h5 class="mb-0">
+                                <?= htmlspecialchars($jac['nombre']) ?>
+                            </h5>
+                        </div>
+                        <div class="jac-body">
+                            <p>
+                                👥 Usuarios:
+                                <strong><?= $jac['usuarios'] ?></strong>
+                            </p>
+                            <p>
+                                📝 Actas:
+                                <strong><?= $jac['actas'] ?></strong>
+                            </p>
+                            <p>
+                                📂 Documentos:
+                                <strong><?= $jac['documentos'] ?></strong>
+                            </p>
+                            <div class="d-grid">
+                                <a href="ver_jac.php?id=<?= $jac['id'] ?>"
+                                   class="btn btn-success">
+                                    Ver Junta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              <?php endforeach; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <h3>📂 Últimos Documentos</h3>
+            <?php if(empty($ultimosDocumentos)): ?>
+                <p class="text-muted">
+                    No hay documentos registrados.
+                </p>
+            <?php else: ?>
+                <?php foreach($ultimosDocumentos as $doc): ?>
+                    <div class="border-bottom mb-2 pb-2">
+                        <strong>
+                            <?= htmlspecialchars($doc['titulo']) ?>
+                        </strong>
+                        <br>
+                        <small class="text-muted">
+                            <?= htmlspecialchars($doc['junta']) ?>
+                        </small>
+                        <br>
+                        <span class="badge bg-warning text-dark">
+                            <?= htmlspecialchars($doc['estado']) ?>
+                        </span>
+                    </div>
+                <?php endforeach; ?>
             <?php endif; ?>
-          </div>
-        </aside>
-      </section>
+        </div>
+        <div class="card">
+            <h3>📝 Últimas Actas</h3>
+            <?php if(empty($ultimasActas)): ?>
+                <p class="text-muted">
+                    No hay actas registradas.
+                </p>
+            <?php else: ?>
+                <?php foreach($ultimasActas as $acta): ?>
+                    <div class="border-bottom mb-2 pb-2">
+                        <strong>
+                            <?= htmlspecialchars($acta['titulo']) ?>
+                        </strong>
+                        <br>
+                        <small class="text-muted">
+                            <?= htmlspecialchars($acta['junta']) ?>
+                        </small>
+                        <br>
+                        <small>
+                            <?= date('d/m/Y', strtotime($acta['fecha_reunion'])) ?>
+                        </small>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
     </main>
   </div>
 
