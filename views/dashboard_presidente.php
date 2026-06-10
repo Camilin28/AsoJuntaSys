@@ -9,6 +9,26 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Presidente 
 }
 
 $nombre = $_SESSION['usuario_nombre'] ?? 'Presidente';
+echo "<pre>";
+
+echo "Juntas: ";
+$stmt = $pdo->query("SELECT COUNT(*) FROM juntas");
+echo $stmt->fetchColumn() . "<br>";
+
+echo "Usuarios: ";
+$stmt = $pdo->query("SELECT COUNT(*) FROM usuarios");
+echo $stmt->fetchColumn() . "<br>";
+
+echo "Actas: ";
+$stmt = $pdo->query("SELECT COUNT(*) FROM actas");
+echo $stmt->fetchColumn() . "<br>";
+
+echo "Documentos: ";
+$stmt = $pdo->query("SELECT COUNT(*) FROM documentos");
+echo $stmt->fetchColumn() . "<br>";
+
+echo "</pre>";
+exit;
 
 try {
 
