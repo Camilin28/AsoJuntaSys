@@ -429,7 +429,7 @@ font-size: 1rem;
         <span class="material-icons">folder_open</span>
       </a>
 
-      <a href="actas.php" class="side-btn" title="Actas">
+      <a href="actas_general.php" class="side-btn" title="Actas Generales">
         <span class="material-icons">description</span>
       </a>
 
