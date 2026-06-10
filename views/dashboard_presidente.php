@@ -9,26 +9,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Presidente 
 }
 
 $nombre = $_SESSION['usuario_nombre'] ?? 'Presidente';
-echo "<pre>";
 
-echo "Juntas: ";
-$stmt = $pdo->query("SELECT COUNT(*) FROM juntas");
-echo $stmt->fetchColumn() . "<br>";
-
-echo "Usuarios: ";
-$stmt = $pdo->query("SELECT COUNT(*) FROM usuarios");
-echo $stmt->fetchColumn() . "<br>";
-
-echo "Actas: ";
-$stmt = $pdo->query("SELECT COUNT(*) FROM actas");
-echo $stmt->fetchColumn() . "<br>";
-
-echo "Documentos: ";
-$stmt = $pdo->query("SELECT COUNT(*) FROM documentos");
-echo $stmt->fetchColumn() . "<br>";
-
-echo "</pre>";
-exit;
 
 try {
 
@@ -106,17 +87,17 @@ try {
 
 
 
-$stmt = $pdo->query(" SELECT COUNT(*) FROM usuarios WHERE cargo='Secretario'");
+    $stmt = $pdo->query(" SELECT COUNT(*) FROM usuarios WHERE cargo='Secretario'");
 
-$totalSecretarios = (int)$stmt->fetchColumn();
+    $totalSecretarios = (int)$stmt->fetchColumn();
 
 
-/******************************
- TOTAL TESOREROS
-******************************/
-$stmt = $pdo->query(" SELECT COUNT(*) FROM usuarios WHERE cargo='Tesorero' ");
+    /******************************
+     TOTAL TESOREROS
+    ******************************/
+    $stmt = $pdo->query(" SELECT COUNT(*) FROM usuarios WHERE cargo='Tesorero' ");
 
-$totalTesoreros = (int)$stmt->fetchColumn();
+    $totalTesoreros = (int)$stmt->fetchColumn();
 
     $stmt = $pdo->query("SELECT COUNT(*) FROM usuarios");
     $totalUsuarios = (int)$stmt->fetchColumn();
@@ -147,9 +128,9 @@ $totalTesoreros = (int)$stmt->fetchColumn();
    PRESIDENTES DE JAC
    ========================== */
 
-$stmt = $pdo->query(" SELECT j.id, j.nombre AS jac, u.nombre AS presidente FROM juntas j LEFT JOIN usuarios u  ON u.jac_id = j.id  AND u.cargo = 'Presidente' ORDER BY j.nombre ");
+    $stmt = $pdo->query(" SELECT j.id, j.nombre AS jac, u.nombre AS presidente FROM juntas j LEFT JOIN usuarios u  ON u.jac_id = j.id  AND u.cargo = 'Presidente' ORDER BY j.nombre ");
 
-$presidentesJAC = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $presidentesJAC = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     /* ==========================
        ULTIMAS ACTAS
@@ -226,33 +207,13 @@ $presidentesJAC = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch(PDOException $e) {
 
-    $totalIngresos = 0;
-    $totalEgresos = 0;
-    $balance = 0;
+      die(
+        "<h2>Error SQL:</h2><pre>" .
+        $e->getMessage() .
+        "</pre>"
+    );
 
-    $totalActas = 0;
-    $totalJuntas = 0;
-    $totalUsuarios = 0;
-    $totalDocumentos = 0;
 
-    $eventosProximos = 0;
-
-    $ultimasActas = [];
-    $ultimosDocumentos = [];
-    $juntasResumen = [];
-
-    $labelsJAC = [];
-    $dataJAC = [];
-
-    $meses = [];
-    $ingresosData = [];
-    $egresosData = [];
-
-    $docsData = [
-        'pendiente' => 0,
-        'revisado' => 0,
-        'aprobado' => 0
-    ];
 }
 
 
