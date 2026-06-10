@@ -234,6 +234,11 @@ $presidentesJAC = $stmt->fetchAll(PDO::FETCH_ASSOC);
         'aprobado' => 0
     ];
 }
+echo $totalJuntas;
+echo $totalUsuarios;
+echo $totalDocumentos;
+echo $totalActas;
+exit;
 
 /* ==========================
    VARIABLES JS
