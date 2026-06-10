@@ -120,7 +120,7 @@ try {
        JUNTAS REGISTRADAS
        ========================== */
 
-    $stmt = $pdo->query(" SELECT j.id,  j.nombre,  COUNT(DISTINCT u.id) AS usuarios,  COUNT(DISTINCT a.id) AS actas,  COUNT(DISTINCT d.id) AS documentosFROM juntas jLEFT JOIN usuarios u ON u.jac_id = j.id LEFT JOIN actas a ON a.jac_id = j.id LEFT JOIN documentos d ON d.jac_id = j.id GROUP BY j.id ORDER BY j.nombre ASC");
+    $stmt = $pdo->query(" SELECT j.id,  j.nombre,  COUNT(DISTINCT u.id) AS usuarios,  COUNT(DISTINCT a.id) AS actas,  COUNT(DISTINCT d.id) AS documentosFROM juntas j LEFT JOIN usuarios u ON u.jac_id = j.id LEFT JOIN actas a ON a.jac_id = j.id LEFT JOIN documentos d ON d.jac_id = j.id GROUP BY j.id ORDER BY j.nombre ASC");
 
     $juntasResumen = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -206,16 +206,8 @@ try {
     }
 
 } catch(PDOException $e) {
-
-      die(
-        "<h2>Error SQL:</h2><pre>" .
-        $e->getMessage() .
-        "</pre>"
-    );
-
-
+    die($e->getMessage());
 }
-
 
 /* ==========================
    VARIABLES JS
