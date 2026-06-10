@@ -23,8 +23,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
 try {
 
     // ================= FINANZAS DE SU JAC =================
-    $stmt = $pdo->prepare("
-        SELECT 
+    $stmt = $pdo->prepare(" SELECT 
             SUM(CASE WHEN tipo_movimiento IN ('Ingreso','Donacion','Subsidio') THEN monto ELSE 0 END) as ingresos,
             SUM(CASE WHEN tipo_movimiento = 'Gasto' THEN monto ELSE 0 END) as egresos
         FROM recursos_financieros
@@ -38,28 +37,18 @@ try {
     $balance = $totalIngresos - $totalEgresos;
 
     // ================= DOCUMENTOS =================
-    $stmt = $pdo->prepare("
-        SELECT COUNT(*) 
-        FROM documentos 
-        WHERE jac_id = ? AND estado = 'Pendiente'
+    $stmt = $pdo->prepare(" SELECT COUNT(*) FROM documentos WHERE jac_id = ? AND estado = 'Pendiente'
     ");
     $stmt->execute([$jac_id]);
     $docsPendientes = (int)$stmt->fetchColumn();
 
     // ================= ACTAS =================
-    $stmt = $pdo->prepare("
-        SELECT COUNT(*) 
-        FROM actas 
-        WHERE jac_id = ?
+    $stmt = $pdo->prepare(" SELECT COUNT(*)  FROM actas  WHERE jac_id = ?
     ");
     $stmt->execute([$jac_id]);
     $totalActas = (int)$stmt->fetchColumn();
-
     // ================= EVENTOS =================
-    $stmt = $pdo->prepare("
-        SELECT COUNT(*) 
-        FROM agenda 
-        WHERE jac_id = ? AND fecha >= CURDATE()
+    $stmt = $pdo->prepare(" SELECT COUNT(*)  FROM agenda  WHERE jac_id = ? AND fecha >= CURDATE()
     ");
     $stmt->execute([$jac_id]);
     $eventosProximos = (int)$stmt->fetchColumn();
@@ -69,8 +58,7 @@ try {
     $docsPendientes = $totalActas = $eventosProximos = 0;
 }
 // ================= TENDENCIA FINANCIERA (6 meses) =================
-$stmt = $pdo->prepare("
-    SELECT 
+$stmt = $pdo->prepare(" SELECT 
         DATE_FORMAT(fecha, '%Y-%m') as mes,
         SUM(CASE 
             WHEN tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
