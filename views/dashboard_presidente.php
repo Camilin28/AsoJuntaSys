@@ -494,7 +494,7 @@ font-size: 1rem;
         </span>
         Actas
     </a>
-    <a href="documentos.php"
+    <a href="documentos_general.php"
        class="quick-action action-yellow">
         <span class="material-icons">
             folder

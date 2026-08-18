@@ -89,8 +89,7 @@ body { background-color: #fff9c4; }
             </select>
         </div>
     </div>
-
-    <a href="registrar_acta.php" class="btn btn-custom mb-3">Registrar Nueva Acta</a>
+    
     <a href="dashboard_presidente.php" class="btn btn-custom mb-3">Volver al Dashboard</a>
 
     <!-- 🔹 Tabla de Actas -->
