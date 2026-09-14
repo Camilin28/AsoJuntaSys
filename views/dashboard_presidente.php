@@ -425,7 +425,7 @@ font-size: 1rem;
         <span class="material-icons">people</span>
       </a>
 
-      <a href="documentos.php" class="side-btn" title="Documentos">
+      <a href="documentos_general.php" class="side-btn" title="Documentos">
         <span class="material-icons">folder_open</span>
       </a>
 
