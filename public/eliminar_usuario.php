@@ -1,5 +1,8 @@
 <?php
+require_once '../includes/auth.php';
 require '../config/db.php';
+
+requireRole(['Presidente General']);
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -12,4 +15,3 @@ if (isset($_GET['id'])) {
     header("Location: listar_usuario.php");
 }
 ?>
-

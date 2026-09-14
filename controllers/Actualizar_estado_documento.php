@@ -1,9 +1,10 @@
 <?php
+require_once('../includes/auth.php');
 require('../config/db.php');
-session_start();
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría') {
+    http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'No autorizado']);
     exit();
 }

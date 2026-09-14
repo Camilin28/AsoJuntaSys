@@ -1,5 +1,8 @@
 <?php
+require_once('../includes/auth.php');
 require('../config/db.php');
+
+requireRole(['Presidente General', 'Presidentes de JAC']);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $accion = $_POST['accion'] ?? "guardar";

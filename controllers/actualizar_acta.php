@@ -1,11 +1,8 @@
 <?php
-session_start();
+require_once('../includes/auth.php');
 require('../config/db.php');
 
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría') {
-    header("Location: ../views/login.php");
-    exit();
-}
+requireRole(['Secretaría']);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];

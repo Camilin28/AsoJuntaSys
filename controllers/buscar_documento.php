@@ -1,5 +1,8 @@
 <?php
+require_once('../includes/auth.php');
 require('../config/db.php');
+
+requireLogin();
 
 $q = trim($_GET['q'] ?? '');
 

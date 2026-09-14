@@ -1,6 +1,9 @@
 <?php
+require_once('../includes/auth.php');
 require('../config/db.php');
 header('Content-Type: application/json; charset=utf-8');
+
+requireLogin();
 
 try {
     $stmt = $pdo->query("

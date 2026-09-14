@@ -1,6 +1,9 @@
 <?php
+require_once '../includes/auth.php';
 require '../config/db.php';
 require '../vendor/autoload.php';
+
+requireLogin();
 
 use Dompdf\Dompdf;
 
@@ -33,4 +36,3 @@ $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 $dompdf->stream("reporte_financiero.pdf", ["Attachment" => false]);
-

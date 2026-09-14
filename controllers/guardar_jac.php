@@ -1,16 +1,8 @@
 <?php
-session_start();
+require_once('../includes/auth.php');
 require('../config/db.php');
 
-// Seguridad
-if (
-    !isset($_SESSION['usuario_id']) ||
-    !isset($_SESSION['usuario_rol']) ||
-    $_SESSION['usuario_rol'] !== 'Presidente General'
-) {
-    header("Location: ../views/login.php");
-    exit();
-}
+requireRole(['Presidente General']);
 
 // Solo POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

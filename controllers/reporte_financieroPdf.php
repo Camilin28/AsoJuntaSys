@@ -1,7 +1,9 @@
 <?php
+require_once '../includes/auth.php';
 require '../config/db.php';
 require '../vendor/autoload.php'; // Debes tener Dompdf instalado
-echo "autoload OK";
+
+requireRole(['Tesorería', 'Presidente General']);
 
 use Dompdf\Dompdf;
 
@@ -36,4 +38,3 @@ $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'landscape');
 $dompdf->render();
 $dompdf->stream("reporte_financiero.pdf", ["Attachment" => false]);
-

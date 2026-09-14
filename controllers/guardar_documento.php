@@ -1,11 +1,8 @@
 <?php
-session_start();
+require_once('../includes/auth.php');
 require('../config/db.php');
 
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../views/login.php");
-    exit();
-}
+requireLogin();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $titulo = $_POST['titulo'];

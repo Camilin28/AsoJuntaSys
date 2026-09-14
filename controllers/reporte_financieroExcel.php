@@ -1,6 +1,9 @@
 <?php
+require_once '../includes/auth.php';
 require '../config/db.php';
 require '../vendor/autoload.php'; // Asegúrate de tener PhpSpreadsheet instalado
+
+requireRole(['Tesorería', 'Presidente General']);
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;

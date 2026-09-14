@@ -1,18 +1,26 @@
 <?php
-require '../config/conexion.php';
+require_once '../includes/auth.php';
 
-if (!isset($_GET['id'])) {
-    echo "ID no proporcionado";
-    exit();
+requireRole([
+    'Tesorería',
+    'Presidente General'
+]);
+
+require_once '../config/db.php';
+
+$id = $_GET['id'] ?? null;
+
+if (!$id) {
+    die("❌ ID no proporcionado.");
 }
 
-$id = $_GET['id'];
-$sql = "DELETE FROM movimientos_financieros WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
+try {
+    $stmt = $pdo->prepare("DELETE FROM recursos_financieros WHERE id = :id");
+    $stmt->execute([':id' => $id]);
 
-if ($stmt->execute()) {
-    header("Location: ../views/dashboard_tesorero.php");
-} else {
-    echo "Error al eliminar: " . $conn->error;
+    header("Location: ../views/dashboard_tesoreria.php?success=delete");
+    exit();
+} catch (PDOException $e) {
+    error_log('eliminar_movimiento.php: ' . $e->getMessage());
+    die("❌ Error al eliminar el movimiento.");
 }

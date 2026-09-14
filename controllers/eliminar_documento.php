@@ -1,5 +1,8 @@
 <?php
+require_once('../includes/auth.php');
 require('../config/db.php');
+
+requireRole(['Secretaría', 'Presidente General']);
 
 if (!isset($_GET['id'])) {
     header("Location: ../views/documentos.php");

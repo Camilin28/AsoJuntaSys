@@ -1,7 +1,10 @@
 <?php
 ob_start(); // 🔹 Evita espacios antes del PDF
+require_once '../includes/auth.php';
 require '../config/db.php';
 require '../vendor/autoload.php';
+
+requireLogin();
 
 use Dompdf\Dompdf;
 use Dompdf\Options;

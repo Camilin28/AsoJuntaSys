@@ -1,20 +1,53 @@
 <?php
-require '../config/conexion.php';
+require_once '../includes/auth.php';
 
-$id = $_POST['id'];
-$descripcion = $_POST['descripcion'];
-$tipo = $_POST['tipo_movimiento'];
-$monto = $_POST['monto'];
-$fecha = $_POST['fecha'];
-$responsable = $_POST['responsable'] ?? null;
+requireRole([
+    'Tesorería',
+    'Presidente General'
+]);
+
+require_once '../config/db.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: ../views/dashboard_tesoreria.php");
+    exit();
+}
+
+$id            = $_POST['id'] ?? null;
+$descripcion   = $_POST['descripcion'] ?? '';
+$tipo          = $_POST['tipo_movimiento'] ?? '';
+$monto         = $_POST['monto'] ?? 0;
+$fecha         = $_POST['fecha'] ?? null;
+$responsable   = $_POST['responsable'] ?? null;
 $observaciones = $_POST['observaciones'] ?? null;
 
-$sql = "UPDATE movimientos_financieros SET descripcion = ?, tipo_movimiento = ?, monto = ?, fecha = ?, responsable = ?, observaciones = ? WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ssisssi", $descripcion, $tipo, $monto, $fecha, $responsable, $observaciones, $id);
+if (!$id) {
+    die("❌ Error: falta el ID del movimiento.");
+}
 
-if ($stmt->execute()) {
-    header("Location: ../views/dashboard_tesorero.php");
-} else {
-    echo "Error al actualizar: " . $conn->error;
+try {
+    $sql = "UPDATE recursos_financieros
+            SET descripcion = :descripcion,
+                tipo_movimiento = :tipo_movimiento,
+                monto = :monto,
+                fecha = :fecha,
+                responsable = :responsable,
+                observaciones = :observaciones
+            WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':descripcion'     => $descripcion,
+        ':tipo_movimiento' => $tipo,
+        ':monto'           => $monto,
+        ':fecha'           => $fecha,
+        ':responsable'     => $responsable,
+        ':observaciones'   => $observaciones,
+        ':id'              => $id,
+    ]);
+
+    header("Location: ../views/dashboard_tesoreria.php?success=edit");
+    exit();
+} catch (PDOException $e) {
+    error_log('actualizar_movimiento.php: ' . $e->getMessage());
+    die("❌ Error al actualizar el movimiento.");
 }

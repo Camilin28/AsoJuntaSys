@@ -1,5 +1,8 @@
 <?php
+require_once '../includes/auth.php';
 require '../config/db.php';
+
+requireRole(['Presidente General']);
 
 $sql = "SELECT * FROM usuarios";
 $stmt = $pdo->prepare($sql);
