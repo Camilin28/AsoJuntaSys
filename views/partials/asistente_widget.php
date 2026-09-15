@@ -19,8 +19,12 @@ $mostrarFinanciero = in_array($_SESSION['usuario_rol'] ?? '', ['Tesorería', 'Pr
     <span id="asistenteCerrar" style="cursor:pointer; font-size:22px; line-height:1;">&times;</span>
   </div>
 
+  <div style="padding:6px 10px; border-bottom:1px solid #eee; text-align:right; flex-shrink:0;">
+    <span id="asistenteReiniciar" style="cursor:pointer; font-size:11px; color:#2E7D32; text-decoration:underline;">Nueva conversación</span>
+  </div>
+
   <div id="chatBoxFlot" style="flex:1; overflow-y:auto; padding:14px; background:#f7f9f7;">
-    <div class="msg-flot asistente">Hola, soy el asistente virtual de AsoJuntaSys. Puedo ayudarte a consultar actas, documentos, agenda<?= $mostrarFinanciero ? ' y finanzas' : '' ?>. ¿En qué te ayudo?</div>
+    <div class="msg-flot asistente" id="mensajeBienvenidaFlot">Hola, soy el asistente virtual de AsoJuntaSys. Puedo ayudarte a consultar actas, documentos, agenda<?= $mostrarFinanciero ? ' y finanzas' : '' ?>. ¿En qué te ayudo?</div>
   </div>
 
   <form id="formChatFlot" style="display:flex; gap:6px; padding:10px; border-top:1px solid #eee; flex-shrink:0;">
@@ -44,6 +48,7 @@ $mostrarFinanciero = in_array($_SESSION['usuario_rol'] ?? '', ['Tesorería', 'Pr
   const panel = document.getElementById('asistentePanel');
   const toggle = document.getElementById('asistenteToggle');
   const cerrar = document.getElementById('asistenteCerrar');
+  const reiniciar = document.getElementById('asistenteReiniciar');
   const chatBox = document.getElementById('chatBoxFlot');
   const form = document.getElementById('formChatFlot');
   const input = document.getElementById('preguntaFlot');
@@ -56,6 +61,19 @@ $mostrarFinanciero = in_array($_SESSION['usuario_rol'] ?? '', ['Tesorería', 'Pr
   });
   cerrar.addEventListener('click', function () {
     panel.style.display = 'none';
+  });
+
+  reiniciar.addEventListener('click', async function () {
+    try {
+      await fetch('../controllers/reiniciar_chat.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'csrf_token=' + encodeURIComponent(csrfTokenFlot)
+      });
+    } catch (err) {}
+    const bienvenida = document.getElementById('mensajeBienvenidaFlot');
+    chatBox.innerHTML = '';
+    chatBox.appendChild(bienvenida);
   });
 
   function agregarMensaje(texto, clase) {

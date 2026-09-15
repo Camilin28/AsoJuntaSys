@@ -9,15 +9,17 @@
  */
 
 define('GEMINI_MODELO', 'gemini-3.6-flash');
-define('GEMINI_TIMEOUT_SEGUNDOS', 15);
+define('GEMINI_TIMEOUT_SEGUNDOS', 20);
 
 /**
- * Envía la pregunta del usuario + el contexto institucional a Gemini
- * y devuelve la respuesta en texto plano.
+ * Envía una conversación completa (instrucción de sistema + turnos previos +
+ * pregunta nueva) a Gemini y devuelve la respuesta en texto plano.
  *
+ * @param string $instruccionSistema Reglas de comportamiento + contexto institucional (se reconstruye en cada llamada).
+ * @param array  $contents Lista de turnos [{role: 'user'|'model', parts: [{text: string}]}], terminando en el turno del usuario actual.
  * @return array{ok: bool, respuesta: string}
  */
-function consultarGemini(string $instruccionSistema, string $pregunta): array {
+function consultarGemini(string $instruccionSistema, array $contents): array {
 
     $apiKey = getenv('GEMINI_API_KEY');
 
@@ -32,12 +34,13 @@ function consultarGemini(string $instruccionSistema, string $pregunta): array {
         'system_instruction' => [
             'parts' => [['text' => $instruccionSistema]],
         ],
-        'contents' => [
-            ['role' => 'user', 'parts' => [['text' => $pregunta]]],
-        ],
+        'contents' => $contents,
         'generationConfig' => [
-            'temperature' => 0.3,
-            'maxOutputTokens' => 400,
+            'temperature' => 0.4,
+            'maxOutputTokens' => 1024,
+            'thinkingConfig' => [
+                'thinkingLevel' => 'low',
+            ],
         ],
     ];
 

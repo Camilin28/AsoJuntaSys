@@ -49,10 +49,10 @@ $urlDashboard = $dashboardsPorRol[$_SESSION['usuario_rol']] ?? 'dashboard.php';
 <div class="contenedor">
   <a class="volver" href="<?= htmlspecialchars($urlDashboard) ?>">← Volver</a>
   <h2>Asistente Virtual</h2>
-  <div class="subtitulo">Pregunta en lenguaje natural sobre actas, documentos, agenda<?= in_array($_SESSION['usuario_rol'], ['Tesorería','Presidente General']) ? ' y finanzas' : '' ?> de tu JAC.</div>
+  <div class="subtitulo">Pregunta en lenguaje natural sobre actas, documentos, agenda<?= in_array($_SESSION['usuario_rol'], ['Tesorería','Presidente General']) ? ' y finanzas' : '' ?> de tu JAC. <span id="btnReiniciar" style="cursor:pointer; color:#2E7D32; text-decoration:underline;">Nueva conversación</span></div>
 
   <div class="chat-box" id="chatBox">
-    <div class="msg asistente">Hola, soy el asistente virtual de AsoJuntaSys. Puedo ayudarte a consultar información de actas, documentos, agenda<?= in_array($_SESSION['usuario_rol'], ['Tesorería','Presidente General']) ? ' y el resumen financiero' : '' ?>. ¿En qué te ayudo?</div>
+    <div class="msg asistente" id="mensajeBienvenida">Hola, soy el asistente virtual de AsoJuntaSys. Puedo ayudarte a consultar información de actas, documentos, agenda<?= in_array($_SESSION['usuario_rol'], ['Tesorería','Presidente General']) ? ' y el resumen financiero' : '' ?>. ¿En qué te ayudo?</div>
   </div>
 
   <div class="sugerencias">
@@ -74,6 +74,20 @@ const chatBox = document.getElementById('chatBox');
 const form = document.getElementById('formChat');
 const input = document.getElementById('pregunta');
 const btn = document.getElementById('btnEnviar');
+const btnReiniciar = document.getElementById('btnReiniciar');
+
+btnReiniciar.addEventListener('click', async function () {
+  try {
+    await fetch('../controllers/reiniciar_chat.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'csrf_token=' + encodeURIComponent(csrfToken)
+    });
+  } catch (err) {}
+  const bienvenida = document.getElementById('mensajeBienvenida');
+  chatBox.innerHTML = '';
+  chatBox.appendChild(bienvenida);
+});
 
 function agregarMensaje(texto, clase) {
   const div = document.createElement('div');
