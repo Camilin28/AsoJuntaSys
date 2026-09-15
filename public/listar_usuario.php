@@ -8,6 +8,7 @@ $sql = "SELECT * FROM usuarios";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$csrfToken = generarTokenCSRF();
 ?>
 
 <!DOCTYPE html>
@@ -109,7 +110,12 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?= $usuario['fecha_registro'] ?></td>
                 <td>
                     <a href="../public/actualizar_usuario.php?id=<?= $usuario['id'] ?>">✏️ Editar</a> |
-                    <a href="../public/eliminar_usuario.php?id=<?= $usuario['id'] ?>" onclick="return confirm('¿Seguro que deseas eliminar este usuario?')">🗑️ Eliminar</a>
+                    <form action="../public/eliminar_usuario.php" method="POST" style="display:inline;"
+                          onsubmit="return confirm('¿Seguro que deseas eliminar este usuario?')">
+                        <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                        <button type="submit" style="background:none; border:none; color:#0d6efd; text-decoration:underline; cursor:pointer; padding:0; font:inherit;">🗑️ Eliminar</button>
+                    </form>
                 </td>
             </tr>
         <?php endforeach; ?>

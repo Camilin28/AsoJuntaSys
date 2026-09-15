@@ -47,3 +47,29 @@ function requireRole($rolesPermitidos) {
         exit();
     }
 }
+
+/**
+ * Genera (o reutiliza) un token CSRF para la sesión actual.
+ * Se usa en formularios que ejecutan acciones destructivas (eliminar).
+ */
+function generarTokenCSRF() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Valida que el token CSRF recibido en el formulario coincida con el
+ * de la sesión. Si no coincide (o falta), corta la ejecución con 403.
+ */
+function validarTokenCSRF($tokenRecibido) {
+    if (
+        empty($_SESSION['csrf_token']) ||
+        empty($tokenRecibido) ||
+        !hash_equals($_SESSION['csrf_token'], $tokenRecibido)
+    ) {
+        http_response_code(403);
+        die("❌ Solicitud inválida o expirada. Vuelve a intentarlo desde la página original.");
+    }
+}

@@ -5,7 +5,14 @@ require('../config/db.php');
 
 requireRole(['Secretaría']);
 
-$id = $_GET['id'] ?? null;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: ../views/actas.php");
+    exit();
+}
+
+validarTokenCSRF($_POST['csrf_token'] ?? '');
+
+$id = $_POST['id'] ?? null;
 if ($id) {
     $stmt = $pdo->prepare("DELETE FROM actas WHERE id = :id");
     $stmt->execute([':id' => $id]);

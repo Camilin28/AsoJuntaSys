@@ -5,9 +5,16 @@ require '../config/db.php';
 
 requireRole(['Presidente General']);
 
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: listar_usuario.php");
+    exit();
+}
 
+validarTokenCSRF($_POST['csrf_token'] ?? '');
+
+$id = $_POST['id'] ?? null;
+
+if ($id) {
     $stmtNombre = $pdo->prepare("SELECT nombre FROM usuarios WHERE id = :id");
     $stmtNombre->execute(['id' => $id]);
     $usuarioEliminado = $stmtNombre->fetch(PDO::FETCH_ASSOC);
@@ -21,3 +28,6 @@ if (isset($_GET['id'])) {
     header("Location: listar_usuario.php");
     exit();
 }
+
+header("Location: listar_usuario.php");
+exit();
