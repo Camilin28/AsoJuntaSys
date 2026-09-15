@@ -3,10 +3,11 @@ session_start();
 require_once '../config/db.php';
 require_once '../includes/auth.php';
 requireRole(['Presidente General']);
-// Cargar JAC disponibles
+// Cargar JAC disponibles (solo activas, para no asignar usuarios a una JAC desactivada)
 $jacs = $pdo->query("
     SELECT id, nombre 
     FROM juntas 
+    WHERE estado = 'Activa'
     ORDER BY nombre ASC
 ")->fetchAll();
 $error   = $_SESSION['error']   ?? null;

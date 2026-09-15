@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 // 🔐 Solo Presidente General
 if (
@@ -10,6 +11,8 @@ if (
     header("Location: ../views/login.php");
     exit();
 }
+
+$csrfToken = generarTokenCSRF();
 
 try {
 
@@ -175,6 +178,18 @@ foreach ($juntas as $jac) {
 <?php if(isset($_GET['updated'])): ?>
 <div class="alert alert-success">
     ✅ La JAC fue actualizada correctamente.
+</div>
+<?php endif; ?>
+
+<?php if(isset($_GET['success'])): ?>
+<div class="alert alert-success">
+    ✅ El estado de la JAC fue actualizado correctamente.
+</div>
+<?php endif; ?>
+
+<?php if(isset($_GET['error'])): ?>
+<div class="alert alert-danger">
+    ❌ Ocurrió un error al actualizar el estado de la JAC.
 </div>
 <?php endif; ?>
 
@@ -387,13 +402,24 @@ foreach ($juntas as $jac) {
 
                                         </a>
 
-                                        <a href="usuarios_jac.php?id=<?= $jac['id'] ?>"
+                                                                                <a href="usuarios_jac.php?id=<?= $jac['id'] ?>"
                                            class="btn btn-success btn-sm"
                                            title="Usuarios">
 
                                             <i class="bi bi-people-fill"></i>
 
                                         </a>
+
+                                        <form action="../controllers/toggle_estado_jac.php" method="POST" style="display:inline;"
+                                              onsubmit="return confirm('<?= $jac['estado'] == 'Activa' ? '¿Desactivar esta JAC? Podrás reactivarla después.' : '¿Reactivar esta JAC?' ?>')">
+                                            <input type="hidden" name="id" value="<?= $jac['id'] ?>">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                                            <button type="submit"
+                                                    class="btn btn-<?= $jac['estado'] == 'Activa' ? 'danger' : 'secondary' ?> btn-sm"
+                                                    title="<?= $jac['estado'] == 'Activa' ? 'Desactivar' : 'Reactivar' ?>">
+                                                <i class="bi bi-<?= $jac['estado'] == 'Activa' ? 'x-circle-fill' : 'arrow-counterclockwise' ?>"></i>
+                                            </button>
+                                        </form>
 
                                     </div>
 
