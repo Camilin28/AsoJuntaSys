@@ -183,6 +183,11 @@ if (isset($_SESSION['error'])) {
     echo "<div class='error-box'>" . $_SESSION['error'] . "</div>";
     unset($_SESSION['error']);
 }
+if (isset($_SESSION['info_login'])) {
+    echo "<div class='error-box' style='background:#e8f5e9;color:#2E7D32;'>" . htmlspecialchars($_SESSION['info_login']) . "</div>";
+    unset($_SESSION['info_login']);
+}
+
 ?>
       <form action="../public/procesar_login.php" method="POST">
         <label for="email">Usuario</label>
@@ -200,6 +205,7 @@ if (isset($_SESSION['error'])) {
     </label>
 </div>
         <button type="submit">Iniciar Sesión</button>
+        <a href="recuperar_password.php" style="display:block; text-align:center; margin-top:10px;">¿Olvidaste tu contraseña?</a>
         
       </form>
 
