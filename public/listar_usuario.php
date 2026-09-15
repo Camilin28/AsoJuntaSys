@@ -93,7 +93,14 @@ $csrfToken = generarTokenCSRF();
 <body>
 
     <h2>Usuarios Registrados</h2>
-    
+
+    <?php if (isset($_SESSION['error'])): ?>
+        <div style="background:#fdecea; color:#c62828; padding:10px 14px; border-radius:5px; margin-bottom:14px;">
+            <?= htmlspecialchars($_SESSION['error']) ?>
+        </div>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+
     <table>
         <tr>
             <th>ID</th>
