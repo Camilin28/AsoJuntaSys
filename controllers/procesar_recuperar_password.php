@@ -39,25 +39,14 @@ try {
         $baseUrl = 'https://' . $_SERVER['HTTP_HOST'];
         $enlace = $baseUrl . '/views/restablecer_password.php?token=' . $token;
 
-        $mail = crearMailer();
+        $cuerpoHtml = "
+            <p>Hola " . htmlspecialchars($usuario['nombre']) . ",</p>
+            <p>Recibimos una solicitud para restablecer tu contraseña en AsoJuntaSys.</p>
+            <p><a href='{$enlace}'>Haz clic aquí para crear una nueva contraseña</a></p>
+            <p>Este enlace vence en 60 minutos. Si tú no solicitaste este cambio, ignora este correo.</p>
+        ";
 
-        if ($mail) {
-            try {
-                $mail->addAddress($email, $usuario['nombre']);
-                $mail->Subject = 'Recuperación de contraseña - AsoJuntaSys';
-                $mail->isHTML(true);
-                $mail->Body = "
-                    <p>Hola " . htmlspecialchars($usuario['nombre']) . ",</p>
-                    <p>Recibimos una solicitud para restablecer tu contraseña en AsoJuntaSys.</p>
-                    <p><a href='{$enlace}'>Haz clic aquí para crear una nueva contraseña</a></p>
-                    <p>Este enlace vence en 60 minutos. Si tú no solicitaste este cambio, ignora este correo.</p>
-                ";
-                $mail->AltBody = "Para restablecer tu contraseña visita: {$enlace} (válido por 60 minutos)";
-                $mail->send();
-            } catch (Exception $e) {
-                error_log('procesar_recuperar_password.php: error al enviar correo: ' . $e->getMessage());
-            }
-        }
+        enviarCorreoBrevo($email, $usuario['nombre'], 'Recuperación de contraseña - AsoJuntaSys', $cuerpoHtml);
     }
     // Si el usuario no existe, no hacemos nada — pero mostramos el mismo
     // mensaje genérico de arriba para no revelar qué correos existen.
