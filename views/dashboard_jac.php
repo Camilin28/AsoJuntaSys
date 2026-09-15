@@ -203,6 +203,10 @@ body{ background:var(--fondo); margin:0; font-family:Arial; }
     <span class="material-icons">event</span>
   </a>
 
+  <a href="asistente.php" class="side-btn" title="Asistente Virtual">
+    <span class="material-icons">smart_toy</span>
+  </a>
+
 </nav>
 
 <main class="content">

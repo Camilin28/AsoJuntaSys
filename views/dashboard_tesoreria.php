@@ -92,6 +92,7 @@ $nombre = $_SESSION['usuario_nombre'];
         <a href="ingresos.php">💰 Gestión de Ingresos</a>
         <a href="egresos.php">📉 Gestión de Egresos</a>
         <a href="reportes.php">📑 Reportes Financieros</a>
+        <a href="asistente.php">🤖 Asistente Virtual</a>
         <a href="../public/logout.php" class="btn btn-danger mt-3 w-100">Cerrar sesión</a>
     </div>
 

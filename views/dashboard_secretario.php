@@ -90,6 +90,9 @@ body {
                     <span class="nav-link text-white">Bienvenida, <?= htmlspecialchars($nombre) ?></span>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-white" href="asistente.php">🤖 Asistente Virtual</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-white" href="../public/logout.php">Cerrar sesión</a>
                 </li>
             </ul>
