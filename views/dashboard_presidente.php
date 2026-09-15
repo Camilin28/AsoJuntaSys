@@ -425,7 +425,7 @@ font-size: 1rem;
         <span class="material-icons">people</span>
       </a>
 
-      <a href="documentos_general.php" class="side-btn" title="Documentos">
+      <a href="documentos.php" class="side-btn" title="Documentos">
         <span class="material-icons">folder_open</span>
       </a>
 
@@ -439,6 +439,9 @@ font-size: 1rem;
       <?php if ($_SESSION['usuario_rol'] === 'Presidente General'): ?>
       <a href="gestionar_jac.php" class="side-btn" title="Gestión JAC">
         <span class="material-icons">location_city</span>
+      </a>
+      <a href="auditoria.php" class="side-btn" title="Auditoría">
+        <span class="material-icons">fact_check</span>
       </a>
 <?php endif; ?>
         </nav>

@@ -1,5 +1,6 @@
 <?php
 require_once('../includes/auth.php');
+require_once('../includes/auditoria.php');
 require('../config/db.php');
 
 requireRole(['Presidente General', 'Presidentes de JAC']);
@@ -27,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ':hora' => $hora,
                     ':color' => $color
                 ]);
+                registrarAuditoria($pdo, 'crear', 'agenda', (int) $pdo->lastInsertId(), $titulo);
                 header("Location: ../views/agenda.php?msg=add");
             } else {
                 // Editar evento
@@ -40,6 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ':color' => $color,
                     ':id' => $id
                 ]);
+                registrarAuditoria($pdo, 'editar', 'agenda', (int) $id, $titulo);
                 header("Location: ../views/agenda.php?msg=edit");
             }
             exit();
@@ -47,6 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql = "DELETE FROM agenda WHERE id=:id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':id' => $id]);
+            registrarAuditoria($pdo, 'eliminar', 'agenda', (int) $id);
             header("Location: ../views/agenda.php?msg=delete");
             exit();
         }

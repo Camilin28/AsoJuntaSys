@@ -1,5 +1,6 @@
 <?php
 require_once('../includes/auth.php');
+require_once('../includes/auditoria.php');
 require('../config/db.php');
 header('Content-Type: application/json');
 
@@ -17,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['id'], $_POST['estado'
         $sql = "UPDATE documentos SET estado = :estado, fecha_modificacion = NOW() WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':estado' => $estado, ':id' => $id]);
+
+        registrarAuditoria($pdo, 'editar', 'documento', (int) $id, "Nuevo estado: {$estado}");
 
         echo json_encode(['success' => true, 'message' => 'Estado actualizado correctamente']);
         exit();

@@ -1,5 +1,6 @@
 <?php
 require_once('../includes/auth.php');
+require_once('../includes/auditoria.php');
 require('../config/db.php');
 
 requireRole(['Secretaría']);
@@ -28,6 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ':observaciones' => $observaciones,
         ':id' => $id
     ]);
+
+    registrarAuditoria($pdo, 'editar', 'acta', (int) $id, $titulo);
 
     header("Location: ../views/actas.php?success=edit");
     exit();

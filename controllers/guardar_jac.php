@@ -1,5 +1,6 @@
 <?php
 require_once('../includes/auth.php');
+require_once('../includes/auditoria.php');
 require('../config/db.php');
 
 requireRole(['Presidente General']);
@@ -141,6 +142,8 @@ try {
     }
 
     $pdo->commit();
+
+    registrarAuditoria($pdo, 'crear', 'jac', (int) $jac_id, $nombre);
 
     $_SESSION['mensaje'] =
         "La Junta de Acción Comunal fue creada correctamente.";

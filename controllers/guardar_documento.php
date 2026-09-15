@@ -1,5 +1,6 @@
 <?php
 require_once('../includes/auth.php');
+require_once('../includes/auditoria.php');
 require('../config/db.php');
 
 requireLogin();
@@ -29,6 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ':categoria_id' => $categoria_id,
                 ':usuario_id' => $usuario_id
             ]);
+
+            registrarAuditoria($pdo, 'crear', 'documento', (int) $pdo->lastInsertId(), $titulo);
 
             header("Location: ../views/documentos.php?success=1");
             exit();

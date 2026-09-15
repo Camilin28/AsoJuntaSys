@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/db.php';
+require_once '../includes/auditoria.php';
 
 // RF-002: máximo 5 intentos fallidos antes de bloquear temporalmente la cuenta.
 define('MAX_INTENTOS_FALLIDOS', 5);
@@ -36,6 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['jac_id'] = $usuario['jac_id'];
                 $_SESSION['ultima_actividad'] = time(); // RF-002: base para el timeout de 30 min
 
+                registrarAuditoria($pdo, 'login_exitoso', 'usuario', $usuario['id']);
+
                 // Redirigir según el rol
                 switch ($usuario['rol']) {
                     case 'Presidente General':
@@ -58,6 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 if ($usuario) {
                     $intentos = (int) ($usuario['intentos_fallidos'] ?? 0) + 1;
+
+                    registrarAuditoria($pdo, 'login_fallido', 'usuario', $usuario['id'], "Correo: {$email}");
 
                     if ($intentos >= MAX_INTENTOS_FALLIDOS) {
                         $bloqueadoHasta = date('Y-m-d H:i:s', time() + BLOQUEO_MINUTOS * 60);

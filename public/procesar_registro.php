@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/db.php';
 require_once '../includes/auth.php';
+require_once '../includes/auditoria.php';
 
 // Solo el Presidente General puede crear usuarios
 requireRole(['Presidente General']);
@@ -59,6 +60,8 @@ try {
         ':rol'      => $rol,
         ':jac_id'   => $jac_id,
     ]);
+
+    registrarAuditoria($pdo, 'crear', 'usuario', (int) $pdo->lastInsertId(), "{$nombre} ({$rol})");
 
     $_SESSION['mensaje'] = "✅ Usuario '{$nombre}' creado correctamente.";
     header("Location: ../views/registrar.php");

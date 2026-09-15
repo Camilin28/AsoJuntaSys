@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/db.php';
+require_once '../includes/auditoria.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: ../views/login.php");
@@ -52,6 +53,8 @@ try {
         WHERE id = :id
     ");
     $update->execute([':hash' => $hash, ':id' => $usuario['id']]);
+
+    registrarAuditoria($pdo, 'editar', 'usuario', (int) $usuario['id'], 'Contraseña restablecida vía token de recuperación');
 
     $_SESSION['info_login'] = "Tu contraseña fue actualizada correctamente. Ya puedes iniciar sesión.";
     header("Location: ../views/login.php");

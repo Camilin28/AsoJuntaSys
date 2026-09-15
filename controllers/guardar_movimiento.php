@@ -1,6 +1,7 @@
 <?php
 
 require_once '../includes/auth.php';
+require_once '../includes/auditoria.php';
 
 requireRole([
     'Tesorería',
@@ -27,6 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$descripcion, $tipo_movimiento, $clasificacion, $monto, $fecha, $responsable, $observaciones]);
+
+    registrarAuditoria($pdo, 'crear', 'movimiento_financiero', (int) $pdo->lastInsertId(), "{$tipo_movimiento}: \${$monto}");
 
     header("Location: ../views/dashboard_tesoreria.php");
     exit();

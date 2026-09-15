@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/auth.php';
+require_once '../includes/auditoria.php';
 require '../config/db.php';
 
 requireRole(['Presidente General']);
@@ -19,6 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "UPDATE usuarios SET nombre = :nombre, email = :email WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['nombre' => $nombre, 'email' => $email, 'id' => $id]);
+
+    registrarAuditoria($pdo, 'editar', 'usuario', (int) $id, $nombre);
 
     header("Location: listar_usuario.php");
     exit();
