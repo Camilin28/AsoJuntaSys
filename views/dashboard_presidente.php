@@ -439,11 +439,13 @@ font-size: 1rem;
       <?php if ($_SESSION['usuario_rol'] === 'Presidente General'): ?>
       <a href="gestionar_jac.php" class="side-btn" title="Gestión JAC">
         <span class="material-icons">location_city</span>
-      </a>
-      <a href="auditoria.php" class="side-btn" title="Auditoría">
+            <a href="auditoria.php" class="side-btn" title="Auditoría">
         <span class="material-icons">fact_check</span>
       </a>
 <?php endif; ?>
+      <a href="asistente.php" class="side-btn" title="Asistente Virtual">
+        <span class="material-icons">smart_toy</span>
+      </a>
         </nav>
 
     <!-- content -->
