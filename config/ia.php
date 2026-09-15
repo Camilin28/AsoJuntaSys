@@ -8,7 +8,7 @@
  * consulta; nunca datos personales identificables innecesarios.
  */
 
-define('GEMINI_MODELO', 'gemini-2.5-flash');
+define('GEMINI_MODELO', 'gemini-3.6-flash');
 define('GEMINI_TIMEOUT_SEGUNDOS', 15);
 
 /**
