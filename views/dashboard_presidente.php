@@ -1,12 +1,15 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 // seguridad: sólo Presidente General
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Presidente General') {
     header("Location: ../views/login.php");
     exit();
 }
+
+$csrfToken = generarTokenCSRF();
 
 $nombre = $_SESSION['usuario_nombre'] ?? 'Presidente';
 
@@ -966,7 +969,9 @@ new Chart(document.getElementById('finanzasChart'), {
     });
   </script>
 
-  <!-- Bootstrap JS -->
+   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <?php include __DIR__ . '/partials/asistente_widget.php'; ?>
 </body>
 </html>

@@ -1,10 +1,12 @@
 <?php
 session_start();
+require_once('../includes/auth.php');
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería') {
     header("Location: login.php");
     exit();
 }
 require('../config/db.php');
+$csrfToken = generarTokenCSRF();
 
 $sql_ingresos = "SELECT SUM(monto) FROM recursos_financieros 
                  WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
@@ -154,6 +156,6 @@ $nombre = $_SESSION['usuario_nombre'];
             </div>
          </div>
     </div>
-
+<?php include __DIR__ . '/partials/asistente_widget.php'; ?>
 </body>
 </html>

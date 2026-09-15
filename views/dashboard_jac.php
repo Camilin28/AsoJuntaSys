@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 // 🔐 Seguridad
 if (
@@ -11,6 +12,8 @@ if (
     header("Location: login.php");
     exit();
 }
+
+$csrfToken = generarTokenCSRF();
 
 if (!isset($_SESSION['jac_id']) || empty($_SESSION['jac_id'])) {
     die("Error: Usuario sin JAC asignada.");
@@ -324,8 +327,10 @@ document.addEventListener('DOMContentLoaded', function() {
     events: '../controllers/obtener_eventos_jac.php'
   });
 
-  calendar.render();
+    calendar.render();
 });
 </script>
+
+<?php include __DIR__ . '/partials/asistente_widget.php'; ?>
 </body>
 </html>

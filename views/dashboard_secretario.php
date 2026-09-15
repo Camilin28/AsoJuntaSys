@@ -1,11 +1,14 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría') {
     header("Location: ../views/login.php");
     exit();
 }
+
+$csrfToken = generarTokenCSRF();
 
 $nombre = $_SESSION['usuario_nombre'];
 
@@ -187,6 +190,6 @@ body {
     
 </div>
 
-</div>
+<?php include __DIR__ . '/partials/asistente_widget.php'; ?>
 </body>
 </html>
