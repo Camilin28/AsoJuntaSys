@@ -103,9 +103,19 @@ function consultarGeminiConHerramientas(string $instruccionSistema, array $conte
         // ¿El modelo pidió llamar una o más herramientas?
         $llamadasFuncion = array_filter($parts, fn($p) => isset($p['functionCall']));
 
-        if ($llamadasFuncion) {
+               if ($llamadasFuncion) {
+            // PHP decodifica un {} vacío de Gemini como [] (lista), pero al
+            // reenviarlo Gemini exige que 'args' sea un objeto ({}), no una
+            // lista. Normalizamos cualquier 'args' vacío a un objeto real.
+            $llamadasNormalizadas = array_map(function ($p) {
+                if (isset($p['functionCall']['args']) && is_array($p['functionCall']['args']) && empty($p['functionCall']['args'])) {
+                    $p['functionCall']['args'] = new stdClass();
+                }
+                return $p;
+            }, array_values($llamadasFuncion));
+
             // Registramos el turno del modelo pidiendo las herramientas
-            $contents[] = ['role' => 'model', 'parts' => array_values($llamadasFuncion)];
+            $contents[] = ['role' => 'model', 'parts' => $llamadasNormalizadas];
 
             $respuestasFuncion = [];
             foreach ($llamadasFuncion as $llamada) {
