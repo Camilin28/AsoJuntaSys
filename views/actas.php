@@ -156,9 +156,9 @@ body { background-color: #fff9c4; }
                                     <p><strong>Documento Asociado:</strong> <?= $acta['documento'] ?? '-' ?></p>
                                     <p><strong>Fecha:</strong> <?= $acta['fecha_reunion'] ?></p>
                                     <p><strong>Lugar:</strong> <?= $acta['lugar'] ?></p>
-                                    <p><strong>Asistentes:</strong> <?= nl2br(htmlspecialchars($acta['asistentes'])) ?></p>
-                                    <p><strong>Acuerdos:</strong> <?= nl2br(htmlspecialchars($acta['acuerdos'])) ?></p>
-                                    <p><strong>Observaciones:</strong> <?= nl2br(htmlspecialchars($acta['observaciones'])) ?></p>
+                                    <p><strong>Asistentes:</strong> <?= nl2br(htmlspecialchars($acta['asistentes'] ?? '')) ?></p>
+                                    <p><strong>Acuerdos:</strong> <?= nl2br(htmlspecialchars($acta['acuerdos'] ?? '')) ?></p>
+                                    <p><strong>Observaciones:</strong> <?= nl2br(htmlspecialchars($acta['observaciones'] ?? '')) ?></p>
                                 </div>
                                 <div class="modal-footer">
                                     

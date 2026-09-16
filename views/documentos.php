@@ -193,7 +193,7 @@ document.querySelectorAll('.estado-select').forEach(select => {
   select.addEventListener('change', async function() {
     const id = this.dataset.id;
     const estado = this.value;
-    const response = await fetch('../controllers/actualizar_estado_documento.php', {
+    const response = await fetch('../controllers/Actualizar_estado_documento.php', {
       method: 'POST',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: `id=${id}&estado=${estado}`

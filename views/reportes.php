@@ -145,7 +145,7 @@ $nombre = $_SESSION['usuario_nombre'];
         </div>
     </div>
 
-        <!-- Gráfica de pastel -->
+    <!-- Gráfica de pastel -->
     <div class="row mb-4">
         <div class="col-md-6 mx-auto">
             <div style="position:relative; height:350px;">
@@ -180,7 +180,7 @@ $nombre = $_SESSION['usuario_nombre'];
                     ?>
                     <tr>
                         <td><?= htmlspecialchars($mov['id']) ?></td>
-                        <td><?= htmlspecialchars($mov['descripcion']) ?></td>
+                        <td><?= htmlspecialchars($mov['descripcion'] ?? '') ?></td>
                         <td>
                             <?= htmlspecialchars($mov['tipo_movimiento']) ?>
                             <?php if ($mov['tipo_movimiento'] === 'Otro'): ?>
@@ -237,7 +237,7 @@ new Chart(ctxTipos, {
             borderWidth: 1
         }]
     },
-        options: {
+    options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {

@@ -45,7 +45,7 @@ body { background-color: #fff9c4; }
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="dashboard_secretario.php">Junta de Acción Comunal</a>
+        <a class="navbar-brand" href="dashboard_presidente.php">Junta de Acción Comunal</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><span class="nav-link text-white">Bienvenida, <?= htmlspecialchars($nombre) ?></span></li>
@@ -137,9 +137,9 @@ body { background-color: #fff9c4; }
                                     <p><strong>Documento Asociado:</strong> <?= $acta['documento'] ?? '-' ?></p>
                                     <p><strong>Fecha:</strong> <?= $acta['fecha_reunion'] ?></p>
                                     <p><strong>Lugar:</strong> <?= $acta['lugar'] ?></p>
-                                    <p><strong>Asistentes:</strong> <?= nl2br(htmlspecialchars($acta['asistentes'])) ?></p>
-                                    <p><strong>Acuerdos:</strong> <?= nl2br(htmlspecialchars($acta['acuerdos'])) ?></p>
-                                    <p><strong>Observaciones:</strong> <?= nl2br(htmlspecialchars($acta['observaciones'])) ?></p>
+                                    <p><strong>Asistentes:</strong> <?= nl2br(htmlspecialchars($acta['asistentes'] ?? '')) ?></p>
+                                    <p><strong>Acuerdos:</strong> <?= nl2br(htmlspecialchars($acta['acuerdos'] ?? '')) ?></p>
+                                    <p><strong>Observaciones:</strong> <?= nl2br(htmlspecialchars($acta['observaciones'] ?? '')) ?></p>
                                 </div>
                                 <div class="modal-footer">
                                     

@@ -52,17 +52,17 @@ if (!$acta) {
 
         <div class="mb-3">
             <label for="asistentes">Asistentes</label>
-            <textarea class="form-control" name="asistentes"><?= htmlspecialchars($acta['asistentes']) ?></textarea>
+            <textarea class="form-control" name="asistentes"><?= htmlspecialchars($acta['asistentes'] ?? '') ?></textarea>
         </div>
 
         <div class="mb-3">
             <label for="acuerdos">Acuerdos</label>
-            <textarea class="form-control" name="acuerdos"><?= htmlspecialchars($acta['acuerdos']) ?></textarea>
+            <textarea class="form-control" name="acuerdos"><?= htmlspecialchars($acta['acuerdos'] ?? '') ?></textarea>
         </div>
 
         <div class="mb-3">
             <label for="observaciones">Observaciones</label>
-            <textarea class="form-control" name="observaciones"><?= htmlspecialchars($acta['observaciones']) ?></textarea>
+            <textarea class="form-control" name="observaciones"><?= htmlspecialchars($acta['observaciones'] ?? '') ?></textarea>
         </div>
 
         <button type="submit" class="btn btn-success">💾 Guardar Cambios</button>

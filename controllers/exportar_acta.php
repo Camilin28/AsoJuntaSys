@@ -102,9 +102,9 @@ $html = '
     <div class="contenido">
         <p><strong> Fecha:</strong> ' . htmlspecialchars($acta['fecha_reunion']) . '</p>
         <p><strong> Lugar:</strong> ' . htmlspecialchars($acta['lugar']) . '</p>
-        <p><strong> Asistentes:</strong> ' . nl2br(htmlspecialchars($acta['asistentes'])) . '</p>
-        <p><strong> Acuerdos:</strong> ' . nl2br(htmlspecialchars($acta['acuerdos'])) . '</p>
-        <p><strong> Observaciones:</strong> ' . nl2br(htmlspecialchars($acta['observaciones'])) . '</p>
+        <p><strong> Asistentes:</strong> ' . nl2br(htmlspecialchars($acta['asistentes'] ?? '')) . '</p>
+        <p><strong> Acuerdos:</strong> ' . nl2br(htmlspecialchars($acta['acuerdos'] ?? '')) . '</p>
+        <p><strong> Observaciones:</strong> ' . nl2br(htmlspecialchars($acta['observaciones'] ?? '')) . '</p>
         <p><strong> Documento Asociado:</strong> ' . ($acta['documento'] ?? 'Ninguno') . '</p>
     </div>
 </body>

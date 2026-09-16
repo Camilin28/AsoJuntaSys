@@ -163,7 +163,7 @@ $nombre = $_SESSION['usuario_nombre'];
                 <?php foreach ($ingresos as $ingreso): ?>
                 <tr>
                     <td><?= htmlspecialchars($ingreso['id']) ?></td>
-                    <td><?= htmlspecialchars($ingreso['descripcion']) ?></td>
+                    <td><?= htmlspecialchars($ingreso['descripcion'] ?? '') ?></td>
                     <td>
                         <?php if ($ingreso['tipo_movimiento'] === 'Otro'): ?>
                             Otro (<?= htmlspecialchars($ingreso['clasificacion']) ?>)
