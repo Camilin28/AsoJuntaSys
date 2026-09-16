@@ -1,14 +1,11 @@
 <?php
 session_start();
 require('../config/db.php');
-require_once('../includes/auth.php');
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría') {
     header("Location: ../views/login.php");
     exit();
 }
-
-$csrfToken = generarTokenCSRF();
 
 $nombre = $_SESSION['usuario_nombre'];
 
@@ -91,9 +88,6 @@ body {
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <span class="nav-link text-white">Bienvenida, <?= htmlspecialchars($nombre) ?></span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="asistente.php">🤖 Asistente Virtual</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white" href="../public/logout.php">Cerrar sesión</a>
@@ -190,6 +184,6 @@ body {
     
 </div>
 
-<?php include __DIR__ . '/partials/asistente_widget.php'; ?>
+</div>
 </body>
 </html>

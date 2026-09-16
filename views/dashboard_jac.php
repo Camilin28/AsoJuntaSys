@@ -1,7 +1,6 @@
 <?php
 session_start();
 require('../config/db.php');
-require_once('../includes/auth.php');
 
 // 🔐 Seguridad
 if (
@@ -12,8 +11,6 @@ if (
     header("Location: login.php");
     exit();
 }
-
-$csrfToken = generarTokenCSRF();
 
 if (!isset($_SESSION['jac_id']) || empty($_SESSION['jac_id'])) {
     die("Error: Usuario sin JAC asignada.");
@@ -206,10 +203,6 @@ body{ background:var(--fondo); margin:0; font-family:Arial; }
     <span class="material-icons">event</span>
   </a>
 
-  <a href="asistente.php" class="side-btn" title="Asistente Virtual">
-    <span class="material-icons">smart_toy</span>
-  </a>
-
 </nav>
 
 <main class="content">
@@ -327,10 +320,8 @@ document.addEventListener('DOMContentLoaded', function() {
     events: '../controllers/obtener_eventos_jac.php'
   });
 
-    calendar.render();
+  calendar.render();
 });
 </script>
-
-<?php include __DIR__ . '/partials/asistente_widget.php'; ?>
 </body>
 </html>

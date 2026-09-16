@@ -1,12 +1,10 @@
 <?php
 session_start();
-require_once('../includes/auth.php');
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería') {
     header("Location: login.php");
     exit();
 }
 require('../config/db.php');
-$csrfToken = generarTokenCSRF();
 
 $sql_ingresos = "SELECT SUM(monto) FROM recursos_financieros 
                  WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
@@ -94,7 +92,6 @@ $nombre = $_SESSION['usuario_nombre'];
         <a href="ingresos.php">💰 Gestión de Ingresos</a>
         <a href="egresos.php">📉 Gestión de Egresos</a>
         <a href="reportes.php">📑 Reportes Financieros</a>
-        <a href="asistente.php">🤖 Asistente Virtual</a>
         <a href="../public/logout.php" class="btn btn-danger mt-3 w-100">Cerrar sesión</a>
     </div>
 
@@ -156,6 +153,6 @@ $nombre = $_SESSION['usuario_nombre'];
             </div>
          </div>
     </div>
-<?php include __DIR__ . '/partials/asistente_widget.php'; ?>
+
 </body>
 </html>

@@ -1,15 +1,12 @@
 <?php
 session_start();
 require('../config/db.php');
-require_once('../includes/auth.php');
 
 // seguridad: sólo Presidente General
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Presidente General') {
     header("Location: ../views/login.php");
     exit();
 }
-
-$csrfToken = generarTokenCSRF();
 
 $nombre = $_SESSION['usuario_nombre'] ?? 'Presidente';
 
@@ -442,13 +439,11 @@ font-size: 1rem;
       <?php if ($_SESSION['usuario_rol'] === 'Presidente General'): ?>
       <a href="gestionar_jac.php" class="side-btn" title="Gestión JAC">
         <span class="material-icons">location_city</span>
-            <a href="auditoria.php" class="side-btn" title="Auditoría">
+      </a>
+      <a href="auditoria.php" class="side-btn" title="Auditoría">
         <span class="material-icons">fact_check</span>
       </a>
 <?php endif; ?>
-      <a href="asistente.php" class="side-btn" title="Asistente Virtual">
-        <span class="material-icons">smart_toy</span>
-      </a>
         </nav>
 
     <!-- content -->
@@ -969,9 +964,7 @@ new Chart(document.getElementById('finanzasChart'), {
     });
   </script>
 
-   <!-- Bootstrap JS -->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <?php include __DIR__ . '/partials/asistente_widget.php'; ?>
 </body>
 </html>
