@@ -12,6 +12,13 @@ if (!isset($_SESSION['usuario_id']) ||
 $nombre = $_SESSION['usuario_nombre'];
 $esSoloLectura = ($_SESSION['usuario_rol'] === 'Secretaría');
 
+$dashboardsPorRol = [
+    'Presidente General' => 'dashboard_presidente.php',
+    'Presidentes de JAC' => 'dashboard_jac.php',
+    'Secretaría'         => 'dashboard_secretario.php',
+];
+$urlDashboard = $dashboardsPorRol[$_SESSION['usuario_rol']] ?? 'dashboard.php';
+
 // 📌 Obtener eventos desde la tabla agenda
 $sql = "SELECT id, titulo AS title, fecha AS start, hora, descripcion, color 
         FROM agenda";
@@ -40,7 +47,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="dashboard_secretario.php">Junta de Acción Comunal</a>
+        <a class="navbar-brand" href="<?= htmlspecialchars($urlDashboard) ?>">Junta de Acción Comunal</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><span class="nav-link text-white">Bienvenida, <?= htmlspecialchars($nombre) ?></span></li>
@@ -68,8 +75,8 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
     </div>
 <?php endif; ?>
-<a href="dashboard_secretario.php" class="btn btn-custom mb-3">Volver al Dashboard</a>
-<h2 class="mb-4">📅 Agenda de la Secretaría</h2>
+<a href="<?= htmlspecialchars($urlDashboard) ?>" class="btn btn-custom mb-3">Volver al Dashboard</a>
+<h2 class="mb-4">📅 Agenda</h2>
 <div id="calendar"></div>
 </div>
 

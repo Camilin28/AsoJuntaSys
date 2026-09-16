@@ -12,6 +12,13 @@ if (!isset($_SESSION['usuario_id']) ||
 $csrfToken = generarTokenCSRF();
 $puedeEliminar = in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General']);
 
+$dashboardsPorRol = [
+    'Presidente General' => 'dashboard_presidente.php',
+    'Presidentes de JAC' => 'dashboard_jac.php',
+    'Secretaría'         => 'dashboard_secretario.php',
+];
+$urlDashboard = $dashboardsPorRol[$_SESSION['usuario_rol']] ?? 'dashboard.php';
+
 
 $nombre = $_SESSION['usuario_nombre'];
 
@@ -80,7 +87,7 @@ body { background-color: #fff9c4; }
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="dashboard_secretario.php">Junta de Acción Comunal</a>
+    <a class="navbar-brand" href="<?= htmlspecialchars($urlDashboard) ?>">Junta de Acción Comunal</a>
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><span class="nav-link text-white">Bienvenida, <?= htmlspecialchars($nombre) ?></span></li>
@@ -131,7 +138,7 @@ body { background-color: #fff9c4; }
 
 <a href="subir_documento.php" class="btn btn-custom mb-3">➕ Subir Documento</a>
 <a href="categorias_documentos.php" class="btn btn-success mb-3">📁 Gestionar Categorías</a>
-<a href="dashboard_secretario.php" class="btn btn-secundary mb-3 ">⬅ Volver al Dashboard</a>
+<a href="<?= htmlspecialchars($urlDashboard) ?>" class="btn btn-secundary mb-3 ">⬅ Volver al Dashboard</a>
 
 <!-- 🔹 Tabla -->
 <div id="tablaDocumentos">
