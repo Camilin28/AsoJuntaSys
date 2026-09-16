@@ -425,7 +425,7 @@ font-size: 1rem;
         <span class="material-icons">people</span>
       </a>
 
-      <a href="documentos.php" class="side-btn" title="Documentos">
+      <a href="documentos_general.php" class="side-btn" title="Documentos">
         <span class="material-icons">folder_open</span>
       </a>
 
@@ -433,7 +433,7 @@ font-size: 1rem;
         <span class="material-icons">description</span>
       </a>
 
-      <a href="agenda.php" class="side-btn" title="Agenda">
+      <a href="agenda_general.php" class="side-btn" title="Agenda">
         <span class="material-icons">event</span>
       </a>
       <?php if ($_SESSION['usuario_rol'] === 'Presidente General'): ?>
@@ -506,7 +506,7 @@ font-size: 1rem;
     </a>
 </div>
 <div class="grid-3 mb-4">
-    <a href="agenda.php"
+    <a href="agenda_general.php"
        class="quick-action action-red">
         <span class="material-icons">
             event
