@@ -10,6 +10,7 @@ if (!isset($_SESSION['usuario_id']) ||
 
 
 $nombre = $_SESSION['usuario_nombre'];
+$esSoloLectura = ($_SESSION['usuario_rol'] === 'Secretaría');
 
 // 📌 Obtener eventos desde la tabla agenda
 $sql = "SELECT id, titulo AS title, fecha AS start, hora, descripcion, color 
@@ -104,9 +105,11 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
             <div class="modal-footer">
+                <?php if (!$esSoloLectura): ?>
                 <button type="submit" name="accion" value="guardar" class="btn btn-custom">Guardar</button>
                 <button type="submit" name="accion" value="eliminar" class="btn btn-danger">Eliminar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <?php endif; ?>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </form>
     </div>
@@ -136,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'es',
-        selectable: true,
+        selectable: <?= $esSoloLectura ? 'false' : 'true' ?>,
         events: <?= json_encode($eventos) ?>,
         dateClick: function(info) {
             document.getElementById("eventoId").value = "";
