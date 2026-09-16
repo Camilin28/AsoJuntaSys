@@ -105,11 +105,13 @@ try {
         $condiciones[] = "YEAR(fecha_reunion) = :anio";
         $params[':anio'] = $anioDetectado;
     }
-    if ($palabrasClave) {
-        $orLike = [];
-        foreach ($palabrasClave as $i => $kw) {
-            $orLike[] = "(titulo LIKE :kw{$i} OR acuerdos LIKE :kw{$i} OR orden_dia LIKE :kw{$i})";
-            $params[":kw{$i}"] = "%{$kw}%";
+     if ($palabrasClave) {
+       $orLike = [];
+       foreach ($palabrasClave as $i => $kw) {
+            $orLike[] = "(titulo LIKE :kw{$i}a OR acuerdos LIKE :kw{$i}b OR orden_dia LIKE :kw{$i}c)";
+            $params[":kw{$i}a"] = "%{$kw}%";
+            $params[":kw{$i}b"] = "%{$kw}%";
+            $params[":kw{$i}c"] = "%{$kw}%";
         }
         $condiciones[] = '(' . implode(' OR ', $orLike) . ')';
     }
