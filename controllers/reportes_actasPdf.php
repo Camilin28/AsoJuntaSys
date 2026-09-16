@@ -40,13 +40,13 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <table>
 <thead>
 <tr>
-<th>ID</th><th>Título</th><th>Fecha Reunión</th><th>Lugar</th><th>Responsable</th>
+<th>ID</th><th>Título</th><th>Fecha Reunión</th><th>Lugar</th>
 </tr>
 </thead>
 <tbody>';
 
 if (count($actas) === 0) {
-    $html .= '<tr><td colspan="5" style="text-align:center;">No hay actas registradas</td></tr>';
+    $html .= '<tr><td colspan="4" style="text-align:center;">No hay actas registradas</td></tr>';
 } else {
     foreach ($actas as $a) {
         $html .= "<tr>
@@ -54,7 +54,6 @@ if (count($actas) === 0) {
             <td>" . htmlspecialchars($a['titulo']) . "</td>
             <td>{$a['fecha_reunion']}</td>
             <td>" . htmlspecialchars($a['lugar']) . "</td>
-            <td>" . htmlspecialchars($a['responsable']) . "</td>
         </tr>";
     }
 }

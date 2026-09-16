@@ -724,7 +724,7 @@ font-size: 1rem;
         <a href="../controllers/reporte_financieroExcel.php"
            class="btn btn-success">💰 Financiero Excel
         </a>
-        <a href="../controllers/reporte_financieroPDF.php"
+        <a href="../controllers/reporte_financieroPdf.php"
            class="btn btn-danger">💰 Financiero PDF
         </a>
         <a href="../controllers/reportes_actasPdf.php"
@@ -822,8 +822,8 @@ font-size: 1rem;
                         </strong>
                         <br>
                         <small class="text-muted">
-                            <?= htmlspecialchars($doc['junta']) ?>
-                        </small>
+                            <?= htmlspecialchars($doc['junta'] ?? 'Sin JAC asociada') ?>
+                        </small>>
                         <br>
                         <span class="badge bg-warning text-dark">
                             <?= htmlspecialchars($doc['estado']) ?>
@@ -846,7 +846,7 @@ font-size: 1rem;
                         </strong>
                         <br>
                         <small class="text-muted">
-                            <?= htmlspecialchars($acta['junta']) ?>
+                            <?= htmlspecialchars($acta['junta'] ?? 'Sin JAC asociada') ?>
                         </small>
                         <br>
                         <small>
