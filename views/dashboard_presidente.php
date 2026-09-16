@@ -928,6 +928,29 @@ new Chart(document.getElementById('finanzasChart'), {
         }
     }
 });
+const juntasLabels = <?= $juntasLabelsJson ?>;
+const juntasData = <?= $juntasDataJson ?>;
+
+new Chart(document.getElementById('usuariosJacChart'), {
+    type: 'bar',
+    data: {
+        labels: juntasLabels,
+        datasets: [{
+            label: 'Usuarios',
+            data: juntasData,
+            backgroundColor: '#2E7D32'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+        }
+    }
+});
 
     // FullCalendar: cargar eventos desde controlador
     document.addEventListener('DOMContentLoaded', function() {
