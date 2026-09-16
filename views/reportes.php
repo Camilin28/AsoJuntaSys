@@ -108,7 +108,13 @@ $nombre = $_SESSION['usuario_nombre'];
 </nav>
 
 <div class="container mt-4">
-    <h2>Reporte de Movimientos Financieros</h2>
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <h2 class="mb-0">Reporte de Movimientos Financieros</h2>
+        <div>
+            <a href="../controllers/reporte_financieroPdf.php" class="btn btn-danger" target="_blank">📄 Descargar PDF</a>
+            <a href="../controllers/reporte_financieroExcel.php" class="btn btn-success">📊 Descargar Excel</a>
+        </div>
+    </div>
 
     <!-- Totales -->
     <div class="row mb-4">
@@ -139,10 +145,12 @@ $nombre = $_SESSION['usuario_nombre'];
         </div>
     </div>
 
-    <!-- Gráfica de pastel -->
+        <!-- Gráfica de pastel -->
     <div class="row mb-4">
-        <div class="col-md-12">
-            <canvas id="graficaTipos" width="100" height="50"></canvas>
+        <div class="col-md-6 mx-auto">
+            <div style="position:relative; height:350px;">
+                <canvas id="graficaTipos"></canvas>
+            </div>
         </div>
     </div>
 
@@ -229,8 +237,9 @@ new Chart(ctxTipos, {
             borderWidth: 1
         }]
     },
-    options: {
+        options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             title: { display: true, text: 'Distribución de Movimientos Financieros por Tipo' },
             legend: { position: 'right' }
