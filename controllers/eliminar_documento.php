@@ -5,12 +5,19 @@ require('../config/db.php');
 
 requireRole(['Secretaría', 'Presidente General']);
 
-if (!isset($_GET['id'])) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: ../views/documentos.php");
     exit();
 }
 
-$id = $_GET['id'];
+validarTokenCSRF($_POST['csrf_token'] ?? '');
+
+$id = $_POST['id'] ?? null;
+
+if (!$id) {
+    header("Location: ../views/documentos.php");
+    exit();
+}
 
 $stmt = $pdo->prepare("SELECT archivo, titulo FROM documentos WHERE id = :id");
 $stmt->execute([':id' => $id]);
