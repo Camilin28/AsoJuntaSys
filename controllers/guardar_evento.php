@@ -18,15 +18,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($accion == "guardar") {
             if (empty($id)) {
                 // Nuevo evento
-                $sql = "INSERT INTO agenda (titulo, descripcion, fecha, hora, color) 
-                        VALUES (:titulo, :descripcion, :fecha, :hora, :color)";
+                $sql = "INSERT INTO agenda (titulo, descripcion, fecha, hora, color, jac_id, creado_por) 
+                        VALUES (:titulo, :descripcion, :fecha, :hora, :color, :jac_id, :creado_por)";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
                     ':titulo' => $titulo,
                     ':descripcion' => $descripcion,
                     ':fecha' => $fecha,
                     ':hora' => $hora,
-                    ':color' => $color
+                    ':color' => $color,
+                    ':jac_id' => $_SESSION['jac_id'] ?? null,
+                    ':creado_por' => $_SESSION['usuario_id']
                 ]);
                 registrarAuditoria($pdo, 'crear', 'agenda', (int) $pdo->lastInsertId(), $titulo);
                 header("Location: ../views/agenda.php?msg=add");

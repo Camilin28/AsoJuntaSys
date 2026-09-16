@@ -3,7 +3,7 @@ session_start();
 require('../config/db.php');
 
 if (!isset($_SESSION['usuario_id']) ||
-   !in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General'])) {
+   !in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General', 'Presidentes de JAC'])) {
     header("Location: ../views/login.php");
     exit();
 }

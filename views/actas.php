@@ -4,12 +4,13 @@ require('../config/db.php');
 require_once('../includes/auth.php');
 
 if (!isset($_SESSION['usuario_id']) ||
-   !in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General'])) {
+   !in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General', 'Presidentes de JAC'])) {
     header("Location: ../views/login.php");
     exit();
 }
 
 $csrfToken = generarTokenCSRF();
+$puedeGestionar = ($_SESSION['usuario_rol'] === 'Secretaría');
 
 
 $nombre = $_SESSION['usuario_nombre'];
@@ -121,6 +122,7 @@ body { background-color: #fff9c4; }
                             <button class="btn btn-info btn-sm" 
                                     data-bs-toggle="modal" 
                                     data-bs-target="#detalleActa<?= $acta['id'] ?>">Ver</button>
+                            <?php if ($puedeGestionar): ?>
                             <a href="editar_acta.php?id=<?= $acta['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
                             <form action="../controllers/eliminar_acta.php" method="POST" style="display:inline;"
                                   onsubmit="return confirm('¿Seguro que deseas eliminar esta acta?')">
@@ -128,6 +130,7 @@ body { background-color: #fff9c4; }
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                                 <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                             </form>
+                            <?php endif; ?>
                              <a href="../controllers/exportar_acta.php?id=<?= $acta['id'] ?>" target="_blank" class="btn btn-info btn-sm">
                             ⬇ Descargar en PDF</a>
                         </td>

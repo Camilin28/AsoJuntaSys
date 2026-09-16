@@ -4,12 +4,13 @@ require('../config/db.php');
 require_once('../includes/auth.php');
 
 if (!isset($_SESSION['usuario_id']) ||
-   !in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General'])) {
+   !in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General', 'Presidentes de JAC'])) {
     header("Location: ../views/login.php");
     exit();
 }
 
 $csrfToken = generarTokenCSRF();
+$puedeEliminar = in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General']);
 
 
 $nombre = $_SESSION['usuario_nombre'];
@@ -163,12 +164,14 @@ body { background-color: #fff9c4; }
         <td><?= $doc['fecha_subida'] ?></td>
         <td class="text-center">
           <a href="../uploads/documentos/<?= $doc['archivo'] ?>" target="_blank" class="btn btn-info btn-sm">📄 Ver</a>
+          <?php if ($puedeEliminar): ?>
           <form action="../controllers/eliminar_documento.php" method="POST" style="display:inline;"
                 onsubmit="return confirm('¿Seguro que deseas eliminar este documento?')">
               <input type="hidden" name="id" value="<?= $doc['id'] ?>">
               <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
               <button type="submit" class="btn btn-danger btn-sm">🗑️ Eliminar</button>
           </form>
+          <?php endif; ?>
         </td>
       </tr>
     <?php endforeach; ?>

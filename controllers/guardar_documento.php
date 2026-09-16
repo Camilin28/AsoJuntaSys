@@ -20,15 +20,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         if (move_uploaded_file($_FILES['archivo']['tmp_name'], $rutaDestino)) {
-            $sql = "INSERT INTO documentos (titulo, descripcion, archivo, categoria_id, usuario_id, estado)
-                    VALUES (:titulo, :descripcion, :archivo, :categoria_id, :usuario_id, 'Pendiente')";
+            $sql = "INSERT INTO documentos (titulo, descripcion, archivo, categoria_id, usuario_id, estado, jac_id)
+                    VALUES (:titulo, :descripcion, :archivo, :categoria_id, :usuario_id, 'Pendiente', :jac_id)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':titulo' => $titulo,
                 ':descripcion' => $descripcion,
                 ':archivo' => $nombreArchivo,
                 ':categoria_id' => $categoria_id,
-                ':usuario_id' => $usuario_id
+                ':usuario_id' => $usuario_id,
+                ':jac_id' => $_SESSION['jac_id'] ?? null
             ]);
 
             registrarAuditoria($pdo, 'crear', 'documento', (int) $pdo->lastInsertId(), $titulo);

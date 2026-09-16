@@ -24,10 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $sql = "INSERT INTO recursos_financieros 
-                (descripcion, tipo_movimiento, clasificacion, monto, fecha, responsable, observaciones) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
+                (descripcion, tipo_movimiento, clasificacion, monto, fecha, responsable, observaciones, jac_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$descripcion, $tipo_movimiento, $clasificacion, $monto, $fecha, $responsable, $observaciones]);
+    $stmt->execute([$descripcion, $tipo_movimiento, $clasificacion, $monto, $fecha, $responsable, $observaciones, $_SESSION['jac_id'] ?? null]);
 
     registrarAuditoria($pdo, 'crear', 'movimiento_financiero', (int) $pdo->lastInsertId(), "{$tipo_movimiento}: \${$monto}");
 

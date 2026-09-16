@@ -22,9 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $sql = "INSERT INTO actas 
-                (titulo, documento_id, fecha_reunion, hora_reunion, lugar, asistentes, orden_dia, acuerdos, observaciones) 
+                (titulo, documento_id, fecha_reunion, hora_reunion, lugar, asistentes, orden_dia, acuerdos, observaciones, jac_id) 
                 VALUES 
-                (:titulo, :documento_id, :fecha_reunion, :hora_reunion, :lugar, :asistentes, :orden_dia, :acuerdos, :observaciones)";
+                (:titulo, :documento_id, :fecha_reunion, :hora_reunion, :lugar, :asistentes, :orden_dia, :acuerdos, :observaciones, :jac_id)";
         
         $stmt = $pdo->prepare($sql);
 
@@ -37,7 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':asistentes'    => $asistentes,
             ':orden_dia'     => $orden_dia,
             ':acuerdos'      => $acuerdos,
-            ':observaciones' => $observaciones
+            ':observaciones' => $observaciones,
+            ':jac_id'        => $_SESSION['jac_id'] ?? null
         ]);
 
         registrarAuditoria($pdo, 'crear', 'acta', (int) $pdo->lastInsertId(), $titulo);
