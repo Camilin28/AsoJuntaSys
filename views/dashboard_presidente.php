@@ -425,7 +425,7 @@ font-size: 1rem;
         <span class="material-icons">people</span>
       </a>
 
-      <a href="documentos_general.php" class="side-btn" title="Documentos">
+      <a href="documentos.php" class="side-btn" title="Documentos">
         <span class="material-icons">folder_open</span>
       </a>
 
@@ -433,7 +433,7 @@ font-size: 1rem;
         <span class="material-icons">description</span>
       </a>
 
-      <a href="agenda_general.php" class="side-btn" title="Agenda">
+      <a href="agenda.php" class="side-btn" title="Agenda">
         <span class="material-icons">event</span>
       </a>
       <?php if ($_SESSION['usuario_rol'] === 'Presidente General'): ?>
@@ -474,11 +474,6 @@ font-size: 1rem;
             id="refreshBtn">
             Actualizar
         </button>
-        <a
-            href="gestionar_jac.php"
-            class="btn btn-success">
-            🏘️ Gestionar JAC
-        </a>
     </div>
 </div>
 <!-- ACCESOS RÁPIDOS -->
@@ -506,7 +501,7 @@ font-size: 1rem;
     </a>
 </div>
 <div class="grid-3 mb-4">
-    <a href="agenda_general.php"
+    <a href="agenda.php"
        class="quick-action action-red">
         <span class="material-icons">
             event
@@ -596,7 +591,7 @@ font-size: 1rem;
     </div>
     <!-- USUARIOS -->
     <div class="kpi-card">
-        <div class="kpi-icon"style="background:linear-gradient(135deg,#6A1B9A,#AB47BC)">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#6A1B9A,#AB47BC)">
             <span class="material-icons">people </span>
         </div>
         <div class="kpi-body">
@@ -765,49 +760,11 @@ font-size: 1rem;
 </section>
 
       <!-- ==========================
-     PANEL GENERAL DE JAC
+     ÚLTIMA ACTIVIDAD
 ========================== -->
 
 <div class="row mt-4">
-    <div class="col-lg-8">
-        <div class="card">
-            <h3>🏘️ Juntas Registradas</h3>
-            <div class="row">
-                <?php foreach($juntasResumen as $jac): ?>
-                <div class="col-md-6 mb-3">
-                    <div class="card jac-card">
-                        <div class="jac-header">
-                            <h5 class="mb-0">
-                                <?= htmlspecialchars($jac['nombre']) ?>
-                            </h5>
-                        </div>
-                        <div class="jac-body">
-                            <p>
-                                👥 Usuarios:
-                                <strong><?= $jac['usuarios'] ?></strong>
-                            </p>
-                            <p>
-                                📝 Actas:
-                                <strong><?= $jac['actas'] ?></strong>
-                            </p>
-                            <p>
-                                📂 Documentos:
-                                <strong><?= $jac['documentos'] ?></strong>
-                            </p>
-                            <div class="d-grid">
-                                <a href="ver_jac.php?id=<?= $jac['id'] ?>"
-                                   class="btn btn-success">
-                                    Ver Junta
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
+    <div class="col-lg-6">
         <div class="card mb-3">
             <h3>📂 Últimos Documentos</h3>
             <?php if(empty($ultimosDocumentos)): ?>
@@ -823,7 +780,7 @@ font-size: 1rem;
                         <br>
                         <small class="text-muted">
                             <?= htmlspecialchars($doc['junta'] ?? 'Sin JAC asociada') ?>
-                        </small>>
+                        </small>
                         <br>
                         <span class="badge bg-warning text-dark">
                             <?= htmlspecialchars($doc['estado']) ?>
@@ -832,6 +789,8 @@ font-size: 1rem;
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
+    </div>
+    <div class="col-lg-6">
         <div class="card">
             <h3>📝 Últimas Actas</h3>
             <?php if(empty($ultimasActas)): ?>
@@ -928,6 +887,7 @@ new Chart(document.getElementById('finanzasChart'), {
         }
     }
 });
+
 const juntasLabels = <?= $juntasLabelsJson ?>;
 const juntasData = <?= $juntasDataJson ?>;
 
