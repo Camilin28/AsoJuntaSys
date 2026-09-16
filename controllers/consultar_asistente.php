@@ -190,7 +190,7 @@ try {
             }
 
             case 'consultar_estadisticas_generales': {
-                if ($jacId || $rol !== 'Presidente General') {
+                if ($rol !== 'Presidente General') {
                     return ['autorizado' => false, 'mensaje' => 'Esta información solo está disponible para el rol Presidente General.'];
                 }
                 $activas = (int) $pdo->query("SELECT COUNT(*) FROM juntas WHERE estado = 'Activa'")->fetchColumn();
