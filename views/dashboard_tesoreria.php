@@ -6,15 +6,22 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería'
 }
 require('../config/db.php');
 
+$filtroJacAnd = !empty($_SESSION['jac_id']) ? " AND jac_id = :jac_id" : "";
+$paramsJacSesion = !empty($_SESSION['jac_id']) ? [':jac_id' => $_SESSION['jac_id']] : [];
+
 $sql_ingresos = "SELECT SUM(monto) FROM recursos_financieros 
-                 WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
-                    OR (tipo_movimiento = 'Otro' AND clasificacion = 'Ingreso')";
-$totalIngresos = $pdo->query($sql_ingresos)->fetchColumn() ?? 0;
+                 WHERE (tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
+                    OR (tipo_movimiento = 'Otro' AND clasificacion = 'Ingreso')){$filtroJacAnd}";
+$stmtIng = $pdo->prepare($sql_ingresos);
+$stmtIng->execute($paramsJacSesion);
+$totalIngresos = $stmtIng->fetchColumn() ?? 0;
 
 $sql_egresos = "SELECT SUM(monto) FROM recursos_financieros 
-                WHERE tipo_movimiento IN ('Gasto','Transferencia') 
-                   OR (tipo_movimiento = 'Otro' AND clasificacion = 'Egreso')";
-$totalEgresos = $pdo->query($sql_egresos)->fetchColumn() ?? 0;
+                WHERE (tipo_movimiento IN ('Gasto','Transferencia') 
+                   OR (tipo_movimiento = 'Otro' AND clasificacion = 'Egreso')){$filtroJacAnd}";
+$stmtEgr = $pdo->prepare($sql_egresos);
+$stmtEgr->execute($paramsJacSesion);
+$totalEgresos = $stmtEgr->fetchColumn() ?? 0;
 
 $balance = $totalIngresos - $totalEgresos;
 $nombre = $_SESSION['usuario_nombre'];

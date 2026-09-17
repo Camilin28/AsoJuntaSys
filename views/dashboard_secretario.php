@@ -9,26 +9,44 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría
 
 $nombre = $_SESSION['usuario_nombre'];
 
-// 🔹 KPIs dinámicos
-$totalActas = $pdo->query("SELECT COUNT(*) AS total FROM actas")->fetch(PDO::FETCH_ASSOC)['total'];
-$totalDocumentos = $pdo->query("SELECT COUNT(*) AS total FROM documentos")->fetch(PDO::FETCH_ASSOC)['total'];
-$totalAgenda = $pdo->query("SELECT COUNT(*) AS total FROM agenda")->fetch(PDO::FETCH_ASSOC)['total'];
+// 🔹 KPIs dinámicos (filtrados por la JAC de esta Secretaría)
+$jacIdSesion = $_SESSION['jac_id'] ?? null;
+$filtroJacWhere = $jacIdSesion ? " WHERE jac_id = :jac_id" : "";
+$filtroJacAndA = $jacIdSesion ? " AND a.jac_id = :jac_id" : "";
+$filtroJacAndD = $jacIdSesion ? " AND d.jac_id = :jac_id" : "";
+$paramsJacSesion = $jacIdSesion ? [':jac_id' => $jacIdSesion] : [];
 
-// 🔹 Últimos registros
-$ultimasActas = $pdo->query("SELECT a.titulo, a.fecha_reunion, a.lugar
+$stmtActas = $pdo->prepare("SELECT COUNT(*) AS total FROM actas{$filtroJacWhere}");
+$stmtActas->execute($paramsJacSesion);
+$totalActas = $stmtActas->fetch(PDO::FETCH_ASSOC)['total'];
+
+$stmtDocs = $pdo->prepare("SELECT COUNT(*) AS total FROM documentos{$filtroJacWhere}");
+$stmtDocs->execute($paramsJacSesion);
+$totalDocumentos = $stmtDocs->fetch(PDO::FETCH_ASSOC)['total'];
+
+$stmtAgenda = $pdo->prepare("SELECT COUNT(*) AS total FROM agenda{$filtroJacWhere}");
+$stmtAgenda->execute($paramsJacSesion);
+$totalAgenda = $stmtAgenda->fetch(PDO::FETCH_ASSOC)['total'];
+
+// 🔹 Últimos registros (filtrados por la JAC de esta Secretaría)
+$ultimasActas = $pdo->prepare("SELECT a.titulo, a.fecha_reunion, a.lugar
     FROM actas a
+    WHERE 1=1{$filtroJacAndA}
     ORDER BY a.fecha_reunion DESC LIMIT 5");
+$ultimasActas->execute($paramsJacSesion);
 
-$ultimosDocs = $pdo->query("SELECT d.titulo, c.nombre AS categoria, d.fecha_subida 
+$ultimosDocs = $pdo->prepare("SELECT d.titulo, c.nombre AS categoria, d.fecha_subida 
     FROM documentos d
     JOIN categorias_documentos c ON d.categoria_id = c.id
+    WHERE 1=1{$filtroJacAndD}
     ORDER BY d.fecha_subida DESC LIMIT 5");
+$ultimosDocs->execute($paramsJacSesion);
 
-
-
-$ultimasCorr = $pdo->query("SELECT titulo, descripcion, fecha, hora,creado_por, creado_en
+$ultimasCorr = $pdo->prepare("SELECT titulo, descripcion, fecha, hora,creado_por, creado_en
     FROM agenda
+    WHERE 1=1{$filtroJacWhere}
     ORDER BY fecha DESC LIMIT 5");
+$ultimasCorr->execute($paramsJacSesion);
 ?>
 
 <!DOCTYPE html>
