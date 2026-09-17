@@ -17,11 +17,15 @@ $options->set('defaultFont', 'DejaVu Sans');
 
 $dompdf = new Dompdf($options);
 
+$sqlBaseActas = "SELECT a.id, a.titulo, a.fecha_reunion, a.hora_reunion, a.lugar, j.nombre AS jac_nombre
+                 FROM actas a
+                 LEFT JOIN juntas j ON a.jac_id = j.id";
+
 if ($_SESSION['usuario_rol'] !== 'Presidente General' && !empty($_SESSION['jac_id'])) {
-    $stmt = $pdo->prepare("SELECT id, titulo, fecha_reunion, hora_reunion, lugar FROM actas WHERE jac_id = :jac_id ORDER BY fecha_reunion DESC");
+    $stmt = $pdo->prepare($sqlBaseActas . " WHERE a.jac_id = :jac_id ORDER BY a.fecha_reunion DESC");
     $stmt->execute([':jac_id' => $_SESSION['jac_id']]);
 } else {
-    $stmt = $pdo->query("SELECT id, titulo, fecha_reunion, hora_reunion, lugar FROM actas ORDER BY fecha_reunion DESC");
+    $stmt = $pdo->query($sqlBaseActas . " ORDER BY j.nombre ASC, a.fecha_reunion DESC");
 }
 $actas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -45,17 +49,18 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <table>
 <thead>
 <tr>
-<th>ID</th><th>Título</th><th>Fecha Reunión</th><th>Lugar</th>
+<th>ID</th><th>JAC</th><th>Título</th><th>Fecha Reunión</th><th>Lugar</th>
 </tr>
 </thead>
 <tbody>';
 
 if (count($actas) === 0) {
-    $html .= '<tr><td colspan="4" style="text-align:center;">No hay actas registradas</td></tr>';
+    $html .= '<tr><td colspan="5" style="text-align:center;">No hay actas registradas</td></tr>';
 } else {
     foreach ($actas as $a) {
         $html .= "<tr>
             <td>{$a['id']}</td>
+            <td><strong>" . htmlspecialchars($a['jac_nombre'] ?? 'Sin JAC') . "</strong></td>
             <td>" . htmlspecialchars($a['titulo']) . "</td>
             <td>{$a['fecha_reunion']}</td>
             <td>" . htmlspecialchars($a['lugar']) . "</td>
