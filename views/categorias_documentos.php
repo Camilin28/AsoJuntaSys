@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría') {
     header("Location: ../views/login.php");
@@ -11,12 +12,15 @@ $nombre = $_SESSION['usuario_nombre'];
 
 // ✅ Agregar categoría
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['nombre'])) {
+    validarTokenCSRF($_POST['csrf_token'] ?? '');
     $nombreCategoria = trim($_POST['nombre']);
     $stmt = $pdo->prepare("INSERT INTO categorias_documentos (nombre) VALUES (:nombre)");
     $stmt->execute([':nombre' => $nombreCategoria]);
     header("Location: categorias_documentos.php?success=1");
     exit();
 }
+
+$csrfToken = generarTokenCSRF();
 
 // ✅ Eliminar categoría
 if (isset($_GET['delete'])) {
@@ -34,7 +38,7 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
 <meta charset="UTF-8">
 <title>Categorías de Documentos</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -71,6 +75,7 @@ body { background-color: #fff9c4; }
 <?php endif; ?>
 
 <form method="POST" class="row g-3 mb-4">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
   <div class="col-md-8">
     <input type="text" name="nombre" class="form-control" placeholder="Nombre de la nueva categoría" required>
   </div>

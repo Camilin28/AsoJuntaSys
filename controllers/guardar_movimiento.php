@@ -11,6 +11,8 @@ requireRole([
 require_once '../config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    validarTokenCSRF($_POST['csrf_token'] ?? '');
+
     $descripcion = $_POST['descripcion'];
     $tipo_movimiento = $_POST['tipo_movimiento'];
     $monto = $_POST['monto'];

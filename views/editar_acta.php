@@ -1,11 +1,14 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría') {
     header("Location: ../views/login.php");
     exit();
 }
+
+$csrfToken = generarTokenCSRF();
 
 $id = $_GET['id'] ?? null;
 if (!$id) {
@@ -25,7 +28,7 @@ if (!$acta) {
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
 <meta charset="UTF-8">
 <title>Editar Acta</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -35,6 +38,7 @@ if (!$acta) {
     <h2>✏️ Editar Acta</h2>
     <form action="../controllers/actualizar_acta.php" method="POST">
         <input type="hidden" name="id" value="<?= $acta['id'] ?>">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
         <div class="mb-3">
             <label for="titulo">Título</label>

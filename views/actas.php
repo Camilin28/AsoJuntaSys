@@ -22,14 +22,19 @@ $urlDashboard = $dashboardsPorRol[$_SESSION['usuario_rol']] ?? 'dashboard.php';
 
 $nombre = $_SESSION['usuario_nombre'];
 
-// Consultar todas las actas
+// Consultar actas (filtradas por JAC del usuario, salvo Presidente General que ve todas)
 $sql = "SELECT a.id, a.titulo, d.titulo AS documento, a.fecha_reunion, a.lugar, 
                a.asistentes, a.acuerdos, a.observaciones
         FROM actas a
-        LEFT JOIN documentos d ON a.documento_id = d.id
-        ORDER BY a.fecha_reunion DESC";
+        LEFT JOIN documentos d ON a.documento_id = d.id";
+$paramsActas = [];
+if (!empty($_SESSION['jac_id'])) {
+    $sql .= " WHERE a.jac_id = :jac_id";
+    $paramsActas[':jac_id'] = $_SESSION['jac_id'];
+}
+$sql .= " ORDER BY a.fecha_reunion DESC";
 $stmt = $pdo->prepare($sql);
-$stmt->execute();
+$stmt->execute($paramsActas);
 $actas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Sacar lugares únicos para filtro

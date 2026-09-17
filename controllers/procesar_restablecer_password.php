@@ -1,12 +1,15 @@
 <?php
 session_start();
 require_once '../config/db.php';
+require_once '../includes/auth.php';
 require_once '../includes/auditoria.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: ../views/login.php");
     exit();
 }
+
+validarTokenCSRF($_POST['csrf_token'] ?? '');
 
 $token = $_POST['token'] ?? '';
 $password = $_POST['password'] ?? '';

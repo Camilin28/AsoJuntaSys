@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría') {
     header("Location: ../views/login.php");
@@ -8,6 +9,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Secretaría
 }
 
 $nombre = $_SESSION['usuario_nombre'];
+$csrfToken = generarTokenCSRF();
 
 // Categorías disponibles
 $sql = "SELECT id, nombre FROM categorias_documentos ORDER BY nombre ASC";
@@ -17,7 +19,7 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
 <meta charset="UTF-8">
 <title>Subir Documento</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -40,6 +42,7 @@ h2 { color: #2E7D32; margin-bottom: 20px; }
 <div class="container">
   <h2>📤 Subir Nuevo Documento</h2>
   <form action="../controllers/guardar_documento.php" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
     <div class="mb-3">
       <label for="titulo" class="form-label">Título</label>
       <input type="text" class="form-control" name="titulo" required>

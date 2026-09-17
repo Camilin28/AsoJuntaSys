@@ -31,14 +31,17 @@ $sqlCategorias = "SELECT id, nombre FROM categorias_documentos ORDER BY nombre A
 $stmtCat = $pdo->query($sqlCategorias);
 $categorias = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
 
-// 🔹 Consulta principal
+$params = [];
 $sql = "SELECT d.id, d.titulo, d.descripcion, d.archivo, d.estado, d.fecha_subida, 
                c.nombre AS categoria, u.nombre AS usuario
         FROM documentos d
         JOIN categorias_documentos c ON d.categoria_id = c.id
         JOIN usuarios u ON d.usuario_id = u.id
         WHERE 1=1";
-$params = [];
+if (!empty($_SESSION['jac_id'])) {
+    $sql .= " AND d.jac_id = :jac_id";
+    $params[':jac_id'] = $_SESSION['jac_id'];
+}
 if ($categoriaSeleccionada) {
     $sql .= " AND c.id = :categoria";
     $params[':categoria'] = $categoriaSeleccionada;

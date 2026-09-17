@@ -6,6 +6,8 @@ require('../config/db.php');
 requireRole(['Presidente General', 'Presidentes de JAC']);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    validarTokenCSRF($_POST['csrf_token'] ?? '');
+
     $accion = $_POST['accion'] ?? "guardar";
     $id = $_POST['id'] ?? null;
     $titulo = $_POST['titulo'] ?? "";

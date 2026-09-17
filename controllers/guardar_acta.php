@@ -6,6 +6,8 @@ require('../config/db.php');
 requireRole(['Secretaría']);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    validarTokenCSRF($_POST['csrf_token'] ?? '');
+
     $titulo        = $_POST['titulo'] ?? null;
     $documento_id  = !empty($_POST['documento_id']) ? $_POST['documento_id'] : null;
     $fecha_reunion = $_POST['fecha_reunion'] ?? null;

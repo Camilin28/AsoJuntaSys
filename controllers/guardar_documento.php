@@ -6,6 +6,8 @@ require('../config/db.php');
 requireLogin();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    validarTokenCSRF($_POST['csrf_token'] ?? '');
+
     $titulo = $_POST['titulo'];
     $descripcion = $_POST['descripcion'] ?? null;
     $categoria_id = $_POST['categoria_id'];

@@ -12,6 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] !== 'POST') {
     exit();
 }
 
+validarTokenCSRF($_POST['csrf_token'] ?? '');
+
 $nombre       = trim($_POST['nombre'] ?? '');
 $email        = trim($_POST['email'] ?? '');
 $passwordPlano = $_POST['password'] ?? '';

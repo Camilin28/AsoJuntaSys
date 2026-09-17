@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 if (!isset($_SESSION['usuario_id']) ||
    !in_array($_SESSION['usuario_rol'], ['Secretaría', 'Presidente General', 'Presidentes de JAC'])) {
@@ -11,6 +12,7 @@ if (!isset($_SESSION['usuario_id']) ||
 
 $nombre = $_SESSION['usuario_nombre'];
 $esSoloLectura = ($_SESSION['usuario_rol'] === 'Secretaría');
+$csrfToken = generarTokenCSRF();
 
 $dashboardsPorRol = [
     'Presidente General' => 'dashboard_presidente.php',
@@ -29,7 +31,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
     <meta charset="UTF-8">
     <title>Agenda - Secretaría</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -91,6 +93,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="modal-body">
                 <input type="hidden" name="id" id="eventoId">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                 <div class="mb-3">
                     <label for="titulo" class="form-label">Título del evento</label>
                     <input type="text" class="form-control" name="titulo" id="eventoTitulo" required>

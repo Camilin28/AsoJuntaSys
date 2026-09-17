@@ -1,17 +1,19 @@
 <?php
 session_start();
+require_once('../includes/auth.php');
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería') {
     header("Location: login.php");
     exit();
 }
 
 $nombre = $_SESSION['usuario_nombre'];
+$csrfToken = generarTokenCSRF();
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
     <meta charset="UTF-8">
     <title>Agregar Movimiento</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -97,6 +99,7 @@ $nombre = $_SESSION['usuario_nombre'];
     <div class="form-card">
         <h2><i class="bi bi-cash-stack"></i> Registrar Movimiento Financiero</h2>
         <form action="../controllers/guardar_movimiento.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
             <div class="mb-3">
                 <label for="descripcion" class="form-label">
                     <i class="bi bi-card-text"></i> Descripción

@@ -13,11 +13,12 @@ $jacs = $pdo->query("
 $error   = $_SESSION['error']   ?? null;
 $mensaje = $_SESSION['mensaje'] ?? null;
 unset($_SESSION['error'], $_SESSION['mensaje']);
+$csrfToken = generarTokenCSRF();
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Usuario | AsoJuntaSys</title>
@@ -306,6 +307,7 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
         <div class="card-body">
 
             <form method="POST" action="../public/procesar_registro.php">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
                 <!-- NOMBRE -->
 

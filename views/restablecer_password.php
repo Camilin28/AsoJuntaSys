@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/db.php';
+require_once '../includes/auth.php';
 
 $token = $_GET['token'] ?? '';
 $tokenValido = false;
@@ -11,11 +12,13 @@ if (!empty($token)) {
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
     $tokenValido = (bool) $usuario;
 }
+
+$csrfToken = generarTokenCSRF();
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
 <meta charset="UTF-8">
 <title>Restablecer contraseña - AsoJuntaSys</title>
 <style>
@@ -82,6 +85,7 @@ if (!empty($token)) {
     <?php else: ?>
       <form action="../controllers/procesar_restablecer_password.php" method="POST">
         <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
         <label for="password">Nueva contraseña</label>
         <input type="password" name="password" required minlength="8" placeholder="Mínimo 8 caracteres">
