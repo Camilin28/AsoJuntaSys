@@ -21,11 +21,16 @@ $dashboardsPorRol = [
 ];
 $urlDashboard = $dashboardsPorRol[$_SESSION['usuario_rol']] ?? 'dashboard.php';
 
-// 📌 Obtener eventos desde la tabla agenda
+// 📌 Obtener eventos desde la tabla agenda (filtrados por JAC del usuario)
 $sql = "SELECT id, titulo AS title, fecha AS start, hora, descripcion, color 
         FROM agenda";
+$paramsEventos = [];
+if (!empty($_SESSION['jac_id'])) {
+    $sql .= " WHERE jac_id = :jac_id";
+    $paramsEventos[':jac_id'] = $_SESSION['jac_id'];
+}
 $stmt = $pdo->prepare($sql);
-$stmt->execute();
+$stmt->execute($paramsEventos);
 $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
