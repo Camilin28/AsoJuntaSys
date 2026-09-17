@@ -14,6 +14,7 @@ $jacIdSesion = $_SESSION['jac_id'] ?? null;
 $filtroJacWhere = $jacIdSesion ? " WHERE jac_id = :jac_id" : "";
 $filtroJacAndA = $jacIdSesion ? " AND a.jac_id = :jac_id" : "";
 $filtroJacAndD = $jacIdSesion ? " AND d.jac_id = :jac_id" : "";
+$filtroJacAndAg = $jacIdSesion ? " AND jac_id = :jac_id" : "";
 $paramsJacSesion = $jacIdSesion ? [':jac_id' => $jacIdSesion] : [];
 
 $stmtActas = $pdo->prepare("SELECT COUNT(*) AS total FROM actas{$filtroJacWhere}");
@@ -44,7 +45,7 @@ $ultimosDocs->execute($paramsJacSesion);
 
 $ultimasCorr = $pdo->prepare("SELECT titulo, descripcion, fecha, hora,creado_por, creado_en
     FROM agenda
-    WHERE 1=1{$filtroJacWhere}
+    WHERE 1=1{$filtroJacAndAg}
     ORDER BY fecha DESC LIMIT 5");
 $ultimasCorr->execute($paramsJacSesion);
 ?>
