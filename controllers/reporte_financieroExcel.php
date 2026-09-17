@@ -60,7 +60,12 @@ $sheet->getRowDimension($filaEncabezado)->setRowHeight(20);
    Datos
 =========================== */
 
-$stmt = $pdo->query("SELECT * FROM recursos_financieros ORDER BY fecha DESC");
+if (!empty($_SESSION['jac_id'])) {
+    $stmt = $pdo->prepare("SELECT * FROM recursos_financieros WHERE jac_id = :jac_id ORDER BY fecha DESC");
+    $stmt->execute([':jac_id' => $_SESSION['jac_id']]);
+} else {
+    $stmt = $pdo->query("SELECT * FROM recursos_financieros ORDER BY fecha DESC");
+}
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $rowIndex = $filaEncabezado + 1;

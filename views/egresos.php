@@ -11,21 +11,24 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería'
 require('../config/db.php'); // Ajusta la ruta si es necesario
 
 try {
+    $filtroJac = !empty($_SESSION['jac_id']) ? " AND jac_id = :jac_id" : "";
+    $paramsJac = !empty($_SESSION['jac_id']) ? [':jac_id' => $_SESSION['jac_id']] : [];
+
     // Consulta para obtener los egresos (Gasto, Transferencia y Otro clasificado como Egreso)
     $sql = "SELECT * FROM recursos_financieros 
-            WHERE tipo_movimiento IN ('Gasto','Transferencia') 
-               OR (tipo_movimiento = 'Otro' AND clasificacion = 'Egreso')";
+            WHERE (tipo_movimiento IN ('Gasto','Transferencia') 
+               OR (tipo_movimiento = 'Otro' AND clasificacion = 'Egreso')){$filtroJac}";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($paramsJac);
     $egresos = $stmt->fetchAll();
 
     // Consulta para el total de egresos
     $sqlTotal = "SELECT SUM(monto) AS total_egresos 
                  FROM recursos_financieros 
-                 WHERE tipo_movimiento IN ('Gasto','Transferencia') 
-                    OR (tipo_movimiento = 'Otro' AND clasificacion = 'Egreso')";
+                 WHERE (tipo_movimiento IN ('Gasto','Transferencia') 
+                    OR (tipo_movimiento = 'Otro' AND clasificacion = 'Egreso')){$filtroJac}";
     $stmtTotal = $pdo->prepare($sqlTotal);
-    $stmtTotal->execute();
+    $stmtTotal->execute($paramsJac);
     $totalEgresos = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total_egresos'] ?? 0;
 
 } catch (PDOException $e) {
@@ -38,7 +41,7 @@ $nombre = $_SESSION['usuario_nombre'];
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
     <meta charset="UTF-8" />
     <title>Egresos - Junta de Acción Comunal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />

@@ -10,33 +10,37 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería'
 require('../config/db.php');
 
 try {
-    $sql = "SELECT * FROM recursos_financieros ORDER BY fecha DESC";
+    $filtroJac = !empty($_SESSION['jac_id']) ? " WHERE jac_id = :jac_id" : "";
+    $filtroJacAnd = !empty($_SESSION['jac_id']) ? " AND jac_id = :jac_id" : "";
+    $paramsJac = !empty($_SESSION['jac_id']) ? [':jac_id' => $_SESSION['jac_id']] : [];
+
+    $sql = "SELECT * FROM recursos_financieros{$filtroJac} ORDER BY fecha DESC";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($paramsJac);
     $movimientos = $stmt->fetchAll();
 
     $sqlIngresos = "SELECT SUM(monto) AS total FROM recursos_financieros 
-                    WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
-                       OR (tipo_movimiento='Otro' AND clasificacion='Ingreso')";
+                    WHERE (tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
+                       OR (tipo_movimiento='Otro' AND clasificacion='Ingreso')){$filtroJacAnd}";
     $stmtIngresos = $pdo->prepare($sqlIngresos);
-    $stmtIngresos->execute();
+    $stmtIngresos->execute($paramsJac);
     $totalIngresos = $stmtIngresos->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
     $sqlEgresos = "SELECT SUM(monto) AS total FROM recursos_financieros 
-                   WHERE tipo_movimiento IN ('Gasto','Transferencia') 
-                      OR (tipo_movimiento='Otro' AND clasificacion='Egreso')";
+                   WHERE (tipo_movimiento IN ('Gasto','Transferencia') 
+                      OR (tipo_movimiento='Otro' AND clasificacion='Egreso')){$filtroJacAnd}";
     $stmtEgresos = $pdo->prepare($sqlEgresos);
-    $stmtEgresos->execute();
+    $stmtEgresos->execute($paramsJac);
     $totalEgresos = $stmtEgresos->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
     $balance = $totalIngresos - $totalEgresos;
 
     // Totales por tipo de movimiento para la gráfica de pastel
     $sqlTipos = "SELECT tipo_movimiento, SUM(monto) AS total 
-                 FROM recursos_financieros 
+                 FROM recursos_financieros{$filtroJac}
                  GROUP BY tipo_movimiento";
     $stmtTipos = $pdo->prepare($sqlTipos);
-    $stmtTipos->execute();
+    $stmtTipos->execute($paramsJac);
     $tiposData = $stmtTipos->fetchAll(PDO::FETCH_ASSOC);
 
     $tipos = [];
@@ -65,7 +69,7 @@ $nombre = $_SESSION['usuario_nombre'];
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
     <meta charset="UTF-8" />
     <title>Reportes Financieros</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />

@@ -9,7 +9,12 @@ use Dompdf\Dompdf;
 
 $dompdf = new Dompdf();
 
-$stmt = $pdo->query("SELECT id, titulo, descripcion, fecha, hora, color FROM agenda ORDER BY fecha ASC");
+if (!empty($_SESSION['jac_id'])) {
+    $stmt = $pdo->prepare("SELECT id, titulo, descripcion, fecha, hora, color FROM agenda WHERE jac_id = :jac_id ORDER BY fecha ASC");
+    $stmt->execute([':jac_id' => $_SESSION['jac_id']]);
+} else {
+    $stmt = $pdo->query("SELECT id, titulo, descripcion, fecha, hora, color FROM agenda ORDER BY fecha ASC");
+}
 $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $html = '
@@ -36,3 +41,4 @@ $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 $dompdf->stream("reporte_financiero.pdf", ["Attachment" => false]);
+

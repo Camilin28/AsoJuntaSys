@@ -11,21 +11,24 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'Tesorería'
 require('../config/db.php'); // Ajusta la ruta si es necesario
 
 try {
+    $filtroJac = !empty($_SESSION['jac_id']) ? " AND jac_id = :jac_id" : "";
+    $paramsJac = !empty($_SESSION['jac_id']) ? [':jac_id' => $_SESSION['jac_id']] : [];
+
     // Consulta para obtener los ingresos (Incluye Ingreso, Donación, Subsidio y Otro clasificado como Ingreso)
     $sql = "SELECT * FROM recursos_financieros 
-            WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
-               OR (tipo_movimiento = 'Otro' AND clasificacion = 'Ingreso')";
+            WHERE (tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
+               OR (tipo_movimiento = 'Otro' AND clasificacion = 'Ingreso')){$filtroJac}";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($paramsJac);
     $ingresos = $stmt->fetchAll();
 
     // Consulta para obtener el total de ingresos
     $sqlTotal = "SELECT SUM(monto) AS total_ingresos 
                  FROM recursos_financieros 
-                 WHERE tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
-                    OR (tipo_movimiento = 'Otro' AND clasificacion = 'Ingreso')";
+                 WHERE (tipo_movimiento IN ('Ingreso','Donacion','Subsidio') 
+                    OR (tipo_movimiento = 'Otro' AND clasificacion = 'Ingreso')){$filtroJac}";
     $stmtTotal = $pdo->prepare($sqlTotal);
-    $stmtTotal->execute();
+    $stmtTotal->execute($paramsJac);
     $totalIngresos = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total_ingresos'] ?? 0;
 
 } catch (PDOException $e) {
@@ -38,7 +41,7 @@ $nombre = $_SESSION['usuario_nombre'];
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
     <meta charset="UTF-8" />
     <title>Ingresos - Junta de Acción Comunal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />

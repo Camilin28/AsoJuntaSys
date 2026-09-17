@@ -17,7 +17,12 @@ $options->set('defaultFont', 'DejaVu Sans');
 
 $dompdf = new Dompdf($options);
 
-$stmt = $pdo->query("SELECT id, titulo, fecha_reunion, hora_reunion, lugar FROM actas ORDER BY fecha_reunion DESC");
+if (!empty($_SESSION['jac_id'])) {
+    $stmt = $pdo->prepare("SELECT id, titulo, fecha_reunion, hora_reunion, lugar FROM actas WHERE jac_id = :jac_id ORDER BY fecha_reunion DESC");
+    $stmt->execute([':jac_id' => $_SESSION['jac_id']]);
+} else {
+    $stmt = $pdo->query("SELECT id, titulo, fecha_reunion, hora_reunion, lugar FROM actas ORDER BY fecha_reunion DESC");
+}
 $actas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // 🔹 HTML limpio y compatible
