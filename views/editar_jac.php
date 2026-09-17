@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 /* ===========================
    Seguridad
@@ -14,6 +15,8 @@ if (
     header("Location: login.php");
     exit();
 }
+
+$csrfToken = generarTokenCSRF();
 
 /* ===========================
    Validar ID
@@ -65,6 +68,8 @@ $totalUsuarios = $stmt->fetchColumn();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    validarTokenCSRF($_POST['csrf_token'] ?? '');
+
     $nombre = trim($_POST['nombre']);
     $direccion = trim($_POST['direccion']);
     $telefono = trim($_POST['telefono']);
@@ -99,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="es">
 
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -284,6 +289,8 @@ body{
         <div class="card-body p-4">
 
             <form method="POST">
+
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
                 <div class="mb-4">
 

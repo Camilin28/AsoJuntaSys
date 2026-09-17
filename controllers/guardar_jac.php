@@ -11,6 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+validarTokenCSRF($_POST['csrf_token'] ?? '');
+
 /* ===========================
    Datos del formulario
 =========================== */
@@ -25,7 +27,7 @@ $tesorero_id   = !empty($_POST['tesorero_id']) ? intval($_POST['tesorero_id']) :
 
 /* ===========================
    Validaciones
-=========================== */
+=========================== */  
 
 if (empty($nombre) || empty($direccion)) {
     $_SESSION['error'] = "El nombre y la dirección son obligatorios.";

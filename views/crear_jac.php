@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('../config/db.php');
+require_once('../includes/auth.php');
 
 if (
     !isset($_SESSION['usuario_id']) ||
@@ -10,6 +11,8 @@ if (
     header("Location: login.php");
     exit();
 }
+
+$csrfToken = generarTokenCSRF();
 
 /* ===========================
    Obtener usuarios disponibles
@@ -49,7 +52,7 @@ $tesoreros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -168,6 +171,7 @@ body{
         <div class="card-body p-4">
 
             <form action="../controllers/guardar_jac.php" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
                 <h5 class="section-title">
                     Datos Generales
