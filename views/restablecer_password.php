@@ -18,7 +18,7 @@ $csrfToken = generarTokenCSRF();
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
 <meta charset="UTF-8">
 <title>Restablecer contraseña - AsoJuntaSys</title>
 <style>

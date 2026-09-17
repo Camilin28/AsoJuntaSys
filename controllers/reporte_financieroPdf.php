@@ -9,7 +9,7 @@ use Dompdf\Dompdf;
 
 $dompdf = new Dompdf();
 
-if (!empty($_SESSION['jac_id'])) {
+if ($_SESSION['usuario_rol'] !== 'Presidente General' && !empty($_SESSION['jac_id'])) {
     $stmt = $pdo->prepare("SELECT * FROM recursos_financieros WHERE jac_id = :jac_id ORDER BY fecha DESC");
     $stmt->execute([':jac_id' => $_SESSION['jac_id']]);
 } else {

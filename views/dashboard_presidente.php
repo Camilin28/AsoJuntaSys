@@ -229,7 +229,7 @@ $egresosJson = json_encode($egresosData);
 <!doctype html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Asociación de Juntas de Acción Comunal - Panel Presidencial</title>

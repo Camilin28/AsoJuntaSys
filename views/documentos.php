@@ -38,7 +38,7 @@ $sql = "SELECT d.id, d.titulo, d.descripcion, d.archivo, d.estado, d.fecha_subid
         JOIN categorias_documentos c ON d.categoria_id = c.id
         JOIN usuarios u ON d.usuario_id = u.id
         WHERE 1=1";
-if (!empty($_SESSION['jac_id'])) {
+if ($_SESSION['usuario_rol'] !== 'Presidente General' && !empty($_SESSION['jac_id'])) {
     $sql .= " AND d.jac_id = :jac_id";
     $params[':jac_id'] = $_SESSION['jac_id'];
 }

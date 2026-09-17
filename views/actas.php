@@ -28,7 +28,7 @@ $sql = "SELECT a.id, a.titulo, d.titulo AS documento, a.fecha_reunion, a.lugar,
         FROM actas a
         LEFT JOIN documentos d ON a.documento_id = d.id";
 $paramsActas = [];
-if (!empty($_SESSION['jac_id'])) {
+if ($_SESSION['usuario_rol'] !== 'Presidente General' && !empty($_SESSION['jac_id'])) {
     $sql .= " WHERE a.jac_id = :jac_id";
     $paramsActas[':jac_id'] = $_SESSION['jac_id'];
 }

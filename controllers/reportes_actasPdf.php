@@ -17,7 +17,7 @@ $options->set('defaultFont', 'DejaVu Sans');
 
 $dompdf = new Dompdf($options);
 
-if (!empty($_SESSION['jac_id'])) {
+if ($_SESSION['usuario_rol'] !== 'Presidente General' && !empty($_SESSION['jac_id'])) {
     $stmt = $pdo->prepare("SELECT id, titulo, fecha_reunion, hora_reunion, lugar FROM actas WHERE jac_id = :jac_id ORDER BY fecha_reunion DESC");
     $stmt->execute([':jac_id' => $_SESSION['jac_id']]);
 } else {
