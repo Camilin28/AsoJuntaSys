@@ -15,6 +15,7 @@ if (!empty($token)) {
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
 <meta charset="UTF-8">
 <title>Restablecer contraseña - AsoJuntaSys</title>
 <style>

@@ -45,6 +45,7 @@ foreach ($juntas as $jac) {
 <html lang="es">
 
 <head>
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -402,7 +403,7 @@ foreach ($juntas as $jac) {
 
                                         </a>
 
-                                                                                <a href="usuarios_jac.php?id=<?= $jac['id'] ?>"
+                                        <a href="usuarios_jac.php?id=<?= $jac['id'] ?>"
                                            class="btn btn-success btn-sm"
                                            title="Usuarios">
 

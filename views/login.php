@@ -4,6 +4,7 @@ session_start();
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - AsoJuntaSys</title>
@@ -187,7 +188,6 @@ if (isset($_SESSION['info_login'])) {
     echo "<div class='error-box' style='background:#e8f5e9;color:#2E7D32;'>" . htmlspecialchars($_SESSION['info_login']) . "</div>";
     unset($_SESSION['info_login']);
 }
-
 ?>
       <form action="../public/procesar_login.php" method="POST">
         <label for="email">Usuario</label>
