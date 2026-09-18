@@ -434,7 +434,7 @@ font-size: 1rem;
         <span class="material-icons">description</span>
       </a>
 
-      <a href="agenda.php" class="side-btn" title="Agenda">
+      <a href="agenda_general.php" class="side-btn" title="Agenda General">
         <span class="material-icons">event</span>
       </a>
       <?php if ($_SESSION['usuario_rol'] === 'Presidente General'): ?>
@@ -502,7 +502,7 @@ font-size: 1rem;
     </a>
 </div>
 <div class="grid-3 mb-4">
-    <a href="agenda.php"
+    <a href="agenda_general.php"
        class="quick-action action-red">
         <span class="material-icons">
             event
@@ -738,7 +738,7 @@ font-size: 1rem;
   <div id="eventosResumen" class="d-flex flex-wrap gap-3">
     <?php
     $stmt = $pdo->query("SELECT titulo, fecha, hora, color 
-                         FROM agenda 
+                         FROM agenda
                          WHERE fecha >= CURDATE() 
                          ORDER BY fecha ASC 
                          LIMIT 3");
