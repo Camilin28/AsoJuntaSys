@@ -27,7 +27,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
 <link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
     <meta charset="UTF-8">
-    <title>Agenda - Secretaría</title>
+    <title>Agenda - General</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
@@ -47,7 +47,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a class="navbar-brand" href="dashboard_presidente.php">Junta de Acción Comunal</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><span class="nav-link text-white">Bienvenida, <?= htmlspecialchars($nombre) ?></span></li>
+                <li class="nav-item"><span class="nav-link text-white">Bienvenido, <?= htmlspecialchars($nombre) ?></span></li>
                 <li class="nav-item"><a class="nav-link text-white" href="../public/logout.php">Cerrar sesión</a></li>
             </ul>
         </div>
@@ -73,7 +73,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 <?php endif; ?>
 <a href="dashboard_presidente.php" class="btn btn-custom mb-3">Volver al Dashboard</a>
-<h2 class="mb-4">📅 Agenda de la Secretaría</h2>
+<h2 class="mb-4">📅 Agenda General</h2>
 <div id="calendar"></div>
 </div>
 
