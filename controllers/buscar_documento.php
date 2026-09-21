@@ -6,6 +6,10 @@ requireLogin();
 
 $q = trim($_GET['q'] ?? '');
 
+$filtroJac = ($_SESSION['usuario_rol'] !== 'Presidente General' && !empty($_SESSION['jac_id']))
+    ? " AND d.jac_id = :jac_id"
+    : "";
+
 if ($q === '') {
     // Si no hay búsqueda, devolver todos los documentos
     $sql = "SELECT d.id, d.titulo, d.descripcion, d.archivo, d.estado, d.fecha_subida, 
@@ -13,8 +17,14 @@ if ($q === '') {
             FROM documentos d
             JOIN categorias_documentos c ON d.categoria_id = c.id
             JOIN usuarios u ON d.usuario_id = u.id
+            WHERE 1=1{$filtroJac}
             ORDER BY d.fecha_subida DESC";
-    $stmt = $pdo->query($sql);
+    $stmt = $pdo->prepare($sql);
+    $params = [];
+    if ($filtroJac) {
+        $params[':jac_id'] = $_SESSION['jac_id'];
+    }
+    $stmt->execute($params);
 } else {
     // Buscar por título, descripción, categoría o usuario
     $sql = "SELECT d.id, d.titulo, d.descripcion, d.archivo, d.estado, d.fecha_subida, 
@@ -22,13 +32,18 @@ if ($q === '') {
             FROM documentos d
             JOIN categorias_documentos c ON d.categoria_id = c.id
             JOIN usuarios u ON d.usuario_id = u.id
-            WHERE d.titulo LIKE :q
-               OR d.descripcion LIKE :q
-               OR c.nombre LIKE :q
-               OR u.nombre LIKE :q
+            WHERE (d.titulo LIKE :q1
+               OR d.descripcion LIKE :q2
+               OR c.nombre LIKE :q3
+               OR u.nombre LIKE :q4){$filtroJac}
             ORDER BY d.fecha_subida DESC";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':q' => "%$q%"]);
+    $like = "%$q%";
+    $params = [':q1' => $like, ':q2' => $like, ':q3' => $like, ':q4' => $like];
+    if ($filtroJac) {
+        $params[':jac_id'] = $_SESSION['jac_id'];
+    }
+    $stmt->execute($params);
 }
 
 $documentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
