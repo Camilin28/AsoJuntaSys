@@ -19,7 +19,7 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="icon" type="image/png" href="../imagenes/Logo_web.png">
+<link rel="icon" type="image/png" href="../imagenes/Logo_AsojuntaSys.png">
 <meta charset="UTF-8">
 <title>Subir Documento</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -62,7 +62,17 @@ h2 { color: #2E7D32; margin-bottom: 20px; }
     </div>
     <div class="mb-3">
       <label for="archivo" class="form-label">Archivo</label>
-      <input type="file" class="form-control" name="archivo" accept=".pdf,.docx,.jpg,.png" required>
+      <input type="file" class="form-control" name="archivo" id="archivoInput" accept=".pdf,.docx,.jpg,.png" required>
+      <small class="form-text text-muted">Tamaño máximo: 10 MB.</small>
+      <script>
+        document.getElementById('archivoInput').addEventListener('change', function () {
+          const LIMITE_MB = 10;
+          if (this.files[0] && this.files[0].size > LIMITE_MB * 1024 * 1024) {
+            alert('El archivo pesa ' + (this.files[0].size / 1024 / 1024).toFixed(1) + ' MB. El máximo permitido es ' + LIMITE_MB + ' MB. Elige un archivo más pequeño.');
+            this.value = '';
+          }
+        });
+      </script>
     </div>
     <button type="submit" class="btn btn-custom">Guardar</button>
     <a href="documentos.php" class="btn btn-secondary">Cancelar</a>

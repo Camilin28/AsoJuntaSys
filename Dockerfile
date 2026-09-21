@@ -22,4 +22,4 @@ RUN composer install --no-dev --optimize-autoloader
 
 EXPOSE 8080
 
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "."]
+CMD ["php", "-d", "upload_max_filesize=10M", "-d", "post_max_size=12M", "-d", "display_errors=Off", "-d", "log_errors=On", "-S", "0.0.0.0:8080", "-t", "."]
